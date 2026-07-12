@@ -1,0 +1,43 @@
+name: Refresh upstream resources
+
+on:
+  schedule:
+    - cron: "17 1 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  refresh:
+    name: Refresh upstream metadata
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+
+      - name: Refresh upstream lock file
+        run: |
+          python scripts/refresh_upstreams.py \
+            --config Loon.conf \
+            --output .upstream/upstreams.lock.json \
+            --strict
+
+      - name: Commit refreshed metadata
+        run: |
+          if [[ -z "$(git status --porcelain .upstream/upstreams.lock.json)" ]]; then
+            echo "No upstream metadata changes."
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add .upstream/upstreams.lock.json
+          git commit -m "chore: refresh upstream metadata"
+          git push
