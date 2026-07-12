@@ -16,7 +16,8 @@
 - 基础：`Proxy`、`Available`、`Final`
 - 平台：`Google`、`Apple`、`Microsoft`
 - 流媒体：`Netflix`、`Disney`、`HBO`、`Spotify`、`YouTube`、`Bilibili`
-- 社交与通信：`Instagram`、`Telegram`、`LinkedIn`
+- 社交与通信：`WeChat`、`Instagram`、`Telegram`、`LinkedIn`
+- 金融支付：`Finance`，覆盖支付宝、云闪付与常用国内银行
 - 短视频：`TikTok`、`Douyin`
 - AI：`AI`、`OpenAI`、`Gemini`、`Claude`
 - Emby：`Emby`、`EmbyProxy`
