@@ -1,53 +1,57 @@
 {
   "config": "Loon.conf",
-  "generated_at": "2026-07-12T22:56:36Z",
+  "generated_at": "2026-07-12T23:03:38Z",
   "resource_count": 107,
   "resources": [
     {
-      "bytes": 261,
-      "checked_at": "2026-07-12T22:55:27Z",
+      "attempt": 1,
+      "bytes": 256,
+      "checked_at": "2026-07-12T23:02:19Z",
       "content_type": "text/plain",
       "core": false,
       "etag": null,
       "last_modified": null,
       "ok": true,
-      "sha256": "9747afff1ed00d45e138da7f8039a1ba1ba87e448741a4df27d229c8c1c5e145",
+      "sha256": "d5e9d350bd1ca3f43f87ac623f97af6ed050ad08541f5ae913a18cddf6743655",
       "source": "other",
       "status": 200,
       "tls_verified": true,
       "url": "https://chatgpt.com/cdn-cgi/trace"
     },
     {
-      "bytes": 259,
-      "checked_at": "2026-07-12T22:55:27Z",
+      "attempt": 1,
+      "bytes": 253,
+      "checked_at": "2026-07-12T23:02:19Z",
       "content_type": "text/plain",
       "core": false,
       "etag": null,
       "last_modified": null,
       "ok": true,
-      "sha256": "1cd54163894e929abc6f1f43a0f9fb1f28715e006776a6bc5218b7df76e5c336",
+      "sha256": "f4f4e1a6d30c50e74be03852358f240e1bc0b5f95cd7a8d09bb1cc8aef1e54be",
       "source": "other",
       "status": 200,
       "tls_verified": true,
       "url": "https://claude.ai/cdn-cgi/trace"
     },
     {
-      "bytes": 782954,
-      "checked_at": "2026-07-12T22:55:28Z",
+      "attempt": 1,
+      "bytes": 783127,
+      "checked_at": "2026-07-12T23:02:19Z",
       "content_type": "text/html; charset=utf-8",
       "core": false,
       "etag": null,
       "last_modified": null,
       "ok": true,
-      "sha256": "a378309a91f03942900271eb199d4190f57a63e7325df2551115806291ed2f03",
+      "sha256": "d02af904b31affb4fd94b9a1081ff6c72a5b3c9643f6043eea0a884a7e2809df",
       "source": "other",
       "status": 200,
       "tls_verified": true,
       "url": "https://gemini.google.com/"
     },
     {
+      "attempt": 1,
       "bytes": 132776,
-      "checked_at": "2026-07-12T22:55:29Z",
+      "checked_at": "2026-07-12T23:02:20Z",
       "content_type": "application/octet-stream",
       "core": true,
       "etag": "\"c024e849f4dd0e372b5119bfd426bdd4f2150b7bd6bc52bc8e51ee5d13e18d5d\"",
@@ -60,8 +64,9 @@
       "url": "https://github.com/Moli-X/Tool/raw/X/GeoIP/CN_Country.mmdb"
     },
     {
+      "attempt": 1,
       "bytes": 12133458,
-      "checked_at": "2026-07-12T22:55:30Z",
+      "checked_at": "2026-07-12T23:02:22Z",
       "content_type": "application/octet-stream",
       "core": true,
       "etag": "\"a84603e8ddeddd7f08424a5fc1a393469162706477105a8fa04134e207cc48ba\"",
@@ -74,8 +79,9 @@
       "url": "https://github.com/Moli-X/Tool/raw/X/GeoIP/GeoLite2-ASN.mmdb"
     },
     {
+      "attempt": 1,
       "bytes": 275603,
-      "checked_at": "2026-07-12T22:55:34Z",
+      "checked_at": "2026-07-12T23:02:24Z",
       "content_type": "text/plain; charset=utf-8",
       "core": false,
       "etag": "\"a8733d50dbb5b304f7d6399d55573c7445ddc5289ccddd1800033cb354373463\"",
@@ -88,8 +94,9 @@
       "url": "https://github.com/fmz200/wool_scripts/raw/main/Loon/plugin/blockAds.plugin"
     },
     {
+      "attempt": 1,
       "bytes": 28444,
-      "checked_at": "2026-07-12T22:55:36Z",
+      "checked_at": "2026-07-12T23:02:25Z",
       "content_type": "text/plain; charset=utf-8",
       "core": false,
       "etag": "\"6f3c8d5d93888e2a17eec2e850c322ee6829edc618c0cc5922f932bc21f37368\"",
@@ -102,8 +109,9 @@
       "url": "https://github.com/fmz200/wool_scripts/raw/main/Loon/plugin/cookies.plugin"
     },
     {
+      "attempt": 1,
       "bytes": 2724,
-      "checked_at": "2026-07-12T22:55:37Z",
+      "checked_at": "2026-07-12T23:02:26Z",
       "content_type": "text/plain; charset=utf-8",
       "core": false,
       "etag": "\"254a93db7e800b933c4d70ee21290d7d5954c4efe849a69665847a4cdcff9577\"",
@@ -116,8 +124,9 @@
       "url": "https://github.com/fmz200/wool_scripts/raw/main/Loon/rule/AI.list"
     },
     {
+      "attempt": 1,
       "bytes": 707,
-      "checked_at": "2026-07-12T22:55:38Z",
+      "checked_at": "2026-07-12T23:02:27Z",
       "content_type": "text/plain; charset=utf-8",
       "core": false,
       "etag": "\"9398fa731502be7b84f81c9338cab8a3cd575d4d909ed078d20a1e1f07c60f7d\"",
@@ -130,8 +139,9 @@
       "url": "https://github.com/fmz200/wool_scripts/raw/main/Loon/rule/apple_update.list"
     },
     {
+      "attempt": 1,
       "bytes": 103295,
-      "checked_at": "2026-07-12T22:55:40Z",
+      "checked_at": "2026-07-12T23:02:28Z",
       "content_type": "text/plain; charset=utf-8",
       "core": false,
       "etag": "\"ab870f5564fc88e278d72dc3829652b1b5a95abeeb04ef60abd3e6947653ebef\"",
@@ -144,8 +154,9 @@
       "url": "https://github.com/fmz200/wool_scripts/raw/main/Loon/rule/rejectAd.list"
     },
     {
+      "attempt": 1,
       "bytes": 29020,
-      "checked_at": "2026-07-12T22:55:41Z",
+      "checked_at": "2026-07-12T23:02:30Z",
       "content_type": "text/plain; charset=utf-8",
       "core": false,
       "etag": "\"076d2e70753cb0c1c38b12af0bb237cea979502e9b24abcb9a426eaa94dae132\"",
@@ -158,8 +169,9 @@
       "url": "https://github.com/fmz200/wool_scripts/raw/main/Loon/script/tasks.scripts"
     },
     {
+      "attempt": 1,
       "bytes": 1846,
-      "checked_at": "2026-07-12T22:55:43Z",
+      "checked_at": "2026-07-12T23:02:31Z",
       "content_type": "text/plain; charset=utf-8",
       "core": false,
       "etag": "\"c884ed793e1a3969beea546329e0dddde63475fe1dc7570fc44d7af4224835fb\"",
@@ -172,8 +184,9 @@
       "url": "https://github.com/fmz200/wool_scripts/raw/main/Loon/script/tools.scripts"
     },
     {
+      "attempt": 1,
       "bytes": 1263314,
-      "checked_at": "2026-07-12T22:55:44Z",
+      "checked_at": "2026-07-12T23:02:32Z",
       "content_type": "application/octet-stream",
       "core": true,
       "etag": "\"0x8DEE0322A86B87C\"",
@@ -186,7 +199,8 @@
       "url": "https://github.com/sub-store-org/Sub-Store/releases/latest/download/sub-store-parser.loon.min.js"
     },
     {
-      "checked_at": "2026-07-12T22:55:46Z",
+      "attempt": 1,
+      "checked_at": "2026-07-12T23:02:34Z",
       "core": false,
       "error": "HTTP Error 403: Forbidden",
       "ok": false,
@@ -195,7 +209,8 @@
       "url": "https://kelee.one/Tool/Loon/Lpx/Amap_remove_ads.lpx"
     },
     {
-      "checked_at": "2026-07-12T22:55:46Z",
+      "attempt": 1,
+      "checked_at": "2026-07-12T23:02:34Z",
       "core": false,
       "error": "HTTP Error 403: Forbidden",
       "ok": false,
@@ -204,7 +219,8 @@
       "url": "https://kelee.one/Tool/Loon/Lpx/AppleWeatherEnhancer.lpx"
     },
     {
-      "checked_at": "2026-07-12T22:55:46Z",
+      "attempt": 1,
+      "checked_at": "2026-07-12T23:02:34Z",
       "core": false,
       "error": "HTTP Error 403: Forbidden",
       "ok": false,
@@ -213,7 +229,8 @@
       "url": "https://kelee.one/Tool/Loon/Lpx/BaiduNetDisk_remove_ads.lpx"
     },
     {
-      "checked_at": "2026-07-12T22:55:47Z",
+      "attempt": 1,
+      "checked_at": "2026-07-12T23:02:35Z",
       "core": false,
       "error": "HTTP Error 403: Forbidden",
       "ok": false,
@@ -222,7 +239,8 @@
       "url": "https://kelee.one/Tool/Loon/Lpx/Bilibili_remove_ads.lpx"
     },
     {
-      "checked_at": "2026-07-12T22:55:47Z",
+      "attempt": 1,
+      "checked_at": "2026-07-12T23:02:35Z",
       "core": false,
       "error": "HTTP Error 403: Forbidden",
       "ok": false,
@@ -231,7 +249,8 @@
       "url": "https://kelee.one/Tool/Loon/Lpx/BlockAdvertisers.lpx"
     },
     {
-      "checked_at": "2026-07-12T22:55:47Z",
+      "attempt": 1,
+      "checked_at": "2026-07-12T23:02:35Z",
       "core": false,
       "error": "HTTP Error 403: Forbidden",
       "ok": false,
@@ -240,7 +259,8 @@
       "url": "https://kelee.one/Tool/Loon/Lpx/Block_HTTPDNS.lpx"
     },
     {
-      "checked_at": "2026-07-12T22:55:48Z",
+      "attempt": 1,
+      "checked_at": "2026-07-12T23:02:36Z",
       "core": false,
       "error": "HTTP Error 403: Forbidden",
       "ok": false,
@@ -249,7 +269,8 @@
       "url": "https://kelee.one/Tool/Loon/Lpx/BoxJs.lpx"
     },
     {
-      "checked_at": "2026-07-12T22:55:48Z",
+      "attempt": 1,
+      "checked_at": "2026-07-12T23:02:36Z",
       "core": false,
       "error": "HTTP Error 403: Forbidden",
       "ok": false,
@@ -258,7 +279,8 @@
       "url": "https://kelee.one/Tool/Loon/Lpx/Cainiao_remove_ads.lpx"
     },
     {
-      "checked_at": "2026-07-12T22:55:48Z",
+      "attempt": 1,
+      "checked_at": "2026-07-12T23:02:36Z",
       "core": false,
       "error": "HTTP Error 403: Forbidden",
       "ok": false,
@@ -267,7 +289,8 @@
       "url": "https://kelee.one/Tool/Loon/Lpx/ColorfulClouds_remove_ads.lpx"
     },
     {
-      "checked_at": "2026-07-12T22:55:49Z",
+      "attempt": 1,
+      "checked_at": "2026-07-12T23:02:37Z",
       "core": false,
       "error": "HTTP Error 403: Forbidden",
       "ok": false,
@@ -276,7 +299,8 @@
       "url": "https://kelee.one/Tool/Loon/Lpx/FleaMarket_remove_ads.lpx"
     },
     {
-      "checked_at": "2026-07-12T22:55:49Z",
+      "attempt": 1,
+      "checked_at": "2026-07-12T23:02:37Z",
       "core": false,
       "error": "HTTP Error 403: Forbidden",
       "ok": false,
@@ -285,7 +309,8 @@
       "url": "https://kelee.one/Tool/Loon/Lpx/Google.lpx"
     },
     {
-      "checked_at": "2026-07-12T22:55:49Z",
+      "attempt": 1,
+      "checked_at": "2026-07-12T23:02:37Z",
       "core": false,
       "error": "HTTP Error 403: Forbidden",
       "ok": false,
@@ -294,7 +319,8 @@
       "url": "https://kelee.one/Tool/Loon/Lpx/HantingHotels_remove_ads.lpx"
     },
     {
-      "checked_at": "2026-07-12T22:55:50Z",
+      "attempt": 1,
+      "checked_at": "2026-07-12T23:02:38Z",
       "core": false,
       "error": "HTTP Error 403: Forbidden",
       "ok": false,
@@ -303,7 +329,8 @@
       "url": "https://kelee.one/Tool/Loon/Lpx/IPATool.lpx"
     },
     {
-      "checked_at": "2026-07-12T22:55:50Z",
+      "attempt": 1,
+      "checked_at": "2026-07-12T23:02:38Z",
       "core": false,
       "error": "HTTP Error 403: Forbidden",
       "ok": false,
@@ -312,7 +339,8 @@
       "url": "https://kelee.one/Tool/Loon/Lpx/JD_remove_ads.lpx"
     },
     {
-      "checked_at": "2026-07-12T22:55:50Z",
+      "attempt": 1,
+      "checked_at": "2026-07-12T23:02:39Z",
       "core": false,
       "error": "HTTP Error 403: Forbidden",
       "ok": false,
@@ -321,7 +349,8 @@
       "url": "https://kelee.one/Tool/Loon/Lpx/Node_detection_tool.lpx"
     },
     {
-      "checked_at": "2026-07-12T22:55:51Z",
+      "attempt": 1,
+      "checked_at": "2026-07-12T23:02:39Z",
       "core": false,
       "error": "HTTP Error 403: Forbidden",
       "ok": false,
@@ -330,7 +359,8 @@
       "url": "https://kelee.one/Tool/Loon/Lpx/Prevent_DNS_Leaks.lpx"
     },
     {
-      "checked_at": "2026-07-12T22:55:51Z",
+      "attempt": 1,
+      "checked_at": "2026-07-12T23:02:39Z",
       "core": false,
       "error": "HTTP Error 403: Forbidden",
       "ok": false,
@@ -339,7 +369,8 @@
       "url": "https://kelee.one/Tool/Loon/Lpx/Remove_ads_by_keli.lpx"
     },
     {
-      "checked_at": "2026-07-12T22:55:51Z",
+      "attempt": 1,
+      "checked_at": "2026-07-12T23:02:40Z",
       "core": false,
       "error": "HTTP Error 403: Forbidden",
       "ok": false,
@@ -348,7 +379,8 @@
       "url": "https://kelee.one/Tool/Loon/Lpx/Script-Hub.lpx"
     },
     {
-      "checked_at": "2026-07-12T22:55:52Z",
+      "attempt": 1,
+      "checked_at": "2026-07-12T23:02:40Z",
       "core": false,
       "error": "HTTP Error 403: Forbidden",
       "ok": false,
@@ -357,7 +389,8 @@
       "url": "https://kelee.one/Tool/Loon/Lpx/Sub-Store.lpx"
     },
     {
-      "checked_at": "2026-07-12T22:55:52Z",
+      "attempt": 1,
+      "checked_at": "2026-07-12T23:02:40Z",
       "core": false,
       "error": "HTTP Error 403: Forbidden",
       "ok": false,
@@ -366,7 +399,8 @@
       "url": "https://kelee.one/Tool/Loon/Lpx/Switch_github_mirror.lpx"
     },
     {
-      "checked_at": "2026-07-12T22:55:52Z",
+      "attempt": 1,
+      "checked_at": "2026-07-12T23:02:41Z",
       "core": false,
       "error": "HTTP Error 403: Forbidden",
       "ok": false,
@@ -375,7 +409,8 @@
       "url": "https://kelee.one/Tool/Loon/Lpx/TXDocs_remove_ads.lpx"
     },
     {
-      "checked_at": "2026-07-12T22:55:53Z",
+      "attempt": 1,
+      "checked_at": "2026-07-12T23:02:41Z",
       "core": false,
       "error": "HTTP Error 403: Forbidden",
       "ok": false,
@@ -384,7 +419,8 @@
       "url": "https://kelee.one/Tool/Loon/Lpx/Taobao_remove_ads.lpx"
     },
     {
-      "checked_at": "2026-07-12T22:55:53Z",
+      "attempt": 1,
+      "checked_at": "2026-07-12T23:02:41Z",
       "core": false,
       "error": "HTTP Error 403: Forbidden",
       "ok": false,
@@ -393,7 +429,8 @@
       "url": "https://kelee.one/Tool/Loon/Lpx/WARP_Node_Query.lpx"
     },
     {
-      "checked_at": "2026-07-12T22:55:54Z",
+      "attempt": 1,
+      "checked_at": "2026-07-12T23:02:42Z",
       "core": false,
       "error": "HTTP Error 403: Forbidden",
       "ok": false,
@@ -402,7 +439,8 @@
       "url": "https://kelee.one/Tool/Loon/Lpx/WPS_Documents_remove_ads.lpx"
     },
     {
-      "checked_at": "2026-07-12T22:55:54Z",
+      "attempt": 1,
+      "checked_at": "2026-07-12T23:02:42Z",
       "core": false,
       "error": "HTTP Error 403: Forbidden",
       "ok": false,
@@ -411,7 +449,8 @@
       "url": "https://kelee.one/Tool/Loon/Lpx/Weixin_Official_Accounts_remove_ads.lpx"
     },
     {
-      "checked_at": "2026-07-12T22:55:54Z",
+      "attempt": 1,
+      "checked_at": "2026-07-12T23:02:42Z",
       "core": false,
       "error": "HTTP Error 403: Forbidden",
       "ok": false,
@@ -420,7 +459,8 @@
       "url": "https://kelee.one/Tool/Loon/Lpx/Weixin_external_links_unlock.lpx"
     },
     {
-      "checked_at": "2026-07-12T22:55:55Z",
+      "attempt": 1,
+      "checked_at": "2026-07-12T23:02:43Z",
       "core": false,
       "error": "HTTP Error 403: Forbidden",
       "ok": false,
@@ -429,7 +469,8 @@
       "url": "https://kelee.one/Tool/Loon/Lpx/WexinMiniPrograms_Remove_ads.lpx"
     },
     {
-      "checked_at": "2026-07-12T22:55:55Z",
+      "attempt": 1,
+      "checked_at": "2026-07-12T23:02:43Z",
       "core": false,
       "error": "HTTP Error 403: Forbidden",
       "ok": false,
@@ -438,7 +479,8 @@
       "url": "https://kelee.one/Tool/Loon/Lpx/YouTubeSubtitlesTranslation.lpx"
     },
     {
-      "checked_at": "2026-07-12T22:55:55Z",
+      "attempt": 1,
+      "checked_at": "2026-07-12T23:02:43Z",
       "core": false,
       "error": "HTTP Error 403: Forbidden",
       "ok": false,
@@ -447,8 +489,9 @@
       "url": "https://kelee.one/Tool/Loon/Lpx/YouTube_remove_ads.lpx"
     },
     {
+      "attempt": 1,
       "bytes": 9818,
-      "checked_at": "2026-07-12T22:55:56Z",
+      "checked_at": "2026-07-12T23:02:44Z",
       "content_type": "image/png",
       "core": true,
       "etag": "\"70211649147742652f29a3910b2b082b950528c98287d5b6da84637dad944d72\"",
@@ -461,8 +504,9 @@
       "url": "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/AI.png"
     },
     {
+      "attempt": 1,
       "bytes": 14638,
-      "checked_at": "2026-07-12T22:55:56Z",
+      "checked_at": "2026-07-12T23:02:44Z",
       "content_type": "image/png",
       "core": true,
       "etag": "\"74dff66f15125083c1c42b4bce89e4d2561d722a073bdd028d8de82e4c1c0b10\"",
@@ -475,8 +519,9 @@
       "url": "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Advertising.png"
     },
     {
+      "attempt": 1,
       "bytes": 4838,
-      "checked_at": "2026-07-12T22:55:57Z",
+      "checked_at": "2026-07-12T23:02:45Z",
       "content_type": "image/png",
       "core": true,
       "etag": "\"a3f75bfd5e57aec36230b5f87653519df5e8a5d7729bea881550f40a4312b2b8\"",
@@ -489,8 +534,9 @@
       "url": "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Apple.png"
     },
     {
+      "attempt": 1,
       "bytes": 6459,
-      "checked_at": "2026-07-12T22:55:58Z",
+      "checked_at": "2026-07-12T23:02:46Z",
       "content_type": "image/png",
       "core": true,
       "etag": "\"939969c2769d74a23b05a97cf20aa02a04b8a36e14456e58b5bb7aef481aaba7\"",
@@ -503,8 +549,9 @@
       "url": "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Available.png"
     },
     {
+      "attempt": 1,
       "bytes": 10231,
-      "checked_at": "2026-07-12T22:55:58Z",
+      "checked_at": "2026-07-12T23:02:46Z",
       "content_type": "image/png",
       "core": true,
       "etag": "\"cf1578829f6e3880383ddddc9dbfa3c3fdf85758d506721dc9e1bec7175087e5\"",
@@ -517,8 +564,9 @@
       "url": "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Disney.png"
     },
     {
+      "attempt": 1,
       "bytes": 9689,
-      "checked_at": "2026-07-12T22:55:59Z",
+      "checked_at": "2026-07-12T23:02:47Z",
       "content_type": "image/png",
       "core": true,
       "etag": "\"cae06672538cede672cfdbb34ca01027bf1050a9809e8e2a95222b08270645cd\"",
@@ -531,8 +579,9 @@
       "url": "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Emby.png"
     },
     {
+      "attempt": 1,
       "bytes": 13928,
-      "checked_at": "2026-07-12T22:55:59Z",
+      "checked_at": "2026-07-12T23:02:47Z",
       "content_type": "image/png",
       "core": true,
       "etag": "\"8411f16845f01e588b6d524953d42a65ee1bdb9771e1f5d8406e9e0dd7f9a200\"",
@@ -545,8 +594,9 @@
       "url": "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/European_Union.png"
     },
     {
+      "attempt": 1,
       "bytes": 5837,
-      "checked_at": "2026-07-12T22:56:00Z",
+      "checked_at": "2026-07-12T23:02:48Z",
       "content_type": "image/png",
       "core": true,
       "etag": "\"14fa202637b7900702b96d1dce05e40229eca7298bcce087c4827c87f8d82b4b\"",
@@ -559,8 +609,9 @@
       "url": "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Google_Search.png"
     },
     {
+      "attempt": 1,
       "bytes": 7051,
-      "checked_at": "2026-07-12T22:56:01Z",
+      "checked_at": "2026-07-12T23:02:48Z",
       "content_type": "image/png",
       "core": true,
       "etag": "\"ad6bbb5f9829cc9091968051dd487c9552f70b1ec021c2cde101d306bea3e28c\"",
@@ -573,8 +624,9 @@
       "url": "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/HBO.png"
     },
     {
+      "attempt": 1,
       "bytes": 11854,
-      "checked_at": "2026-07-12T22:56:01Z",
+      "checked_at": "2026-07-12T23:02:49Z",
       "content_type": "image/png",
       "core": true,
       "etag": "\"5f30f6c1f5158f3c733d3266fa44ba4d3c4fd24eafa6edfadb566cd3ff416d3e\"",
@@ -587,8 +639,9 @@
       "url": "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Hong_Kong.png"
     },
     {
+      "attempt": 1,
       "bytes": 16709,
-      "checked_at": "2026-07-12T22:56:02Z",
+      "checked_at": "2026-07-12T23:02:50Z",
       "content_type": "image/png",
       "core": true,
       "etag": "\"881fe254036d80d290c4f471e67a2ef8265904c4170ee05048832ef9c13484b8\"",
@@ -601,8 +654,9 @@
       "url": "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Instagram.png"
     },
     {
+      "attempt": 1,
       "bytes": 8754,
-      "checked_at": "2026-07-12T22:56:02Z",
+      "checked_at": "2026-07-12T23:02:50Z",
       "content_type": "image/png",
       "core": true,
       "etag": "\"051113e1b94f875399f15b3b6aa8513e45f732ae42698b8f4089b1ee98031632\"",
@@ -615,8 +669,9 @@
       "url": "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Japan.png"
     },
     {
+      "attempt": 1,
       "bytes": 10961,
-      "checked_at": "2026-07-12T22:56:03Z",
+      "checked_at": "2026-07-12T23:02:51Z",
       "content_type": "image/png",
       "core": true,
       "etag": "\"d0fab13fa1543b76a8ab4b90a04acc8e10682ed79bee8385c023fcc20cb5dbb1\"",
@@ -629,8 +684,9 @@
       "url": "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Korea.png"
     },
     {
+      "attempt": 1,
       "bytes": 12542,
-      "checked_at": "2026-07-12T22:56:04Z",
+      "checked_at": "2026-07-12T23:02:52Z",
       "content_type": "image/png",
       "core": true,
       "etag": "\"86ce7fff131955fec55b6c1c1887d74c1390934e933ad23579cf9ebda466f123\"",
@@ -643,8 +699,9 @@
       "url": "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Linkedin.png"
     },
     {
+      "attempt": 1,
       "bytes": 1243,
-      "checked_at": "2026-07-12T22:56:04Z",
+      "checked_at": "2026-07-12T23:02:52Z",
       "content_type": "image/png",
       "core": true,
       "etag": "\"8aa4f4499b01ad828290d45dd9f467221df547c81ef8b15eb39dc15821c2fc1f\"",
@@ -657,8 +714,9 @@
       "url": "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Microsoft.png"
     },
     {
+      "attempt": 1,
       "bytes": 3875,
-      "checked_at": "2026-07-12T22:56:05Z",
+      "checked_at": "2026-07-12T23:02:53Z",
       "content_type": "image/png",
       "core": true,
       "etag": "\"0b592a9131b4e8c868b366164ffb83f9ea3f51b8891d981531f5445e355d6128\"",
@@ -671,8 +729,9 @@
       "url": "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Netflix.png"
     },
     {
+      "attempt": 1,
       "bytes": 9416,
-      "checked_at": "2026-07-12T22:56:06Z",
+      "checked_at": "2026-07-12T23:02:53Z",
       "content_type": "image/png",
       "core": true,
       "etag": "\"b329da4270841f6cd36910886659a45e514abcc451dc4c6f5fe3d01edbdbfebd\"",
@@ -685,8 +744,9 @@
       "url": "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Singapore.png"
     },
     {
+      "attempt": 1,
       "bytes": 17767,
-      "checked_at": "2026-07-12T22:56:06Z",
+      "checked_at": "2026-07-12T23:02:54Z",
       "content_type": "image/png",
       "core": true,
       "etag": "\"cd45fed5ec5720053af9112f1b0c74105841801e74ba514771b5ed60dc023f18\"",
@@ -699,8 +759,9 @@
       "url": "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Spotify.png"
     },
     {
+      "attempt": 1,
       "bytes": 10667,
-      "checked_at": "2026-07-12T22:56:07Z",
+      "checked_at": "2026-07-12T23:02:55Z",
       "content_type": "image/png",
       "core": true,
       "etag": "\"b501db79538b0ecb83694964c879bdd69c31ad4f6c0e4c81241223fa61f94bed\"",
@@ -713,8 +774,9 @@
       "url": "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Taiwan.png"
     },
     {
+      "attempt": 1,
       "bytes": 13559,
-      "checked_at": "2026-07-12T22:56:07Z",
+      "checked_at": "2026-07-12T23:02:55Z",
       "content_type": "image/png",
       "core": true,
       "etag": "\"2f4d621056ad11b4b2c120285c6f76af5126e28f436f87778f8ca90fee18cdd1\"",
@@ -727,8 +789,9 @@
       "url": "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Telegram.png"
     },
     {
+      "attempt": 1,
       "bytes": 8365,
-      "checked_at": "2026-07-12T22:56:08Z",
+      "checked_at": "2026-07-12T23:02:56Z",
       "content_type": "image/png",
       "core": true,
       "etag": "\"5b1ca9c98a1185af00b4d9bc81b67aa975246c806930b25a83f65a211336f76a\"",
@@ -741,8 +804,9 @@
       "url": "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/TikTok.png"
     },
     {
+      "attempt": 1,
       "bytes": 12522,
-      "checked_at": "2026-07-12T22:56:09Z",
+      "checked_at": "2026-07-12T23:02:56Z",
       "content_type": "image/png",
       "core": true,
       "etag": "\"6dafa4523d44508e77bcc12a1a1a7e1f3536c80e360e287f4a4ca0d0b895bd92\"",
@@ -755,8 +819,9 @@
       "url": "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/United_States.png"
     },
     {
+      "attempt": 1,
       "bytes": 9092,
-      "checked_at": "2026-07-12T22:56:09Z",
+      "checked_at": "2026-07-12T23:02:57Z",
       "content_type": "image/png",
       "core": true,
       "etag": "\"6e556572691a3bfa72aab0023e8520de2560679d581c66fedcc094d2cb2cb6b7\"",
@@ -769,8 +834,9 @@
       "url": "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/YouTube.png"
     },
     {
+      "attempt": 1,
       "bytes": 11576,
-      "checked_at": "2026-07-12T22:56:10Z",
+      "checked_at": "2026-07-12T23:02:58Z",
       "content_type": "image/png",
       "core": true,
       "etag": "\"97f665c8e43d249582cbc664b27cb11a3a1f8ba0c522d367f23ca25b51822aa4\"",
@@ -783,8 +849,9 @@
       "url": "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/bilibili.png"
     },
     {
+      "attempt": 1,
       "bytes": 311,
-      "checked_at": "2026-07-12T22:56:11Z",
+      "checked_at": "2026-07-12T23:02:58Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "etag": "\"e536142b53c9b091a0a734f8a897f382d6a4052a8b6fbb3b16f268955b54c158\"",
@@ -797,8 +864,9 @@
       "url": "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Loon/ABC/ABC.list"
     },
     {
+      "attempt": 1,
       "bytes": 749,
-      "checked_at": "2026-07-12T22:56:11Z",
+      "checked_at": "2026-07-12T23:02:59Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "etag": "\"bffa5a58688a5d9ef5d739854eb4b91dda69202f31db3d425f22a44924122451\"",
@@ -811,8 +879,9 @@
       "url": "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Loon/AliPay/AliPay.list"
     },
     {
+      "attempt": 1,
       "bytes": 1468,
-      "checked_at": "2026-07-12T22:56:12Z",
+      "checked_at": "2026-07-12T23:03:00Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "etag": "\"763fc53b9b57993e1f832beaa9b90013e8e367927ae88f1d461e13ecce96fc12\"",
@@ -825,8 +894,9 @@
       "url": "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Loon/Apple/Apple.list"
     },
     {
+      "attempt": 1,
       "bytes": 766,
-      "checked_at": "2026-07-12T22:56:12Z",
+      "checked_at": "2026-07-12T23:03:01Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "etag": "\"e01daefa8cbc5ef90f6778c410954ddd9529598818b67abd9673a856445043ed\"",
@@ -839,8 +909,9 @@
       "url": "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Loon/BOC/BOC.list"
     },
     {
+      "attempt": 1,
       "bytes": 324,
-      "checked_at": "2026-07-12T22:56:13Z",
+      "checked_at": "2026-07-12T23:03:01Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "etag": "\"c4179b14ef45d106465a0df73a14f24d5c6a4cf03fe8d811ab527bfd788c03da\"",
@@ -853,8 +924,9 @@
       "url": "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Loon/BOCOM/BOCOM.list"
     },
     {
+      "attempt": 1,
       "bytes": 4523,
-      "checked_at": "2026-07-12T22:56:14Z",
+      "checked_at": "2026-07-12T23:03:02Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "etag": "\"f9032a745a7cd57bd4d8373a2b49fa1250d229b25d7ce8cef468ac4e60f1eb68\"",
@@ -867,8 +939,9 @@
       "url": "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Loon/BiliBili/BiliBili.list"
     },
     {
+      "attempt": 1,
       "bytes": 638,
-      "checked_at": "2026-07-12T22:56:14Z",
+      "checked_at": "2026-07-12T23:03:02Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "etag": "\"6590bef7aef39314d2ff012a919efad0d903b3beb64f5dc4b217bac81defa87b\"",
@@ -881,8 +954,9 @@
       "url": "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Loon/CCB/CCB.list"
     },
     {
+      "attempt": 1,
       "bytes": 558,
-      "checked_at": "2026-07-12T22:56:15Z",
+      "checked_at": "2026-07-12T23:03:03Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "etag": "\"af7cda49d3e4815000c6db4445e8f588e81adbe03283e9c825ca1c73a1d68e30\"",
@@ -895,8 +969,9 @@
       "url": "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Loon/CEB/CEB.list"
     },
     {
+      "attempt": 1,
       "bytes": 1167,
-      "checked_at": "2026-07-12T22:56:15Z",
+      "checked_at": "2026-07-12T23:03:04Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "etag": "\"9ee845a11579c440c31d75a1f5ec51245494c8c1f3cf2141191b16d8a91d1ef4\"",
@@ -909,8 +984,9 @@
       "url": "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Loon/CMB/CMB.list"
     },
     {
+      "attempt": 1,
       "bytes": 3305,
-      "checked_at": "2026-07-12T22:56:16Z",
+      "checked_at": "2026-07-12T23:03:04Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "etag": "\"cd8f6043dab833493e8f215da77c75a2838eed960bb3e96b5559935698524bdc\"",
@@ -923,8 +999,9 @@
       "url": "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Loon/ChinaMaxNoIP/ChinaMaxNoIP.list"
     },
     {
+      "attempt": 1,
       "bytes": 244,
-      "checked_at": "2026-07-12T22:56:17Z",
+      "checked_at": "2026-07-12T23:03:05Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "etag": "\"560d7aa01da3ea96cf5b8c52e00f8dc8d246bd2193a5753d62d473dc8d619141\"",
@@ -937,8 +1014,9 @@
       "url": "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Loon/Claude/Claude.list"
     },
     {
+      "attempt": 1,
       "bytes": 6490,
-      "checked_at": "2026-07-12T22:56:17Z",
+      "checked_at": "2026-07-12T23:03:05Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "etag": "\"09b2896c5a426c54bb9d894fc26b549b2925404db88cbed941307c4ec85e851b\"",
@@ -951,8 +1029,9 @@
       "url": "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Loon/Direct/Direct.list"
     },
     {
+      "attempt": 1,
       "bytes": 5565,
-      "checked_at": "2026-07-12T22:56:18Z",
+      "checked_at": "2026-07-12T23:03:06Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "etag": "\"75e82c14edc4a2d234a5a09675755ece7edc44ae7b82d5d6c84e67f739fdc19f\"",
@@ -965,8 +1044,9 @@
       "url": "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Loon/Disney/Disney.list"
     },
     {
+      "attempt": 1,
       "bytes": 533,
-      "checked_at": "2026-07-12T22:56:18Z",
+      "checked_at": "2026-07-12T23:03:07Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "etag": "\"d025b98541e7df0240d143fe9746edeb5a70ae631dace10a3b37845343923e8d\"",
@@ -979,8 +1059,9 @@
       "url": "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Loon/DouYin/DouYin.list"
     },
     {
+      "attempt": 1,
       "bytes": 1629,
-      "checked_at": "2026-07-12T22:56:19Z",
+      "checked_at": "2026-07-12T23:03:07Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "etag": "\"f98ed02cb42c3e4edde4d9eba770da388c7931feefac95382bd1768419e4eb01\"",
@@ -993,8 +1074,9 @@
       "url": "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Loon/Emby/Emby.list"
     },
     {
+      "attempt": 1,
       "bytes": 605,
-      "checked_at": "2026-07-12T22:56:20Z",
+      "checked_at": "2026-07-12T23:03:08Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "etag": "\"56eca4cfa6e1909e80dd076d7a2b352f5a2d57bd58fbda85d54c11db90cad6bc\"",
@@ -1007,8 +1089,9 @@
       "url": "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Loon/Gemini/Gemini.list"
     },
     {
+      "attempt": 1,
       "bytes": 19792,
-      "checked_at": "2026-07-12T22:56:20Z",
+      "checked_at": "2026-07-12T23:03:09Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "etag": "\"539529f5825f5e5e6feed45a5a71738d3757618fcededac324ca10a051534e4a\"",
@@ -1021,8 +1104,9 @@
       "url": "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Loon/Google/Google.list"
     },
     {
+      "attempt": 1,
       "bytes": 1738,
-      "checked_at": "2026-07-12T22:56:20Z",
+      "checked_at": "2026-07-12T23:03:09Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "etag": "\"71cb4a22c59a48411dd05aecd0306d32458bf5137893256dcbbb9eac1c0ff839\"",
@@ -1035,8 +1119,9 @@
       "url": "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Loon/HBO/HBO.list"
     },
     {
+      "attempt": 1,
       "bytes": 1701,
-      "checked_at": "2026-07-12T22:56:21Z",
+      "checked_at": "2026-07-12T23:03:10Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "etag": "\"70936b006afc04b5c547fa0a0a7738909b17f385873fb896588f764621c9a1f5\"",
@@ -1049,8 +1134,9 @@
       "url": "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Loon/ICBC/ICBC.list"
     },
     {
+      "attempt": 1,
       "bytes": 287,
-      "checked_at": "2026-07-12T22:56:22Z",
+      "checked_at": "2026-07-12T23:03:11Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "etag": "\"c4b41a7c42259da40b14f22e72de9bb76d60841065639773a85be4f79b0abc82\"",
@@ -1063,8 +1149,9 @@
       "url": "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Loon/Instagram/Instagram.list"
     },
     {
+      "attempt": 1,
       "bytes": 509,
-      "checked_at": "2026-07-12T22:56:22Z",
+      "checked_at": "2026-07-12T23:03:11Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "etag": "\"b9408ed4b12a1279e92e415192ab14e67b8ebc64044a87886b7774c36e48e5d7\"",
@@ -1077,8 +1164,9 @@
       "url": "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Loon/LinkedIn/LinkedIn.list"
     },
     {
+      "attempt": 1,
       "bytes": 20536,
-      "checked_at": "2026-07-12T22:56:23Z",
+      "checked_at": "2026-07-12T23:03:12Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "etag": "\"1b1fd9c1f31b720f05fe5b71fd6fccb67b7a7b118fab8b11878b2d6673c15c98\"",
@@ -1091,8 +1179,9 @@
       "url": "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Loon/Microsoft/Microsoft.list"
     },
     {
+      "attempt": 1,
       "bytes": 40369,
-      "checked_at": "2026-07-12T22:56:23Z",
+      "checked_at": "2026-07-12T23:03:12Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "etag": "\"755d7f2ebaf2117038c9dbfcd6d228b861382f839c41e7738fa4055da37c8433\"",
@@ -1105,8 +1194,9 @@
       "url": "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Loon/Netflix/Netflix.list"
     },
     {
+      "attempt": 1,
       "bytes": 1353,
-      "checked_at": "2026-07-12T22:56:24Z",
+      "checked_at": "2026-07-12T23:03:13Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "etag": "\"da7a9e1c695bf7baaefbfb8630fe0e024b8d320be1affa23adcbbc16e0175fe6\"",
@@ -1119,8 +1209,9 @@
       "url": "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Loon/OpenAI/OpenAI.list"
     },
     {
+      "attempt": 1,
       "bytes": 4391,
-      "checked_at": "2026-07-12T22:56:25Z",
+      "checked_at": "2026-07-12T23:03:14Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "etag": "\"01461dc9be0da205b2ec8ba9b178a45678ad112db87cb5186bb9d11dd8768572\"",
@@ -1133,8 +1224,9 @@
       "url": "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Loon/Proxy/Proxy.list"
     },
     {
+      "attempt": 1,
       "bytes": 1197,
-      "checked_at": "2026-07-12T22:56:26Z",
+      "checked_at": "2026-07-12T23:03:14Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "etag": "\"e8f52ec3f5044df4e0e5722d12087a678a5af95c2b7b6d95a3f6a0157749e059\"",
@@ -1147,8 +1239,9 @@
       "url": "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Loon/Spotify/Spotify.list"
     },
     {
+      "attempt": 1,
       "bytes": 1355,
-      "checked_at": "2026-07-12T22:56:26Z",
+      "checked_at": "2026-07-12T23:03:15Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "etag": "\"2c50c87f16b5e77430bffaf36d121fa56915f66793f20dc55443bbe3829f07dd\"",
@@ -1161,8 +1254,9 @@
       "url": "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Loon/Telegram/Telegram.list"
     },
     {
+      "attempt": 1,
       "bytes": 1100,
-      "checked_at": "2026-07-12T22:56:27Z",
+      "checked_at": "2026-07-12T23:03:16Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "etag": "\"90b29161856d08c7c2ae4c418ff197b13a14e97d74db5636df4bf6bd749c0abf\"",
@@ -1175,8 +1269,9 @@
       "url": "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Loon/TikTok/TikTok.list"
     },
     {
+      "attempt": 1,
       "bytes": 616,
-      "checked_at": "2026-07-12T22:56:27Z",
+      "checked_at": "2026-07-12T23:03:16Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "etag": "\"2ab5c07e9e1f5e3d56c8479a48fc36c2a11db6e4564c20eb1b31f193672e2412\"",
@@ -1189,8 +1284,9 @@
       "url": "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Loon/UnionPay/UnionPay.list"
     },
     {
+      "attempt": 1,
       "bytes": 1085,
-      "checked_at": "2026-07-12T22:56:28Z",
+      "checked_at": "2026-07-12T23:03:17Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "etag": "\"231117464fb0f1fadf961866bda59bfbc7b1ecfc30ebaba6e73817ce7893df36\"",
@@ -1203,8 +1299,9 @@
       "url": "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Loon/WeChat/WeChat.list"
     },
     {
+      "attempt": 1,
       "bytes": 5451,
-      "checked_at": "2026-07-12T22:56:29Z",
+      "checked_at": "2026-07-12T23:03:17Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "etag": "\"63885066bff514c1a2ff8946cba7cc3d179f7b5c11bcc80847ae0b8a42c5b524\"",
@@ -1217,8 +1314,9 @@
       "url": "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Loon/YouTube/YouTube.list"
     },
     {
+      "attempt": 1,
       "bytes": 29876,
-      "checked_at": "2026-07-12T22:56:29Z",
+      "checked_at": "2026-07-12T23:03:18Z",
       "content_type": "image/png",
       "core": true,
       "etag": "\"2e093e4e0319ae9842b5a0b4d2e776899c2d0176c4e63bcb518eeec88408689a\"",
@@ -1231,8 +1329,9 @@
       "url": "https://raw.githubusercontent.com/fmz200/wool_scripts/main/icons/apps/ChatGPT2.png"
     },
     {
+      "attempt": 1,
       "bytes": 41046,
-      "checked_at": "2026-07-12T22:56:30Z",
+      "checked_at": "2026-07-12T23:03:19Z",
       "content_type": "image/png",
       "core": true,
       "etag": "\"0e0bea323f12d496099849fd0b3a453560bb913b7b0dd0729e6c2090ed26b1f3\"",
@@ -1245,8 +1344,9 @@
       "url": "https://raw.githubusercontent.com/fmz200/wool_scripts/main/icons/apps/Claude_01.png"
     },
     {
+      "attempt": 1,
       "bytes": 13426,
-      "checked_at": "2026-07-12T22:56:31Z",
+      "checked_at": "2026-07-12T23:03:20Z",
       "content_type": "image/png",
       "core": true,
       "etag": "\"7c5137898d6c64d0f0dab0ca9d95b9692203c3e3e56b370aaa1e5a40a6aedc77\"",
@@ -1259,8 +1359,9 @@
       "url": "https://raw.githubusercontent.com/fmz200/wool_scripts/main/icons/apps/Emby.png"
     },
     {
+      "attempt": 1,
       "bytes": 14621,
-      "checked_at": "2026-07-12T22:56:31Z",
+      "checked_at": "2026-07-12T23:03:20Z",
       "content_type": "image/png",
       "core": true,
       "etag": "\"0efc9fdcb6c2af9720e4123da55172faaa05ae922dd316482109721554b6fb5f\"",
@@ -1273,8 +1374,9 @@
       "url": "https://raw.githubusercontent.com/fmz200/wool_scripts/main/icons/apps/Final.png"
     },
     {
+      "attempt": 1,
       "bytes": 11246,
-      "checked_at": "2026-07-12T22:56:32Z",
+      "checked_at": "2026-07-12T23:03:21Z",
       "content_type": "image/png",
       "core": true,
       "etag": "\"402abf4519010e40bc428311983d5dba686e76f2d7bcd2e9bf557fa911c19796\"",
@@ -1287,8 +1389,9 @@
       "url": "https://raw.githubusercontent.com/fmz200/wool_scripts/main/icons/apps/Gemini_01.png"
     },
     {
+      "attempt": 1,
       "bytes": 12635,
-      "checked_at": "2026-07-12T22:56:33Z",
+      "checked_at": "2026-07-12T23:03:21Z",
       "content_type": "image/png",
       "core": true,
       "etag": "\"c47d46db4365949a097a26a3d83baa76b37988e5e5ae59b23780cd5895b83bdb\"",
@@ -1301,8 +1404,9 @@
       "url": "https://raw.githubusercontent.com/fmz200/wool_scripts/main/icons/apps/Proxy.png"
     },
     {
+      "attempt": 1,
       "bytes": 12737,
-      "checked_at": "2026-07-12T22:56:33Z",
+      "checked_at": "2026-07-12T23:03:22Z",
       "content_type": "image/png",
       "core": true,
       "etag": "\"309bfc06ed996a03614ecf7541e1aaff2b18fe16555129196f3d0f4f2b6c79a6\"",
@@ -1315,8 +1419,9 @@
       "url": "https://raw.githubusercontent.com/fmz200/wool_scripts/main/icons/apps/wechat.png"
     },
     {
+      "attempt": 1,
       "bytes": 19272,
-      "checked_at": "2026-07-12T22:56:34Z",
+      "checked_at": "2026-07-12T23:03:23Z",
       "content_type": "image/png",
       "core": true,
       "etag": "\"6431f6d117d2ad9ec10fa413ec0350b64a4adbadb8f6c37222b2aac065cd33c9\"",
@@ -1329,7 +1434,8 @@
       "url": "https://raw.githubusercontent.com/fmz200/wool_scripts/main/icons/bank/PBC.png"
     },
     {
-      "checked_at": "2026-07-12T22:56:35Z",
+      "attempt": 3,
+      "checked_at": "2026-07-12T23:03:30Z",
       "core": false,
       "error": "HTTPError: HTTP Error 500: Internal Server Error",
       "ok": false,
@@ -1338,7 +1444,8 @@
       "url": "https://sub.store/download/%E6%B8%94%E4%BA%91Cloudfisher?target=Loon"
     },
     {
-      "checked_at": "2026-07-12T22:56:35Z",
+      "attempt": 3,
+      "checked_at": "2026-07-12T23:03:38Z",
       "core": false,
       "error": "HTTPError: HTTP Error 500: Internal Server Error",
       "ok": false,

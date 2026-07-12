@@ -10,6 +10,7 @@ import json
 import re
 import ssl
 import sys
+import time
 import urllib.error
 import urllib.request
 from pathlib import Path
@@ -159,8 +160,72 @@ def fetch(url: str, timeout: int) -> dict[str, object]:
         }
 
 
-def refresh(urls: Iterable[str], timeout: int) -> list[dict[str, object]]:
-    return [fetch(url, timeout) for url in urls]
+def fetch_with_retries(url: str, timeout: int, retries: int) -> dict[str, object]:
+    last_result: dict[str, object] | None = None
+    for attempt in range(retries + 1):
+        result = fetch(url, timeout)
+        result["attempt"] = attempt + 1
+        if result["ok"]:
+            return result
+        last_result = result
+        status = result.get("status")
+        retryable = status is None or status == 429 or int(status) >= 500
+        if attempt < retries and retryable:
+            time.sleep(min(2 * (attempt + 1), 5))
+            continue
+        break
+    return last_result or fetch(url, timeout)
+
+
+def load_previous_resources(output: Path) -> dict[str, dict[str, object]]:
+    if not output.exists():
+        return {}
+    try:
+        payload = json.loads(output.read_text(encoding="utf-8"))
+    except json.JSONDecodeError:
+        return {}
+    return {
+        str(item["url"]): item
+        for item in payload.get("resources", [])
+        if isinstance(item, dict) and "url" in item
+    }
+
+
+def use_stale_core_success(
+    resources: list[dict[str, object]],
+    previous_resources: dict[str, dict[str, object]],
+) -> list[dict[str, object]]:
+    resolved: list[dict[str, object]] = []
+    for item in resources:
+        if not item["core"] or item["ok"]:
+            resolved.append(item)
+            continue
+
+        previous = previous_resources.get(str(item["url"]))
+        if not previous or not previous.get("ok"):
+            resolved.append(item)
+            continue
+
+        stale = dict(previous)
+        stale.update(
+            {
+                "attempt": item.get("attempt"),
+                "checked_at": item["checked_at"],
+                "core": item["core"],
+                "last_error": item.get("error"),
+                "last_status": item.get("status"),
+                "ok": True,
+                "source": item["source"],
+                "stale": True,
+                "url": item["url"],
+            }
+        )
+        resolved.append(stale)
+    return resolved
+
+
+def refresh(urls: Iterable[str], timeout: int, retries: int) -> list[dict[str, object]]:
+    return [fetch_with_retries(url, timeout, retries) for url in urls]
 
 
 def main() -> int:
@@ -168,11 +233,14 @@ def main() -> int:
     parser.add_argument("--config", default="Loon.conf", type=Path)
     parser.add_argument("--output", default=".upstream/upstreams.lock.json", type=Path)
     parser.add_argument("--timeout", default=30, type=int)
+    parser.add_argument("--retries", default=2, type=int)
     parser.add_argument("--strict", action="store_true")
     args = parser.parse_args()
 
     urls = extract_urls(args.config)
-    resources = refresh(urls, args.timeout)
+    previous_resources = load_previous_resources(args.output)
+    resources = refresh(urls, args.timeout, args.retries)
+    resources = use_stale_core_success(resources, previous_resources)
     payload = {
         "generated_at": dt.datetime.now(dt.UTC).isoformat(timespec="seconds").replace("+00:00", "Z"),
         "config": str(args.config),
