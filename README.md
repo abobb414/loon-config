@@ -9,6 +9,8 @@
 - `.github/workflows/refresh-upstreams.yml`：每日自动刷新上游资源元数据。
 - `.upstream/upstreams.lock.json`：上游资源状态、ETag、Last-Modified 与 sha256 记录。
 
+公开版配置不包含节点订阅地址；请在 Loon 本地添加自己的远程代理订阅。
+
 ## 分流策略
 
 配置包含以下主要策略组：
