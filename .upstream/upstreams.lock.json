@@ -1,57 +1,47 @@
 {
   "config": "Loon.conf",
-  "generated_at": "2026-07-15T07:51:18Z",
+  "generated_at": "2026-07-15T07:52:55Z",
   "resource_count": 105,
   "resources": [
     {
       "attempt": 1,
-      "bytes": 256,
-      "checked_at": "2026-07-15T07:48:05Z",
-      "content_type": "text/plain",
+      "checked_at": "2026-07-15T07:50:53Z",
       "core": false,
-      "etag": null,
-      "last_modified": null,
-      "ok": true,
-      "sha256": "e590f81217ba36f0272ba5df7cbe2eb4ca86f73c48dbc1c44ae9ac78441410eb",
+      "error": "URLError: <urlopen error _ssl.c:1015: The handshake operation timed out>",
+      "ok": false,
       "source": "other",
-      "status": 200,
-      "tls_verified": true,
+      "status": null,
       "url": "https://chatgpt.com/cdn-cgi/trace"
     },
     {
       "attempt": 1,
-      "bytes": 229,
-      "checked_at": "2026-07-15T07:48:11Z",
+      "bytes": 254,
+      "checked_at": "2026-07-15T07:50:58Z",
       "content_type": "text/plain",
       "core": false,
       "etag": null,
       "last_modified": null,
       "ok": true,
-      "sha256": "ba959adeb1c19d9006b1ff15a0cf8efc9101d07fb184b87cc12b6ab03a679d5b",
+      "sha256": "6a4cf84f790de58eca587e84676b5e950ae375f5134e7cf66bcaa1e2f8df5191",
       "source": "other",
       "status": 200,
       "tls_verified": true,
       "url": "https://claude.ai/cdn-cgi/trace"
     },
     {
-      "attempt": 2,
-      "bytes": 780956,
-      "checked_at": "2026-07-15T07:48:31Z",
-      "content_type": "text/html; charset=utf-8",
+      "attempt": 1,
+      "checked_at": "2026-07-15T07:51:01Z",
       "core": false,
-      "etag": null,
-      "last_modified": null,
-      "ok": true,
-      "sha256": "d4b0787a0e79750cee7a57ff8bd4960780c1256841928b514872d1c3ee176efb",
+      "error": "URLError: <urlopen error _ssl.c:1015: The handshake operation timed out>",
+      "ok": false,
       "source": "other",
-      "status": 200,
-      "tls_verified": true,
+      "status": null,
       "url": "https://gemini.google.com/"
     },
     {
       "attempt": 1,
       "bytes": 132776,
-      "checked_at": "2026-07-15T07:48:53Z",
+      "checked_at": "2026-07-15T07:51:06Z",
       "content_type": "application/octet-stream",
       "core": true,
       "etag": "\"09e4e304f341447f498441b5a0220299e5b4608be3eaa2ee068ab06e17bc3b78\"",
@@ -66,7 +56,7 @@
     {
       "attempt": 1,
       "bytes": 12133458,
-      "checked_at": "2026-07-15T07:48:56Z",
+      "checked_at": "2026-07-15T07:51:10Z",
       "content_type": "application/octet-stream",
       "core": true,
       "etag": "\"a84603e8ddeddd7f08424a5fc1a393469162706477105a8fa04134e207cc48ba\"",
@@ -81,7 +71,7 @@
     {
       "attempt": 1,
       "bytes": 275603,
-      "checked_at": "2026-07-15T07:49:04Z",
+      "checked_at": "2026-07-15T07:51:22Z",
       "content_type": "text/plain; charset=utf-8",
       "core": false,
       "etag": "\"a8733d50dbb5b304f7d6399d55573c7445ddc5289ccddd1800033cb354373463\"",
@@ -96,7 +86,7 @@
     {
       "attempt": 1,
       "bytes": 28444,
-      "checked_at": "2026-07-15T07:49:07Z",
+      "checked_at": "2026-07-15T07:51:25Z",
       "content_type": "text/plain; charset=utf-8",
       "core": false,
       "etag": "\"6f3c8d5d93888e2a17eec2e850c322ee6829edc618c0cc5922f932bc21f37368\"",
@@ -111,7 +101,7 @@
     {
       "attempt": 1,
       "bytes": 2724,
-      "checked_at": "2026-07-15T07:49:11Z",
+      "checked_at": "2026-07-15T07:51:28Z",
       "content_type": "text/plain; charset=utf-8",
       "core": false,
       "etag": "\"254a93db7e800b933c4d70ee21290d7d5954c4efe849a69665847a4cdcff9577\"",
@@ -126,7 +116,7 @@
     {
       "attempt": 1,
       "bytes": 707,
-      "checked_at": "2026-07-15T07:49:14Z",
+      "checked_at": "2026-07-15T07:51:30Z",
       "content_type": "text/plain; charset=utf-8",
       "core": false,
       "etag": "\"9398fa731502be7b84f81c9338cab8a3cd575d4d909ed078d20a1e1f07c60f7d\"",
@@ -141,7 +131,7 @@
     {
       "attempt": 1,
       "bytes": 103295,
-      "checked_at": "2026-07-15T07:49:17Z",
+      "checked_at": "2026-07-15T07:51:34Z",
       "content_type": "text/plain; charset=utf-8",
       "core": false,
       "etag": "\"ab870f5564fc88e278d72dc3829652b1b5a95abeeb04ef60abd3e6947653ebef\"",
@@ -154,9 +144,9 @@
       "url": "https://github.com/fmz200/wool_scripts/raw/main/Loon/rule/rejectAd.list"
     },
     {
-      "attempt": 2,
+      "attempt": 1,
       "bytes": 29020,
-      "checked_at": "2026-07-15T07:49:25Z",
+      "checked_at": "2026-07-15T07:51:38Z",
       "content_type": "text/plain; charset=utf-8",
       "core": false,
       "etag": "\"076d2e70753cb0c1c38b12af0bb237cea979502e9b24abcb9a426eaa94dae132\"",
@@ -171,7 +161,7 @@
     {
       "attempt": 1,
       "bytes": 1846,
-      "checked_at": "2026-07-15T07:49:29Z",
+      "checked_at": "2026-07-15T07:51:41Z",
       "content_type": "text/plain; charset=utf-8",
       "core": false,
       "etag": "\"c884ed793e1a3969beea546329e0dddde63475fe1dc7570fc44d7af4224835fb\"",
@@ -186,7 +176,7 @@
     {
       "attempt": 1,
       "bytes": 1263785,
-      "checked_at": "2026-07-15T07:49:31Z",
+      "checked_at": "2026-07-15T07:51:44Z",
       "content_type": "application/octet-stream",
       "core": true,
       "etag": "\"0x8DEE1521E5AEFFB\"",
@@ -200,7 +190,7 @@
     },
     {
       "attempt": 1,
-      "checked_at": "2026-07-15T07:49:38Z",
+      "checked_at": "2026-07-15T07:51:48Z",
       "core": false,
       "error": "HTTP Error 403: Forbidden",
       "ok": false,
@@ -210,17 +200,17 @@
     },
     {
       "attempt": 1,
-      "checked_at": "2026-07-15T07:49:38Z",
+      "checked_at": "2026-07-15T07:51:48Z",
       "core": false,
-      "error": "HTTP Error 403: Forbidden",
+      "error": "RemoteDisconnected: Remote end closed connection without response",
       "ok": false,
       "source": "Kelee plugin",
-      "status": 403,
+      "status": null,
       "url": "https://kelee.one/Tool/Loon/Lpx/AppleWeatherEnhancer.lpx"
     },
     {
-      "attempt": 2,
-      "checked_at": "2026-07-15T07:49:42Z",
+      "attempt": 1,
+      "checked_at": "2026-07-15T07:51:49Z",
       "core": false,
       "error": "HTTP Error 403: Forbidden",
       "ok": false,
@@ -229,8 +219,8 @@
       "url": "https://kelee.one/Tool/Loon/Lpx/BaiduNetDisk_remove_ads.lpx"
     },
     {
-      "attempt": 2,
-      "checked_at": "2026-07-15T07:49:45Z",
+      "attempt": 1,
+      "checked_at": "2026-07-15T07:51:49Z",
       "core": false,
       "error": "HTTP Error 403: Forbidden",
       "ok": false,
@@ -240,7 +230,7 @@
     },
     {
       "attempt": 1,
-      "checked_at": "2026-07-15T07:49:45Z",
+      "checked_at": "2026-07-15T07:51:50Z",
       "core": false,
       "error": "HTTP Error 403: Forbidden",
       "ok": false,
@@ -250,7 +240,7 @@
     },
     {
       "attempt": 1,
-      "checked_at": "2026-07-15T07:49:46Z",
+      "checked_at": "2026-07-15T07:51:50Z",
       "core": false,
       "error": "HTTP Error 403: Forbidden",
       "ok": false,
@@ -260,7 +250,7 @@
     },
     {
       "attempt": 1,
-      "checked_at": "2026-07-15T07:49:46Z",
+      "checked_at": "2026-07-15T07:51:51Z",
       "core": false,
       "error": "HTTP Error 403: Forbidden",
       "ok": false,
@@ -270,7 +260,7 @@
     },
     {
       "attempt": 1,
-      "checked_at": "2026-07-15T07:49:47Z",
+      "checked_at": "2026-07-15T07:51:51Z",
       "core": false,
       "error": "HTTP Error 403: Forbidden",
       "ok": false,
@@ -279,8 +269,8 @@
       "url": "https://kelee.one/Tool/Loon/Lpx/Cainiao_remove_ads.lpx"
     },
     {
-      "attempt": 3,
-      "checked_at": "2026-07-15T07:49:54Z",
+      "attempt": 1,
+      "checked_at": "2026-07-15T07:51:52Z",
       "core": false,
       "error": "HTTP Error 403: Forbidden",
       "ok": false,
@@ -290,7 +280,7 @@
     },
     {
       "attempt": 1,
-      "checked_at": "2026-07-15T07:49:55Z",
+      "checked_at": "2026-07-15T07:51:52Z",
       "core": false,
       "error": "HTTP Error 403: Forbidden",
       "ok": false,
@@ -300,17 +290,17 @@
     },
     {
       "attempt": 1,
-      "checked_at": "2026-07-15T07:49:55Z",
+      "checked_at": "2026-07-15T07:51:53Z",
       "core": false,
-      "error": "HTTP Error 403: Forbidden",
+      "error": "RemoteDisconnected: Remote end closed connection without response",
       "ok": false,
       "source": "Kelee plugin",
-      "status": 403,
+      "status": null,
       "url": "https://kelee.one/Tool/Loon/Lpx/Google.lpx"
     },
     {
       "attempt": 1,
-      "checked_at": "2026-07-15T07:49:56Z",
+      "checked_at": "2026-07-15T07:51:53Z",
       "core": false,
       "error": "HTTP Error 403: Forbidden",
       "ok": false,
@@ -320,7 +310,7 @@
     },
     {
       "attempt": 1,
-      "checked_at": "2026-07-15T07:49:56Z",
+      "checked_at": "2026-07-15T07:51:54Z",
       "core": false,
       "error": "HTTP Error 403: Forbidden",
       "ok": false,
@@ -330,7 +320,7 @@
     },
     {
       "attempt": 1,
-      "checked_at": "2026-07-15T07:49:57Z",
+      "checked_at": "2026-07-15T07:51:55Z",
       "core": false,
       "error": "HTTP Error 403: Forbidden",
       "ok": false,
@@ -339,8 +329,8 @@
       "url": "https://kelee.one/Tool/Loon/Lpx/JD_remove_ads.lpx"
     },
     {
-      "attempt": 2,
-      "checked_at": "2026-07-15T07:50:00Z",
+      "attempt": 1,
+      "checked_at": "2026-07-15T07:51:55Z",
       "core": false,
       "error": "HTTP Error 403: Forbidden",
       "ok": false,
@@ -350,7 +340,7 @@
     },
     {
       "attempt": 1,
-      "checked_at": "2026-07-15T07:50:00Z",
+      "checked_at": "2026-07-15T07:51:56Z",
       "core": false,
       "error": "HTTP Error 403: Forbidden",
       "ok": false,
@@ -360,7 +350,7 @@
     },
     {
       "attempt": 1,
-      "checked_at": "2026-07-15T07:50:01Z",
+      "checked_at": "2026-07-15T07:51:56Z",
       "core": false,
       "error": "HTTP Error 403: Forbidden",
       "ok": false,
@@ -370,7 +360,7 @@
     },
     {
       "attempt": 1,
-      "checked_at": "2026-07-15T07:50:01Z",
+      "checked_at": "2026-07-15T07:51:57Z",
       "core": false,
       "error": "HTTP Error 403: Forbidden",
       "ok": false,
@@ -380,17 +370,17 @@
     },
     {
       "attempt": 1,
-      "checked_at": "2026-07-15T07:50:02Z",
+      "checked_at": "2026-07-15T07:51:58Z",
       "core": false,
-      "error": "HTTP Error 403: Forbidden",
+      "error": "RemoteDisconnected: Remote end closed connection without response",
       "ok": false,
       "source": "Kelee plugin",
-      "status": 403,
+      "status": null,
       "url": "https://kelee.one/Tool/Loon/Lpx/Sub-Store.lpx"
     },
     {
       "attempt": 1,
-      "checked_at": "2026-07-15T07:50:02Z",
+      "checked_at": "2026-07-15T07:51:59Z",
       "core": false,
       "error": "HTTP Error 403: Forbidden",
       "ok": false,
@@ -399,8 +389,8 @@
       "url": "https://kelee.one/Tool/Loon/Lpx/Switch_github_mirror.lpx"
     },
     {
-      "attempt": 3,
-      "checked_at": "2026-07-15T07:50:10Z",
+      "attempt": 1,
+      "checked_at": "2026-07-15T07:51:59Z",
       "core": false,
       "error": "HTTP Error 403: Forbidden",
       "ok": false,
@@ -410,7 +400,7 @@
     },
     {
       "attempt": 1,
-      "checked_at": "2026-07-15T07:50:11Z",
+      "checked_at": "2026-07-15T07:52:00Z",
       "core": false,
       "error": "HTTP Error 403: Forbidden",
       "ok": false,
@@ -420,7 +410,7 @@
     },
     {
       "attempt": 1,
-      "checked_at": "2026-07-15T07:50:11Z",
+      "checked_at": "2026-07-15T07:52:00Z",
       "core": false,
       "error": "HTTP Error 403: Forbidden",
       "ok": false,
@@ -430,17 +420,17 @@
     },
     {
       "attempt": 1,
-      "checked_at": "2026-07-15T07:50:11Z",
+      "checked_at": "2026-07-15T07:52:01Z",
       "core": false,
-      "error": "HTTP Error 403: Forbidden",
+      "error": "RemoteDisconnected: Remote end closed connection without response",
       "ok": false,
       "source": "Kelee plugin",
-      "status": 403,
+      "status": null,
       "url": "https://kelee.one/Tool/Loon/Lpx/WPS_Documents_remove_ads.lpx"
     },
     {
       "attempt": 1,
-      "checked_at": "2026-07-15T07:50:12Z",
+      "checked_at": "2026-07-15T07:52:02Z",
       "core": false,
       "error": "HTTP Error 403: Forbidden",
       "ok": false,
@@ -450,7 +440,7 @@
     },
     {
       "attempt": 1,
-      "checked_at": "2026-07-15T07:50:12Z",
+      "checked_at": "2026-07-15T07:52:03Z",
       "core": false,
       "error": "HTTP Error 403: Forbidden",
       "ok": false,
@@ -460,7 +450,7 @@
     },
     {
       "attempt": 1,
-      "checked_at": "2026-07-15T07:50:13Z",
+      "checked_at": "2026-07-15T07:52:03Z",
       "core": false,
       "error": "HTTP Error 403: Forbidden",
       "ok": false,
@@ -470,7 +460,7 @@
     },
     {
       "attempt": 1,
-      "checked_at": "2026-07-15T07:50:13Z",
+      "checked_at": "2026-07-15T07:52:03Z",
       "core": false,
       "error": "HTTP Error 403: Forbidden",
       "ok": false,
@@ -479,8 +469,8 @@
       "url": "https://kelee.one/Tool/Loon/Lpx/YouTubeSubtitlesTranslation.lpx"
     },
     {
-      "attempt": 2,
-      "checked_at": "2026-07-15T07:50:16Z",
+      "attempt": 1,
+      "checked_at": "2026-07-15T07:52:04Z",
       "core": false,
       "error": "HTTP Error 403: Forbidden",
       "ok": false,
@@ -491,7 +481,7 @@
     {
       "attempt": 1,
       "bytes": 9818,
-      "checked_at": "2026-07-15T07:50:17Z",
+      "checked_at": "2026-07-15T07:52:05Z",
       "content_type": "image/png",
       "core": true,
       "etag": "\"70211649147742652f29a3910b2b082b950528c98287d5b6da84637dad944d72\"",
@@ -506,7 +496,7 @@
     {
       "attempt": 1,
       "bytes": 14638,
-      "checked_at": "2026-07-15T07:50:18Z",
+      "checked_at": "2026-07-15T07:52:05Z",
       "content_type": "image/png",
       "core": true,
       "etag": "\"74dff66f15125083c1c42b4bce89e4d2561d722a073bdd028d8de82e4c1c0b10\"",
@@ -519,9 +509,9 @@
       "url": "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Advertising.png"
     },
     {
-      "attempt": 2,
+      "attempt": 1,
       "bytes": 4838,
-      "checked_at": "2026-07-15T07:50:21Z",
+      "checked_at": "2026-07-15T07:52:06Z",
       "content_type": "image/png",
       "core": true,
       "etag": "\"a3f75bfd5e57aec36230b5f87653519df5e8a5d7729bea881550f40a4312b2b8\"",
@@ -536,7 +526,7 @@
     {
       "attempt": 1,
       "bytes": 20153,
-      "checked_at": "2026-07-15T07:50:21Z",
+      "checked_at": "2026-07-15T07:52:09Z",
       "content_type": "image/png",
       "core": true,
       "etag": "\"3413faae9a658257f6f79ee5b94ecc9a91e9f3e24c41003fc070341882d2683e\"",
@@ -551,7 +541,7 @@
     {
       "attempt": 1,
       "bytes": 15428,
-      "checked_at": "2026-07-15T07:50:22Z",
+      "checked_at": "2026-07-15T07:52:10Z",
       "content_type": "image/png",
       "core": true,
       "etag": "\"66954cb3909e73ddba52d2836190d63aa99ecfd8c4be0649bd1950a43fb4d3ee\"",
@@ -566,7 +556,7 @@
     {
       "attempt": 1,
       "bytes": 11224,
-      "checked_at": "2026-07-15T07:50:22Z",
+      "checked_at": "2026-07-15T07:52:11Z",
       "content_type": "image/png",
       "core": true,
       "etag": "\"d2546a6307634b69271a38fa4dbc62263febb50f98d72931aa8596a779b491f4\"",
@@ -581,7 +571,7 @@
     {
       "attempt": 1,
       "bytes": 10231,
-      "checked_at": "2026-07-15T07:50:23Z",
+      "checked_at": "2026-07-15T07:52:12Z",
       "content_type": "image/png",
       "core": true,
       "etag": "\"cf1578829f6e3880383ddddc9dbfa3c3fdf85758d506721dc9e1bec7175087e5\"",
@@ -596,7 +586,7 @@
     {
       "attempt": 1,
       "bytes": 9689,
-      "checked_at": "2026-07-15T07:50:24Z",
+      "checked_at": "2026-07-15T07:52:13Z",
       "content_type": "image/png",
       "core": true,
       "etag": "\"cae06672538cede672cfdbb34ca01027bf1050a9809e8e2a95222b08270645cd\"",
@@ -611,7 +601,7 @@
     {
       "attempt": 1,
       "bytes": 13928,
-      "checked_at": "2026-07-15T07:50:25Z",
+      "checked_at": "2026-07-15T07:52:14Z",
       "content_type": "image/png",
       "core": true,
       "etag": "\"8411f16845f01e588b6d524953d42a65ee1bdb9771e1f5d8406e9e0dd7f9a200\"",
@@ -626,7 +616,7 @@
     {
       "attempt": 1,
       "bytes": 13045,
-      "checked_at": "2026-07-15T07:50:25Z",
+      "checked_at": "2026-07-15T07:52:15Z",
       "content_type": "image/png",
       "core": true,
       "etag": "\"667f7a130e7fe70ee19ab159760e66e49f8b70f2787b26aee3be4d99be161302\"",
@@ -639,9 +629,9 @@
       "url": "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Global.png"
     },
     {
-      "attempt": 2,
+      "attempt": 1,
       "bytes": 5837,
-      "checked_at": "2026-07-15T07:50:29Z",
+      "checked_at": "2026-07-15T07:52:15Z",
       "content_type": "image/png",
       "core": true,
       "etag": "\"14fa202637b7900702b96d1dce05e40229eca7298bcce087c4827c87f8d82b4b\"",
@@ -656,7 +646,7 @@
     {
       "attempt": 1,
       "bytes": 7051,
-      "checked_at": "2026-07-15T07:50:30Z",
+      "checked_at": "2026-07-15T07:52:16Z",
       "content_type": "image/png",
       "core": true,
       "etag": "\"ad6bbb5f9829cc9091968051dd487c9552f70b1ec021c2cde101d306bea3e28c\"",
@@ -671,7 +661,7 @@
     {
       "attempt": 1,
       "bytes": 11854,
-      "checked_at": "2026-07-15T07:50:31Z",
+      "checked_at": "2026-07-15T07:52:16Z",
       "content_type": "image/png",
       "core": true,
       "etag": "\"5f30f6c1f5158f3c733d3266fa44ba4d3c4fd24eafa6edfadb566cd3ff416d3e\"",
@@ -686,7 +676,7 @@
     {
       "attempt": 1,
       "bytes": 16709,
-      "checked_at": "2026-07-15T07:50:31Z",
+      "checked_at": "2026-07-15T07:52:17Z",
       "content_type": "image/png",
       "core": true,
       "etag": "\"881fe254036d80d290c4f471e67a2ef8265904c4170ee05048832ef9c13484b8\"",
@@ -701,7 +691,7 @@
     {
       "attempt": 1,
       "bytes": 8754,
-      "checked_at": "2026-07-15T07:50:32Z",
+      "checked_at": "2026-07-15T07:52:18Z",
       "content_type": "image/png",
       "core": true,
       "etag": "\"051113e1b94f875399f15b3b6aa8513e45f732ae42698b8f4089b1ee98031632\"",
@@ -716,7 +706,7 @@
     {
       "attempt": 1,
       "bytes": 10961,
-      "checked_at": "2026-07-15T07:50:32Z",
+      "checked_at": "2026-07-15T07:52:18Z",
       "content_type": "image/png",
       "core": true,
       "etag": "\"d0fab13fa1543b76a8ab4b90a04acc8e10682ed79bee8385c023fcc20cb5dbb1\"",
@@ -731,7 +721,7 @@
     {
       "attempt": 1,
       "bytes": 12542,
-      "checked_at": "2026-07-15T07:50:33Z",
+      "checked_at": "2026-07-15T07:52:19Z",
       "content_type": "image/png",
       "core": true,
       "etag": "\"86ce7fff131955fec55b6c1c1887d74c1390934e933ad23579cf9ebda466f123\"",
@@ -746,7 +736,7 @@
     {
       "attempt": 1,
       "bytes": 1243,
-      "checked_at": "2026-07-15T07:50:33Z",
+      "checked_at": "2026-07-15T07:52:19Z",
       "content_type": "image/png",
       "core": true,
       "etag": "\"8aa4f4499b01ad828290d45dd9f467221df547c81ef8b15eb39dc15821c2fc1f\"",
@@ -761,7 +751,7 @@
     {
       "attempt": 1,
       "bytes": 3875,
-      "checked_at": "2026-07-15T07:50:34Z",
+      "checked_at": "2026-07-15T07:52:20Z",
       "content_type": "image/png",
       "core": true,
       "etag": "\"0b592a9131b4e8c868b366164ffb83f9ea3f51b8891d981531f5445e355d6128\"",
@@ -776,7 +766,7 @@
     {
       "attempt": 1,
       "bytes": 9416,
-      "checked_at": "2026-07-15T07:50:35Z",
+      "checked_at": "2026-07-15T07:52:20Z",
       "content_type": "image/png",
       "core": true,
       "etag": "\"b329da4270841f6cd36910886659a45e514abcc451dc4c6f5fe3d01edbdbfebd\"",
@@ -791,7 +781,7 @@
     {
       "attempt": 1,
       "bytes": 17767,
-      "checked_at": "2026-07-15T07:50:36Z",
+      "checked_at": "2026-07-15T07:52:21Z",
       "content_type": "image/png",
       "core": true,
       "etag": "\"cd45fed5ec5720053af9112f1b0c74105841801e74ba514771b5ed60dc023f18\"",
@@ -806,7 +796,7 @@
     {
       "attempt": 1,
       "bytes": 10457,
-      "checked_at": "2026-07-15T07:50:37Z",
+      "checked_at": "2026-07-15T07:52:22Z",
       "content_type": "image/png",
       "core": true,
       "etag": "\"a16413a1fd56b3ac2100bf4923bde1fcc3f64814376a1a6e58ce24742a0d905b\"",
@@ -821,7 +811,7 @@
     {
       "attempt": 1,
       "bytes": 10667,
-      "checked_at": "2026-07-15T07:50:37Z",
+      "checked_at": "2026-07-15T07:52:23Z",
       "content_type": "image/png",
       "core": true,
       "etag": "\"b501db79538b0ecb83694964c879bdd69c31ad4f6c0e4c81241223fa61f94bed\"",
@@ -836,7 +826,7 @@
     {
       "attempt": 1,
       "bytes": 13559,
-      "checked_at": "2026-07-15T07:50:38Z",
+      "checked_at": "2026-07-15T07:52:24Z",
       "content_type": "image/png",
       "core": true,
       "etag": "\"2f4d621056ad11b4b2c120285c6f76af5126e28f436f87778f8ca90fee18cdd1\"",
@@ -851,7 +841,7 @@
     {
       "attempt": 1,
       "bytes": 8365,
-      "checked_at": "2026-07-15T07:50:39Z",
+      "checked_at": "2026-07-15T07:52:25Z",
       "content_type": "image/png",
       "core": true,
       "etag": "\"5b1ca9c98a1185af00b4d9bc81b67aa975246c806930b25a83f65a211336f76a\"",
@@ -866,7 +856,7 @@
     {
       "attempt": 1,
       "bytes": 12522,
-      "checked_at": "2026-07-15T07:50:40Z",
+      "checked_at": "2026-07-15T07:52:26Z",
       "content_type": "image/png",
       "core": true,
       "etag": "\"6dafa4523d44508e77bcc12a1a1a7e1f3536c80e360e287f4a4ca0d0b895bd92\"",
@@ -881,7 +871,7 @@
     {
       "attempt": 1,
       "bytes": 20675,
-      "checked_at": "2026-07-15T07:50:41Z",
+      "checked_at": "2026-07-15T07:52:26Z",
       "content_type": "image/png",
       "core": true,
       "etag": "\"e6c00e50b75805452840726482740f29e013fe43d7d01b7c9a8583f43d31be75\"",
@@ -896,7 +886,7 @@
     {
       "attempt": 1,
       "bytes": 9092,
-      "checked_at": "2026-07-15T07:50:42Z",
+      "checked_at": "2026-07-15T07:52:30Z",
       "content_type": "image/png",
       "core": true,
       "etag": "\"6e556572691a3bfa72aab0023e8520de2560679d581c66fedcc094d2cb2cb6b7\"",
@@ -911,7 +901,7 @@
     {
       "attempt": 1,
       "bytes": 11576,
-      "checked_at": "2026-07-15T07:50:42Z",
+      "checked_at": "2026-07-15T07:52:30Z",
       "content_type": "image/png",
       "core": true,
       "etag": "\"97f665c8e43d249582cbc664b27cb11a3a1f8ba0c522d367f23ca25b51822aa4\"",
@@ -926,7 +916,7 @@
     {
       "attempt": 1,
       "bytes": 1137,
-      "checked_at": "2026-07-15T07:50:43Z",
+      "checked_at": "2026-07-15T07:52:31Z",
       "content_type": "text/plain; charset=utf-8",
       "core": false,
       "etag": "\"688056234081b30e7442546a610ef0ebff83543916a2a5e370fd629291a4ec88\"",
@@ -941,7 +931,7 @@
     {
       "attempt": 1,
       "bytes": 311,
-      "checked_at": "2026-07-15T07:50:44Z",
+      "checked_at": "2026-07-15T07:52:32Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "etag": "\"e536142b53c9b091a0a734f8a897f382d6a4052a8b6fbb3b16f268955b54c158\"",
@@ -956,7 +946,7 @@
     {
       "attempt": 1,
       "bytes": 749,
-      "checked_at": "2026-07-15T07:50:45Z",
+      "checked_at": "2026-07-15T07:52:33Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "etag": "\"bffa5a58688a5d9ef5d739854eb4b91dda69202f31db3d425f22a44924122451\"",
@@ -971,7 +961,7 @@
     {
       "attempt": 1,
       "bytes": 1468,
-      "checked_at": "2026-07-15T07:50:45Z",
+      "checked_at": "2026-07-15T07:52:33Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "etag": "\"ff15ec2dda2128840ddf567cb8f1e9eb48d44f0ab9dad2491b761d9d8d4945ad\"",
@@ -986,7 +976,7 @@
     {
       "attempt": 1,
       "bytes": 766,
-      "checked_at": "2026-07-15T07:50:46Z",
+      "checked_at": "2026-07-15T07:52:35Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "etag": "\"e01daefa8cbc5ef90f6778c410954ddd9529598818b67abd9673a856445043ed\"",
@@ -1001,7 +991,7 @@
     {
       "attempt": 1,
       "bytes": 324,
-      "checked_at": "2026-07-15T07:50:47Z",
+      "checked_at": "2026-07-15T07:52:36Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "etag": "\"c4179b14ef45d106465a0df73a14f24d5c6a4cf03fe8d811ab527bfd788c03da\"",
@@ -1016,7 +1006,7 @@
     {
       "attempt": 1,
       "bytes": 4523,
-      "checked_at": "2026-07-15T07:50:48Z",
+      "checked_at": "2026-07-15T07:52:37Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "etag": "\"f9032a745a7cd57bd4d8373a2b49fa1250d229b25d7ce8cef468ac4e60f1eb68\"",
@@ -1031,7 +1021,7 @@
     {
       "attempt": 1,
       "bytes": 638,
-      "checked_at": "2026-07-15T07:50:48Z",
+      "checked_at": "2026-07-15T07:52:37Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "etag": "\"6590bef7aef39314d2ff012a919efad0d903b3beb64f5dc4b217bac81defa87b\"",
@@ -1046,7 +1036,7 @@
     {
       "attempt": 1,
       "bytes": 558,
-      "checked_at": "2026-07-15T07:50:49Z",
+      "checked_at": "2026-07-15T07:52:38Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "etag": "\"af7cda49d3e4815000c6db4445e8f588e81adbe03283e9c825ca1c73a1d68e30\"",
@@ -1061,7 +1051,7 @@
     {
       "attempt": 1,
       "bytes": 1167,
-      "checked_at": "2026-07-15T07:50:49Z",
+      "checked_at": "2026-07-15T07:52:38Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "etag": "\"9ee845a11579c440c31d75a1f5ec51245494c8c1f3cf2141191b16d8a91d1ef4\"",
@@ -1076,7 +1066,7 @@
     {
       "attempt": 1,
       "bytes": 3305,
-      "checked_at": "2026-07-15T07:50:50Z",
+      "checked_at": "2026-07-15T07:52:39Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "etag": "\"c11ef0958d31f08ba6c531131313f4f5943a6e91646ced84cd373f7fd2d61bfd\"",
@@ -1091,7 +1081,7 @@
     {
       "attempt": 1,
       "bytes": 244,
-      "checked_at": "2026-07-15T07:50:50Z",
+      "checked_at": "2026-07-15T07:52:40Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "etag": "\"560d7aa01da3ea96cf5b8c52e00f8dc8d246bd2193a5753d62d473dc8d619141\"",
@@ -1106,7 +1096,7 @@
     {
       "attempt": 1,
       "bytes": 6490,
-      "checked_at": "2026-07-15T07:50:51Z",
+      "checked_at": "2026-07-15T07:52:40Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "etag": "\"09b2896c5a426c54bb9d894fc26b549b2925404db88cbed941307c4ec85e851b\"",
@@ -1119,9 +1109,9 @@
       "url": "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Loon/Direct/Direct.list"
     },
     {
-      "attempt": 3,
+      "attempt": 1,
       "bytes": 5565,
-      "checked_at": "2026-07-15T07:50:59Z",
+      "checked_at": "2026-07-15T07:52:41Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "etag": "\"75e82c14edc4a2d234a5a09675755ece7edc44ae7b82d5d6c84e67f739fdc19f\"",
@@ -1136,7 +1126,7 @@
     {
       "attempt": 1,
       "bytes": 533,
-      "checked_at": "2026-07-15T07:51:04Z",
+      "checked_at": "2026-07-15T07:52:41Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "etag": "\"d025b98541e7df0240d143fe9746edeb5a70ae631dace10a3b37845343923e8d\"",
@@ -1151,7 +1141,7 @@
     {
       "attempt": 1,
       "bytes": 1629,
-      "checked_at": "2026-07-15T07:51:05Z",
+      "checked_at": "2026-07-15T07:52:42Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "etag": "\"f98ed02cb42c3e4edde4d9eba770da388c7931feefac95382bd1768419e4eb01\"",
@@ -1166,7 +1156,7 @@
     {
       "attempt": 1,
       "bytes": 605,
-      "checked_at": "2026-07-15T07:51:06Z",
+      "checked_at": "2026-07-15T07:52:42Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "etag": "\"56eca4cfa6e1909e80dd076d7a2b352f5a2d57bd58fbda85d54c11db90cad6bc\"",
@@ -1181,7 +1171,7 @@
     {
       "attempt": 1,
       "bytes": 19792,
-      "checked_at": "2026-07-15T07:51:07Z",
+      "checked_at": "2026-07-15T07:52:43Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "etag": "\"539529f5825f5e5e6feed45a5a71738d3757618fcededac324ca10a051534e4a\"",
@@ -1196,7 +1186,7 @@
     {
       "attempt": 1,
       "bytes": 1738,
-      "checked_at": "2026-07-15T07:51:08Z",
+      "checked_at": "2026-07-15T07:52:44Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "etag": "\"71cb4a22c59a48411dd05aecd0306d32458bf5137893256dcbbb9eac1c0ff839\"",
@@ -1211,7 +1201,7 @@
     {
       "attempt": 1,
       "bytes": 1701,
-      "checked_at": "2026-07-15T07:51:09Z",
+      "checked_at": "2026-07-15T07:52:45Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "etag": "\"70936b006afc04b5c547fa0a0a7738909b17f385873fb896588f764621c9a1f5\"",
@@ -1226,7 +1216,7 @@
     {
       "attempt": 1,
       "bytes": 287,
-      "checked_at": "2026-07-15T07:51:09Z",
+      "checked_at": "2026-07-15T07:52:45Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "etag": "\"c4b41a7c42259da40b14f22e72de9bb76d60841065639773a85be4f79b0abc82\"",
@@ -1241,7 +1231,7 @@
     {
       "attempt": 1,
       "bytes": 509,
-      "checked_at": "2026-07-15T07:51:10Z",
+      "checked_at": "2026-07-15T07:52:46Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "etag": "\"b9408ed4b12a1279e92e415192ab14e67b8ebc64044a87886b7774c36e48e5d7\"",
@@ -1256,7 +1246,7 @@
     {
       "attempt": 1,
       "bytes": 20536,
-      "checked_at": "2026-07-15T07:51:10Z",
+      "checked_at": "2026-07-15T07:52:46Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "etag": "\"1b1fd9c1f31b720f05fe5b71fd6fccb67b7a7b118fab8b11878b2d6673c15c98\"",
@@ -1271,7 +1261,7 @@
     {
       "attempt": 1,
       "bytes": 40369,
-      "checked_at": "2026-07-15T07:51:11Z",
+      "checked_at": "2026-07-15T07:52:47Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "etag": "\"755d7f2ebaf2117038c9dbfcd6d228b861382f839c41e7738fa4055da37c8433\"",
@@ -1286,7 +1276,7 @@
     {
       "attempt": 1,
       "bytes": 1353,
-      "checked_at": "2026-07-15T07:51:12Z",
+      "checked_at": "2026-07-15T07:52:48Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "etag": "\"da7a9e1c695bf7baaefbfb8630fe0e024b8d320be1affa23adcbbc16e0175fe6\"",
@@ -1301,7 +1291,7 @@
     {
       "attempt": 1,
       "bytes": 4391,
-      "checked_at": "2026-07-15T07:51:12Z",
+      "checked_at": "2026-07-15T07:52:49Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "etag": "\"01461dc9be0da205b2ec8ba9b178a45678ad112db87cb5186bb9d11dd8768572\"",
@@ -1316,7 +1306,7 @@
     {
       "attempt": 1,
       "bytes": 1197,
-      "checked_at": "2026-07-15T07:51:13Z",
+      "checked_at": "2026-07-15T07:52:49Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "etag": "\"e8f52ec3f5044df4e0e5722d12087a678a5af95c2b7b6d95a3f6a0157749e059\"",
@@ -1331,7 +1321,7 @@
     {
       "attempt": 1,
       "bytes": 1355,
-      "checked_at": "2026-07-15T07:51:13Z",
+      "checked_at": "2026-07-15T07:52:50Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "etag": "\"2c50c87f16b5e77430bffaf36d121fa56915f66793f20dc55443bbe3829f07dd\"",
@@ -1346,7 +1336,7 @@
     {
       "attempt": 1,
       "bytes": 1100,
-      "checked_at": "2026-07-15T07:51:14Z",
+      "checked_at": "2026-07-15T07:52:50Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "etag": "\"90b29161856d08c7c2ae4c418ff197b13a14e97d74db5636df4bf6bd749c0abf\"",
@@ -1361,7 +1351,7 @@
     {
       "attempt": 1,
       "bytes": 616,
-      "checked_at": "2026-07-15T07:51:14Z",
+      "checked_at": "2026-07-15T07:52:51Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "etag": "\"2ab5c07e9e1f5e3d56c8479a48fc36c2a11db6e4564c20eb1b31f193672e2412\"",
@@ -1376,7 +1366,7 @@
     {
       "attempt": 1,
       "bytes": 1085,
-      "checked_at": "2026-07-15T07:51:15Z",
+      "checked_at": "2026-07-15T07:52:51Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "etag": "\"231117464fb0f1fadf961866bda59bfbc7b1ecfc30ebaba6e73817ce7893df36\"",
@@ -1391,7 +1381,7 @@
     {
       "attempt": 1,
       "bytes": 5451,
-      "checked_at": "2026-07-15T07:51:15Z",
+      "checked_at": "2026-07-15T07:52:52Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "etag": "\"63885066bff514c1a2ff8946cba7cc3d179f7b5c11bcc80847ae0b8a42c5b524\"",
@@ -1406,7 +1396,7 @@
     {
       "attempt": 1,
       "bytes": 11246,
-      "checked_at": "2026-07-15T07:51:16Z",
+      "checked_at": "2026-07-15T07:52:53Z",
       "content_type": "image/png",
       "core": true,
       "etag": "\"402abf4519010e40bc428311983d5dba686e76f2d7bcd2e9bf557fa911c19796\"",
@@ -1421,7 +1411,7 @@
     {
       "attempt": 1,
       "bytes": 24839,
-      "checked_at": "2026-07-15T07:51:17Z",
+      "checked_at": "2026-07-15T07:52:53Z",
       "content_type": "image/png",
       "core": true,
       "etag": "\"1552d63a568c1bcd09fd39cfba66a22f0831ea90147a68d38eec5618748e773d\"",

@@ -21,10 +21,10 @@
 - 社交与通信：`WeChat`、`Instagram`、`Telegram`、`LinkedIn`
 - 金融支付：`Finance`，覆盖支付宝、云闪付与常用国内银行
 - 短视频：`TikTok`、`Douyin`
-- AI：`AI`、`OpenAI`、`Gemini`、`Claude`，包含通用自动兜底、OpenAI/Gemini 非港区兜底与 fmz200 AI 合集补充；Gemini 规则由 blackmatrix7 基础规则和本仓库补充规则自动合并
+- AI：`AI`、`OpenAI`、`Gemini`、`Claude`；`AI` 自动测速选择非港区节点，三个应用策略默认使用 `AI`，也可手动指定地区；Gemini 规则由 blackmatrix7 基础规则和本仓库补充规则自动合并
 - Emby：`Emby`、`EmbyProxy`
 
-`Available` 负责自动测速；`Proxy` 作为总代理；`Final` 处理未命中规则的兜底流量。OpenAI 与 Gemini 策略默认排除香港节点；通用 AI 与 Claude 保留香港作为可选兜底，降低单一区域或单个节点失效的影响。
+`Available` 负责自动测速；`Proxy` 作为总代理；`Final` 处理未命中规则的兜底流量。`AI` 及三个应用策略均不包含香港节点，避免不稳定的香港线路参与 AI 分流。
 
 ## 自动更新
 
