@@ -35,6 +35,13 @@ CORE_MARKERS = (
     "github.com/Moli-X/Tool/raw/X/GeoIP",
     "github.com/sub-store-org/Sub-Store/releases",
 )
+GEMINI_UPSTREAM_URL = (
+    "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/"
+    "rule/Loon/Gemini/Gemini.list"
+)
+GEMINI_SUPPLEMENT_PATH = Path("rules/GeminiSupplement.list")
+GEMINI_MERGED_PATH = Path("rules/Gemini.list")
+GEMINI_RULE_TYPES = ("DOMAIN", "DOMAIN-SUFFIX", "DOMAIN-KEYWORD")
 
 
 def normalize_url(url: str) -> str:
@@ -77,6 +84,7 @@ def extract_urls(config: Path) -> list[str]:
             url = normalize_url(match)
             if not should_skip(url):
                 urls.add(url)
+    urls.add(GEMINI_UPSTREAM_URL)
     return sorted(urls)
 
 
@@ -228,6 +236,97 @@ def refresh(urls: Iterable[str], timeout: int, retries: int) -> list[dict[str, o
     return [fetch_with_retries(url, timeout, retries) for url in urls]
 
 
+def fetch_text(url: str, timeout: int) -> str:
+    request = urllib.request.Request(
+        url,
+        headers={
+            "User-Agent": "loon-config-upstream-refresh/1.0",
+            "Accept": "text/plain,*/*",
+        },
+    )
+    context = ssl.create_default_context()
+
+    def read_response(request_context: ssl.SSLContext) -> str:
+        with urllib.request.urlopen(request, timeout=timeout, context=request_context) as response:
+            return response.read().decode("utf-8")
+
+    try:
+        return read_response(context)
+    except urllib.error.URLError as error:
+        if "CERTIFICATE_VERIFY_FAILED" not in str(error):
+            raise
+        return read_response(ssl._create_unverified_context())  # noqa: S323 - metadata refresh fallback.
+
+
+def fetch_text_with_retries(url: str, timeout: int, retries: int) -> str:
+    last_error: Exception | None = None
+
+    for attempt in range(retries + 1):
+        try:
+            return fetch_text(url, timeout)
+        except Exception as error:  # noqa: BLE001 - preserve the last upstream failure.
+            last_error = error
+            if attempt < retries:
+                time.sleep(min(2 * (attempt + 1), 5))
+
+    raise RuntimeError(f"Could not fetch {url}: {last_error}")
+
+
+def rule_lines(content: str) -> list[str]:
+    rules: list[str] = []
+    for raw_line in content.splitlines():
+        line = raw_line.strip()
+        if not line or line.startswith("#"):
+            continue
+        rule_type, separator, _ = line.partition(",")
+        if separator and rule_type in GEMINI_RULE_TYPES:
+            rules.append(line)
+    return rules
+
+
+def build_gemini_rules(upstream: str, supplement: str) -> str:
+    merged: list[str] = []
+    seen: set[str] = set()
+    for line in [*rule_lines(upstream), *rule_lines(supplement)]:
+        if line not in seen:
+            seen.add(line)
+            merged.append(line)
+
+    if not merged:
+        raise ValueError("Gemini rule sources contained no valid Loon rules")
+
+    counts = {rule_type: 0 for rule_type in GEMINI_RULE_TYPES}
+    for line in merged:
+        rule_type = line.partition(",")[0]
+        counts[rule_type] += 1
+
+    header = [
+        "# NAME: Gemini",
+        "# AUTHOR: blackmatrix7, bol609619914-design",
+        "# REPO: https://github.com/bol609619914-design/loon-config",
+        f"# UPSTREAM: {GEMINI_UPSTREAM_URL}",
+        "# GENERATED: scripts/refresh_upstreams.py (edit GeminiSupplement.list for custom rules)",
+        *[f"# {rule_type}: {counts[rule_type]}" for rule_type in GEMINI_RULE_TYPES],
+        f"# TOTAL: {len(merged)}",
+        "",
+    ]
+    return "\n".join([*header, *merged]) + "\n"
+
+
+def refresh_gemini_rules(timeout: int, retries: int) -> bool:
+    try:
+        upstream = fetch_text_with_retries(GEMINI_UPSTREAM_URL, timeout, retries)
+        supplement = GEMINI_SUPPLEMENT_PATH.read_text(encoding="utf-8")
+        rendered = build_gemini_rules(upstream, supplement)
+    except (OSError, RuntimeError, ValueError) as error:
+        print(f"Gemini rule refresh failed: {error}", file=sys.stderr)
+        return False
+
+    if not GEMINI_MERGED_PATH.exists() or GEMINI_MERGED_PATH.read_text(encoding="utf-8") != rendered:
+        GEMINI_MERGED_PATH.write_text(rendered, encoding="utf-8")
+    return True
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--config", default="Loon.conf", type=Path)
@@ -241,6 +340,7 @@ def main() -> int:
     previous_resources = load_previous_resources(args.output)
     resources = refresh(urls, args.timeout, args.retries)
     resources = use_stale_core_success(resources, previous_resources)
+    gemini_rules_ok = refresh_gemini_rules(args.timeout, args.retries)
     payload = {
         "generated_at": dt.datetime.now(dt.UTC).isoformat(timespec="seconds").replace("+00:00", "Z"),
         "config": str(args.config),
@@ -259,7 +359,7 @@ def main() -> int:
         print("Core upstream failures:", file=sys.stderr)
         for item in failed_core:
             print(f"- {item['status']} {item['url']}", file=sys.stderr)
-    return 1 if args.strict and failed_core else 0
+    return 1 if args.strict and (failed_core or not gemini_rules_ok) else 0
 
 
 if __name__ == "__main__":

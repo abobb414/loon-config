@@ -1,17 +1,19 @@
 # NAME: GeminiSupplement
 # AUTHOR: bol609619914-design
 # REPO: https://github.com/bol609619914-design/loon-config
-# UPDATED: 2026-07-13
-# DOMAIN: 9
+# UPDATED: 2026-07-15
+# DOMAIN: 11
 # DOMAIN-SUFFIX: 2
 # DOMAIN-KEYWORD: 5
-# TOTAL: 16
+# TOTAL: 18
 
 DOMAIN,ai.google.dev
 DOMAIN,aida.googleapis.com
+DOMAIN,aiplatform.googleapis.com
 DOMAIN,aistudio.google.com
 DOMAIN,alkalicore-pa.clients6.google.com
 DOMAIN,alkalimakersuite-pa.clients6.google.com
+DOMAIN,assistant.google.com
 DOMAIN,geller-pa.googleapis.com
 DOMAIN,gemini.google.com
 DOMAIN,generativelanguage.googleapis.com
