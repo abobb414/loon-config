@@ -11,6 +11,13 @@
 
 公开版配置不包含节点订阅地址；请在 Loon 本地添加自己的远程代理订阅。
 
+## 图标库
+
+图标订阅地址：
+
+- `https://raw.githubusercontent.com/abobb414/loon-config/refs/heads/main/IconSet/Color/icons-all.json`
+- `https://raw.githubusercontent.com/fmz200/wool_scripts/main/icons/icons-all.json`
+
 ## 分流策略
 
 配置包含以下主要策略组：
