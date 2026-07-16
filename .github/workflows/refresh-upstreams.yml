@@ -31,13 +31,13 @@ jobs:
 
       - name: Commit refreshed metadata
         run: |
-          if [[ -z "$(git status --porcelain .upstream/upstreams.lock.json rules/Gemini.list)" ]]; then
+          if [[ -z "$(git status --porcelain Loon.conf .upstream/upstreams.lock.json rules/Gemini.list)" ]]; then
             echo "No upstream metadata changes."
             exit 0
           fi
 
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add .upstream/upstreams.lock.json rules/Gemini.list
+          git add Loon.conf .upstream/upstreams.lock.json rules/Gemini.list
           git commit -m "chore: refresh upstream metadata and Gemini rules"
           git push

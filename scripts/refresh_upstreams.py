@@ -42,10 +42,28 @@ GEMINI_UPSTREAM_URL = (
 GEMINI_SUPPLEMENT_PATH = Path("rules/GeminiSupplement.list")
 GEMINI_MERGED_PATH = Path("rules/Gemini.list")
 GEMINI_RULE_TYPES = ("DOMAIN", "DOMAIN-SUFFIX", "DOMAIN-KEYWORD")
+LAST_UPDATED_RE = re.compile(r"^# Last Updated:.*$", re.MULTILINE)
+SHANGHAI_TZ = dt.timezone(dt.timedelta(hours=8), name="Asia/Shanghai")
 
 
 def normalize_url(url: str) -> str:
     return url.rstrip(").\"'")
+
+
+def update_last_updated(config: Path) -> None:
+    content = config.read_text(encoding="utf-8")
+    stamp = dt.datetime.now(SHANGHAI_TZ).strftime("%Y-%m-%d %H:%M:%S")
+    replacement = f"# Last Updated: {stamp} (Asia/Shanghai)"
+    if LAST_UPDATED_RE.search(content):
+        updated = LAST_UPDATED_RE.sub(replacement, content, count=1)
+    else:
+        created_line = re.search(r"^# Created:.*$", content, re.MULTILINE)
+        if created_line:
+            updated = content[: created_line.end()] + "\n" + replacement + content[created_line.end() :]
+        else:
+            updated = replacement + "\n" + content
+    if updated != content:
+        config.write_text(updated, encoding="utf-8")
 
 
 def should_skip(url: str) -> bool:
@@ -336,6 +354,7 @@ def main() -> int:
     parser.add_argument("--strict", action="store_true")
     args = parser.parse_args()
 
+    update_last_updated(args.config)
     urls = extract_urls(args.config)
     previous_resources = load_previous_resources(args.output)
     resources = refresh(urls, args.timeout, args.retries)
