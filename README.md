@@ -15,6 +15,7 @@
 
 图标订阅地址：
 
+- Qure Color：`https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/`
 - `https://raw.githubusercontent.com/abobb414/loon-config/refs/heads/main/IconSet/Color/icons-all.json`
 - `https://raw.githubusercontent.com/fmz200/wool_scripts/main/icons/icons-all.json`
 
@@ -28,6 +29,7 @@
 - 社交与通信：`WeChat`、`Instagram`、`Telegram`、`LinkedIn`
 - 金融支付：`Finance`，覆盖支付宝、云闪付与常用国内银行
 - 短视频：`TikTok`、`Douyin`
+- 区域：`SEA`（东南亚，不含新加坡）、`SA`（南美）、`NA`（北美，不含美国）、`AF`（非洲）、`AU`（澳大利亚）
 - AI：`AI`、`OpenAI`、`Gemini`、`Claude`；`AI` 自动测速选择非港区节点，三个应用策略默认使用 `AI`，也可手动指定地区；Gemini 规则由 blackmatrix7 基础规则和本仓库补充规则自动合并
 - Emby：`Emby`、`EmbyProxy`
 
