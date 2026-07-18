@@ -29,7 +29,7 @@
 - 社交与通信：`WeChat`、`Instagram`、`Telegram`、`LinkedIn`
 - 金融支付：`Finance`，覆盖支付宝、云闪付与常用国内银行
 - 短视频：`TikTok`、`Douyin`
-- 区域：`AS`（亚洲，排除港/台/日/韩）、`AM`（美洲）、`AF`（非洲）、`AU`（澳大利亚）
+- 区域：`HK`、`TW`、`SG`、`JP`、`KR`、`US`、`AU` 独立分组；`AS`（亚洲，排除上述节点）、`AM`（美洲，排除美国）、`AF`（非洲）
 - AI：`AI`、`OpenAI`、`Gemini`、`Claude`；`AI` 自动测速选择非港区节点，三个应用策略默认使用 `AI`，也可手动指定地区；Gemini 规则由 blackmatrix7 基础规则和本仓库补充规则自动合并
 - Emby：`Emby` 默认走代理，4 个指定地址强制直连
 
