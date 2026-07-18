@@ -42,7 +42,7 @@ proxy-groups:
   - {name: Bilibili, icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/bilibili.png", type: select, proxies: [DIRECT, Proxy, HongKong, Taiwan, Singapore, Japan, UnitedStates]}
 
   - {name: TikTok, icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/TikTok.png", type: select, proxies: [Proxy, UnitedStates, Singapore, Japan, HongKong, Taiwan, Europe]}
-  - {name: Douyin, icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/TikTok.png", type: select, proxies: [DIRECT, Proxy]}
+  - {name: Douyin, icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/TikTok_2.png", type: select, proxies: [DIRECT, Proxy]}
   - {name: Instagram, icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Instagram.png", type: select, proxies: [Proxy, UnitedStates, Singapore, Japan, HongKong, Taiwan, Europe]}
   - {name: Telegram, icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Telegram.png", type: select, proxies: [Proxy, Singapore, UnitedStates, HongKong, Japan, Taiwan, Europe]}
   - {name: LinkedIn, icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Linkedin.png", type: select, proxies: [Proxy, DIRECT, UnitedStates, Singapore, Japan, HongKong, Taiwan, Europe]}
