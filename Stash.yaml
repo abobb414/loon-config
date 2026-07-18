@@ -42,13 +42,12 @@ proxy-groups:
   - {name: Bilibili, icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/bilibili.png", type: select, proxies: [DIRECT, Proxy, HongKong, Taiwan, Singapore, Japan, UnitedStates]}
 
   - {name: TikTok, icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/TikTok.png", type: select, proxies: [Proxy, UnitedStates, Singapore, Japan, HongKong, Taiwan, Europe]}
-  - {name: Douyin, icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/TikTok.png", type: select, proxies: [DIRECT, Proxy]}
+  - {name: Douyin, icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/TikTok.png", type: select, proxies: [DIRECT, Proxy]}
   - {name: Instagram, icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Instagram.png", type: select, proxies: [Proxy, UnitedStates, Singapore, Japan, HongKong, Taiwan, Europe]}
   - {name: Telegram, icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Telegram.png", type: select, proxies: [Proxy, Singapore, UnitedStates, HongKong, Japan, Taiwan, Europe]}
   - {name: LinkedIn, icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Linkedin.png", type: select, proxies: [Proxy, DIRECT, UnitedStates, Singapore, Japan, HongKong, Taiwan, Europe]}
 
-  - {name: Emby, icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Emby.png", type: select, proxies: [DIRECT, Proxy, UnitedStates, Singapore, Japan, HongKong, Taiwan, Europe]}
-  - {name: EmbyProxy, icon: "https://raw.githubusercontent.com/fmz200/wool_scripts/main/icons/apps/Emby.png", type: select, proxies: [Proxy, UnitedStates, Singapore, Japan, HongKong, Taiwan, Europe]}
+  - {name: Emby, icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Emby.png", type: select, proxies: [Proxy, UnitedStates, Singapore, Japan, HongKong, Taiwan, Europe]}
 
   - {name: HongKong, icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Hong_Kong.png", type: url-test, include-all: true, url: "http://www.gstatic.com/generate_204", interval: 600, tolerance: 50, filter: '(?i)🇭🇰|香港|\\b(HK|Hong)\\b'}
   - {name: Taiwan, icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Taiwan.png", type: url-test, include-all: true, url: "http://www.gstatic.com/generate_204", interval: 600, tolerance: 50, filter: '(?i)🇨🇳|🇹🇼|台湾|\\b(TW|Taiwan)\\b'}
@@ -121,14 +120,10 @@ rules:
   - RULE-SET,Instagram,Instagram
   - RULE-SET,Telegram,Telegram
   - RULE-SET,LinkedIn,LinkedIn
-  - DOMAIN,iris.niceduck.lol,Emby
-  - DOMAIN,cdn.irisnb.com,Emby
-  - DOMAIN,iris4837.iris520.vip,Emby
-  - DOMAIN,ak4837.iris520.vip,Emby
-  - DOMAIN,byteiris.iris520.vip,Emby
-  - DOMAIN,cf.iris520.vip,Emby
-  - DOMAIN,liminalpro.liminalnet.us,Emby
-  - DOMAIN,shsiis.cloudfisher.cc,EmbyProxy
+  - DOMAIN,iris.niceduck.lol,DIRECT
+  - DOMAIN,cf.iris520.vip,DIRECT
+  - DOMAIN,cdn.liminalnet.team,DIRECT
+  - DOMAIN,limina.552554.xyz,DIRECT
   - RULE-SET,Emby,Emby
   - RULE-SET,Direct,DIRECT
   - RULE-SET,ChinaMaxNoIP,DIRECT
