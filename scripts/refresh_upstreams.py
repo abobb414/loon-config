@@ -52,8 +52,8 @@ def normalize_url(url: str) -> str:
 
 def update_last_updated(config: Path) -> None:
     content = config.read_text(encoding="utf-8")
-    stamp = dt.datetime.now(SHANGHAI_TZ).strftime("%Y-%m-%d %H:%M:%S")
-    replacement = f"# Last Updated: {stamp} (Asia/Shanghai)"
+    stamp = dt.datetime.now(SHANGHAI_TZ).strftime("%Y-%m-%d")
+    replacement = f"# Last Updated: {stamp}"
     if LAST_UPDATED_RE.search(content):
         updated = LAST_UPDATED_RE.sub(replacement, content, count=1)
     else:
