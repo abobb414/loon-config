@@ -31,7 +31,7 @@
 - 短视频：`TikTok`、`Douyin`
 - 区域：`AS`（亚洲，排除港/台/日/韩）、`AM`（美洲）、`AF`（非洲）、`AU`（澳大利亚）
 - AI：`AI`、`OpenAI`、`Gemini`、`Claude`；`AI` 自动测速选择非港区节点，三个应用策略默认使用 `AI`，也可手动指定地区；Gemini 规则由 blackmatrix7 基础规则和本仓库补充规则自动合并
-- Emby：`Emby`、`EmbyProxy`
+- Emby：`Emby` 默认走代理，4 个指定地址强制直连
 
 `Available` 负责自动测速；`Proxy` 作为总代理；`Final` 处理未命中规则的兜底流量。`AI` 及三个应用策略均不包含香港节点，避免不稳定的香港线路参与 AI 分流。
 
