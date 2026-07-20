@@ -52,6 +52,7 @@ Loon 端的远程规则仍直接引用上游地址，因此应用内刷新配置
 本配置基于以下项目与资源整理：
 
 - [blackmatrix7/ios_rule_script](https://github.com/blackmatrix7/ios_rule_script)：Loon 远程分流规则。
+- [Cats-Team/AdRules](https://github.com/Cats-Team/AdRules)：高质量广告拦截规则，是实现海外平台去广告的重要基础。
 - [Koolson/Qure](https://github.com/Koolson/Qure)：策略组图标。
 - [fmz200/wool_scripts](https://github.com/fmz200/wool_scripts)：插件、广告规则与补充图标。
 - [Moli-X/Tool](https://github.com/Moli-X/Tool)：Loon 配置结构参考、GeoIP/ASN 资源。
