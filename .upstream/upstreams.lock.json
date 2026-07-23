@@ -1,42 +1,42 @@
 {
   "config": "Loon.conf",
-  "generated_at": "2026-07-22T04:34:00Z",
-  "resource_count": 108,
+  "generated_at": "2026-07-23T04:33:31Z",
+  "resource_count": 111,
   "resources": [
     {
       "attempt": 1,
-      "bytes": 132836,
-      "checked_at": "2026-07-22T04:33:31Z",
+      "bytes": 204122,
+      "checked_at": "2026-07-23T04:33:13Z",
       "content_type": "application/octet-stream",
-      "core": true,
-      "etag": "\"0cd279b48e683840771f807a0ebe807f0ad73f4195007ee70d8760c6c60e6db0\"",
+      "core": false,
+      "etag": "W/\"31d5a-CfbUVzF5ltXGbiltRCmGw/4ec0Y\"",
       "last_modified": null,
       "ok": true,
-      "sha256": "986efcfb5fda73917e88e8d5faadd327fdd5b2c7acadf853e43fa68b95e0680c",
-      "source": "Moli-X/Tool",
+      "sha256": "9b806706f382ae352a8dd1d32d17eb6e098e39e30a2840fe93fb40e7ada718bc",
+      "source": "other",
       "status": 200,
       "tls_verified": true,
-      "url": "https://github.com/Moli-X/Tool/raw/X/GeoIP/CN_Country.mmdb"
+      "url": "https://cdn.jsdelivr.net/gh/Loyalsoldier/geoip@release/Country-asn.mmdb"
     },
     {
       "attempt": 1,
-      "bytes": 12094326,
-      "checked_at": "2026-07-22T04:33:32Z",
+      "bytes": 7965511,
+      "checked_at": "2026-07-23T04:33:13Z",
       "content_type": "application/octet-stream",
-      "core": true,
-      "etag": "\"b70ec477798be3f3857a9a5249c15790187cf7cb91de188ecc1781852b1f09c6\"",
+      "core": false,
+      "etag": "W/\"798b47-oIxktfWtRCQxDH35VedasKT3xiU\"",
       "last_modified": null,
       "ok": true,
-      "sha256": "d6535df17b3026a3a0c91f07632ff258fb833d6f1140a02460754c3182c81b57",
-      "source": "Moli-X/Tool",
+      "sha256": "b946936242c1ed0bea9a3fafcc4334e52e59f4a9070af419bbf109434ee54660",
+      "source": "other",
       "status": 200,
       "tls_verified": true,
-      "url": "https://github.com/Moli-X/Tool/raw/X/GeoIP/GeoLite2-ASN.mmdb"
+      "url": "https://cdn.jsdelivr.net/gh/Loyalsoldier/geoip@release/Country.mmdb"
     },
     {
       "attempt": 1,
       "bytes": 275603,
-      "checked_at": "2026-07-22T04:33:33Z",
+      "checked_at": "2026-07-23T04:33:16Z",
       "content_type": "text/plain; charset=utf-8",
       "core": false,
       "etag": "\"a8733d50dbb5b304f7d6399d55573c7445ddc5289ccddd1800033cb354373463\"",
@@ -51,7 +51,7 @@
     {
       "attempt": 1,
       "bytes": 28444,
-      "checked_at": "2026-07-22T04:33:33Z",
+      "checked_at": "2026-07-23T04:33:17Z",
       "content_type": "text/plain; charset=utf-8",
       "core": false,
       "etag": "\"6f3c8d5d93888e2a17eec2e850c322ee6829edc618c0cc5922f932bc21f37368\"",
@@ -66,7 +66,7 @@
     {
       "attempt": 1,
       "bytes": 2724,
-      "checked_at": "2026-07-22T04:33:34Z",
+      "checked_at": "2026-07-23T04:33:17Z",
       "content_type": "text/plain; charset=utf-8",
       "core": false,
       "etag": "\"254a93db7e800b933c4d70ee21290d7d5954c4efe849a69665847a4cdcff9577\"",
@@ -81,7 +81,7 @@
     {
       "attempt": 1,
       "bytes": 707,
-      "checked_at": "2026-07-22T04:33:35Z",
+      "checked_at": "2026-07-23T04:33:17Z",
       "content_type": "text/plain; charset=utf-8",
       "core": false,
       "etag": "\"9398fa731502be7b84f81c9338cab8a3cd575d4d909ed078d20a1e1f07c60f7d\"",
@@ -96,7 +96,7 @@
     {
       "attempt": 1,
       "bytes": 103295,
-      "checked_at": "2026-07-22T04:33:35Z",
+      "checked_at": "2026-07-23T04:33:18Z",
       "content_type": "text/plain; charset=utf-8",
       "core": false,
       "etag": "\"ab870f5564fc88e278d72dc3829652b1b5a95abeeb04ef60abd3e6947653ebef\"",
@@ -111,7 +111,7 @@
     {
       "attempt": 1,
       "bytes": 29020,
-      "checked_at": "2026-07-22T04:33:36Z",
+      "checked_at": "2026-07-23T04:33:18Z",
       "content_type": "text/plain; charset=utf-8",
       "core": false,
       "etag": "\"076d2e70753cb0c1c38b12af0bb237cea979502e9b24abcb9a426eaa94dae132\"",
@@ -126,7 +126,7 @@
     {
       "attempt": 1,
       "bytes": 1846,
-      "checked_at": "2026-07-22T04:33:36Z",
+      "checked_at": "2026-07-23T04:33:19Z",
       "content_type": "text/plain; charset=utf-8",
       "core": false,
       "etag": "\"c884ed793e1a3969beea546329e0dddde63475fe1dc7570fc44d7af4224835fb\"",
@@ -140,14 +140,14 @@
     },
     {
       "attempt": 1,
-      "bytes": 1267998,
-      "checked_at": "2026-07-22T04:33:37Z",
+      "bytes": 1268154,
+      "checked_at": "2026-07-23T04:33:19Z",
       "content_type": "application/octet-stream",
       "core": true,
-      "etag": "\"0x8DEE73D530FA6EF\"",
-      "last_modified": "Tue, 21 Jul 2026 15:32:50 GMT",
+      "etag": "\"0x8DEE810E1A4D35F\"",
+      "last_modified": "Wed, 22 Jul 2026 16:47:13 GMT",
       "ok": true,
-      "sha256": "2ea27ba940e3a974c88b5636cdc0ee9b6395fda04e5b44e408469153edef44cb",
+      "sha256": "c0234f429fea7bdd835ca80134f93570b30b9bdb2e7d9bc580b4bb8cfc04d28f",
       "source": "sub-store-org/Sub-Store",
       "status": 200,
       "tls_verified": true,
@@ -155,7 +155,7 @@
     },
     {
       "attempt": 1,
-      "checked_at": "2026-07-22T04:33:37Z",
+      "checked_at": "2026-07-23T04:33:19Z",
       "core": false,
       "error": "HTTP Error 403: Forbidden",
       "ok": false,
@@ -165,7 +165,7 @@
     },
     {
       "attempt": 1,
-      "checked_at": "2026-07-22T04:33:37Z",
+      "checked_at": "2026-07-23T04:33:20Z",
       "core": false,
       "error": "HTTP Error 403: Forbidden",
       "ok": false,
@@ -175,7 +175,7 @@
     },
     {
       "attempt": 1,
-      "checked_at": "2026-07-22T04:33:37Z",
+      "checked_at": "2026-07-23T04:33:20Z",
       "core": false,
       "error": "HTTP Error 403: Forbidden",
       "ok": false,
@@ -185,7 +185,7 @@
     },
     {
       "attempt": 1,
-      "checked_at": "2026-07-22T04:33:37Z",
+      "checked_at": "2026-07-23T04:33:20Z",
       "core": false,
       "error": "HTTP Error 403: Forbidden",
       "ok": false,
@@ -195,7 +195,7 @@
     },
     {
       "attempt": 1,
-      "checked_at": "2026-07-22T04:33:38Z",
+      "checked_at": "2026-07-23T04:33:20Z",
       "core": false,
       "error": "HTTP Error 403: Forbidden",
       "ok": false,
@@ -205,7 +205,7 @@
     },
     {
       "attempt": 1,
-      "checked_at": "2026-07-22T04:33:38Z",
+      "checked_at": "2026-07-23T04:33:20Z",
       "core": false,
       "error": "HTTP Error 403: Forbidden",
       "ok": false,
@@ -215,7 +215,7 @@
     },
     {
       "attempt": 1,
-      "checked_at": "2026-07-22T04:33:38Z",
+      "checked_at": "2026-07-23T04:33:20Z",
       "core": false,
       "error": "HTTP Error 403: Forbidden",
       "ok": false,
@@ -225,7 +225,7 @@
     },
     {
       "attempt": 1,
-      "checked_at": "2026-07-22T04:33:38Z",
+      "checked_at": "2026-07-23T04:33:20Z",
       "core": false,
       "error": "HTTP Error 403: Forbidden",
       "ok": false,
@@ -235,7 +235,7 @@
     },
     {
       "attempt": 1,
-      "checked_at": "2026-07-22T04:33:38Z",
+      "checked_at": "2026-07-23T04:33:20Z",
       "core": false,
       "error": "HTTP Error 403: Forbidden",
       "ok": false,
@@ -245,7 +245,7 @@
     },
     {
       "attempt": 1,
-      "checked_at": "2026-07-22T04:33:38Z",
+      "checked_at": "2026-07-23T04:33:20Z",
       "core": false,
       "error": "HTTP Error 403: Forbidden",
       "ok": false,
@@ -255,7 +255,7 @@
     },
     {
       "attempt": 1,
-      "checked_at": "2026-07-22T04:33:39Z",
+      "checked_at": "2026-07-23T04:33:20Z",
       "core": false,
       "error": "HTTP Error 403: Forbidden",
       "ok": false,
@@ -265,7 +265,7 @@
     },
     {
       "attempt": 1,
-      "checked_at": "2026-07-22T04:33:39Z",
+      "checked_at": "2026-07-23T04:33:20Z",
       "core": false,
       "error": "HTTP Error 403: Forbidden",
       "ok": false,
@@ -275,7 +275,7 @@
     },
     {
       "attempt": 1,
-      "checked_at": "2026-07-22T04:33:39Z",
+      "checked_at": "2026-07-23T04:33:20Z",
       "core": false,
       "error": "HTTP Error 403: Forbidden",
       "ok": false,
@@ -285,7 +285,7 @@
     },
     {
       "attempt": 1,
-      "checked_at": "2026-07-22T04:33:39Z",
+      "checked_at": "2026-07-23T04:33:20Z",
       "core": false,
       "error": "HTTP Error 403: Forbidden",
       "ok": false,
@@ -295,7 +295,7 @@
     },
     {
       "attempt": 1,
-      "checked_at": "2026-07-22T04:33:39Z",
+      "checked_at": "2026-07-23T04:33:20Z",
       "core": false,
       "error": "HTTP Error 403: Forbidden",
       "ok": false,
@@ -305,7 +305,7 @@
     },
     {
       "attempt": 1,
-      "checked_at": "2026-07-22T04:33:39Z",
+      "checked_at": "2026-07-23T04:33:21Z",
       "core": false,
       "error": "HTTP Error 403: Forbidden",
       "ok": false,
@@ -315,7 +315,7 @@
     },
     {
       "attempt": 1,
-      "checked_at": "2026-07-22T04:33:40Z",
+      "checked_at": "2026-07-23T04:33:21Z",
       "core": false,
       "error": "HTTP Error 403: Forbidden",
       "ok": false,
@@ -325,7 +325,7 @@
     },
     {
       "attempt": 1,
-      "checked_at": "2026-07-22T04:33:40Z",
+      "checked_at": "2026-07-23T04:33:21Z",
       "core": false,
       "error": "HTTP Error 403: Forbidden",
       "ok": false,
@@ -335,7 +335,7 @@
     },
     {
       "attempt": 1,
-      "checked_at": "2026-07-22T04:33:40Z",
+      "checked_at": "2026-07-23T04:33:21Z",
       "core": false,
       "error": "HTTP Error 403: Forbidden",
       "ok": false,
@@ -345,7 +345,7 @@
     },
     {
       "attempt": 1,
-      "checked_at": "2026-07-22T04:33:40Z",
+      "checked_at": "2026-07-23T04:33:21Z",
       "core": false,
       "error": "HTTP Error 403: Forbidden",
       "ok": false,
@@ -355,7 +355,7 @@
     },
     {
       "attempt": 1,
-      "checked_at": "2026-07-22T04:33:40Z",
+      "checked_at": "2026-07-23T04:33:21Z",
       "core": false,
       "error": "HTTP Error 403: Forbidden",
       "ok": false,
@@ -365,7 +365,7 @@
     },
     {
       "attempt": 1,
-      "checked_at": "2026-07-22T04:33:41Z",
+      "checked_at": "2026-07-23T04:33:21Z",
       "core": false,
       "error": "HTTP Error 403: Forbidden",
       "ok": false,
@@ -375,7 +375,7 @@
     },
     {
       "attempt": 1,
-      "checked_at": "2026-07-22T04:33:41Z",
+      "checked_at": "2026-07-23T04:33:21Z",
       "core": false,
       "error": "HTTP Error 403: Forbidden",
       "ok": false,
@@ -385,7 +385,7 @@
     },
     {
       "attempt": 1,
-      "checked_at": "2026-07-22T04:33:41Z",
+      "checked_at": "2026-07-23T04:33:21Z",
       "core": false,
       "error": "HTTP Error 403: Forbidden",
       "ok": false,
@@ -395,7 +395,7 @@
     },
     {
       "attempt": 1,
-      "checked_at": "2026-07-22T04:33:41Z",
+      "checked_at": "2026-07-23T04:33:21Z",
       "core": false,
       "error": "HTTP Error 403: Forbidden",
       "ok": false,
@@ -405,7 +405,7 @@
     },
     {
       "attempt": 1,
-      "checked_at": "2026-07-22T04:33:42Z",
+      "checked_at": "2026-07-23T04:33:21Z",
       "core": false,
       "error": "HTTP Error 403: Forbidden",
       "ok": false,
@@ -415,7 +415,7 @@
     },
     {
       "attempt": 1,
-      "checked_at": "2026-07-22T04:33:42Z",
+      "checked_at": "2026-07-23T04:33:21Z",
       "core": false,
       "error": "HTTP Error 403: Forbidden",
       "ok": false,
@@ -425,7 +425,7 @@
     },
     {
       "attempt": 1,
-      "checked_at": "2026-07-22T04:33:42Z",
+      "checked_at": "2026-07-23T04:33:21Z",
       "core": false,
       "error": "HTTP Error 403: Forbidden",
       "ok": false,
@@ -435,7 +435,7 @@
     },
     {
       "attempt": 1,
-      "checked_at": "2026-07-22T04:33:42Z",
+      "checked_at": "2026-07-23T04:33:22Z",
       "core": false,
       "error": "HTTP Error 403: Forbidden",
       "ok": false,
@@ -445,14 +445,34 @@
     },
     {
       "attempt": 1,
-      "bytes": 6189933,
-      "checked_at": "2026-07-22T04:33:43Z",
+      "checked_at": "2026-07-23T04:33:22Z",
+      "core": false,
+      "error": "HTTP Error 403: Forbidden",
+      "ok": false,
+      "source": "Kelee plugin",
+      "status": 403,
+      "url": "https://kelee.one/Tool/Loon/Lsr/SpeedtestChina.lsr"
+    },
+    {
+      "attempt": 1,
+      "checked_at": "2026-07-23T04:33:22Z",
+      "core": false,
+      "error": "HTTP Error 403: Forbidden",
+      "ok": false,
+      "source": "Kelee plugin",
+      "status": 403,
+      "url": "https://kelee.one/Tool/Loon/Lsr/SpeedtestInternational.lsr"
+    },
+    {
+      "attempt": 1,
+      "bytes": 6200107,
+      "checked_at": "2026-07-23T04:33:22Z",
       "content_type": "text/plain; charset=utf-8",
       "core": false,
-      "etag": "\"ed6c4264056b473dfa2ca24bd2bf5b3f10a42acd5268817736ec617a898ae7a1\"",
+      "etag": "\"f09e441ad0e3b003e0ec05d2fdf652f699b3bea3e08caed474579e075e410a58\"",
       "last_modified": null,
       "ok": true,
-      "sha256": "07b51b9c78755e2ad0d58c9617d18997abfbf392f6f37e09d5f2dccad82a7a23",
+      "sha256": "045eea87c906ff45ca797e2557e9f2361aab36fd2bcbd1f3af5ffb367ecd98c9",
       "source": "other",
       "status": 200,
       "tls_verified": true,
@@ -461,7 +481,7 @@
     {
       "attempt": 1,
       "bytes": 9818,
-      "checked_at": "2026-07-22T04:33:44Z",
+      "checked_at": "2026-07-23T04:33:22Z",
       "content_type": "image/png",
       "core": true,
       "etag": "\"70211649147742652f29a3910b2b082b950528c98287d5b6da84637dad944d72\"",
@@ -476,7 +496,7 @@
     {
       "attempt": 1,
       "bytes": 14638,
-      "checked_at": "2026-07-22T04:33:44Z",
+      "checked_at": "2026-07-23T04:33:22Z",
       "content_type": "image/png",
       "core": true,
       "etag": "\"74dff66f15125083c1c42b4bce89e4d2561d722a073bdd028d8de82e4c1c0b10\"",
@@ -491,7 +511,7 @@
     {
       "attempt": 1,
       "bytes": 10076,
-      "checked_at": "2026-07-22T04:33:44Z",
+      "checked_at": "2026-07-23T04:33:22Z",
       "content_type": "image/png",
       "core": true,
       "etag": "\"0c9a421c0a8caed61e3e4667d45c9b4426b3e5e23ba152372d843732bfe8d887\"",
@@ -506,7 +526,7 @@
     {
       "attempt": 1,
       "bytes": 8530,
-      "checked_at": "2026-07-22T04:33:44Z",
+      "checked_at": "2026-07-23T04:33:23Z",
       "content_type": "image/png",
       "core": true,
       "etag": "\"181dbcd0957635d0ba355dfa7e9bfd07a51b22a118431075423cb17e47ed365c\"",
@@ -521,7 +541,7 @@
     {
       "attempt": 1,
       "bytes": 4838,
-      "checked_at": "2026-07-22T04:33:44Z",
+      "checked_at": "2026-07-23T04:33:23Z",
       "content_type": "image/png",
       "core": true,
       "etag": "\"a3f75bfd5e57aec36230b5f87653519df5e8a5d7729bea881550f40a4312b2b8\"",
@@ -536,7 +556,7 @@
     {
       "attempt": 1,
       "bytes": 9596,
-      "checked_at": "2026-07-22T04:33:45Z",
+      "checked_at": "2026-07-23T04:33:23Z",
       "content_type": "image/png",
       "core": true,
       "etag": "\"8f631eb10be1abcad2a8ab5d623459596a21110883e0a4e747214b83738e48d5\"",
@@ -551,7 +571,7 @@
     {
       "attempt": 1,
       "bytes": 16392,
-      "checked_at": "2026-07-22T04:33:45Z",
+      "checked_at": "2026-07-23T04:33:23Z",
       "content_type": "image/png",
       "core": true,
       "etag": "\"49ec3623cdb989568b60c66e5c532ed2f6ef63d7d4962ef763f9981be61793ba\"",
@@ -566,7 +586,7 @@
     {
       "attempt": 1,
       "bytes": 20153,
-      "checked_at": "2026-07-22T04:33:45Z",
+      "checked_at": "2026-07-23T04:33:23Z",
       "content_type": "image/png",
       "core": true,
       "etag": "\"3413faae9a658257f6f79ee5b94ecc9a91e9f3e24c41003fc070341882d2683e\"",
@@ -581,7 +601,7 @@
     {
       "attempt": 1,
       "bytes": 15428,
-      "checked_at": "2026-07-22T04:33:45Z",
+      "checked_at": "2026-07-23T04:33:23Z",
       "content_type": "image/png",
       "core": true,
       "etag": "\"66954cb3909e73ddba52d2836190d63aa99ecfd8c4be0649bd1950a43fb4d3ee\"",
@@ -596,7 +616,7 @@
     {
       "attempt": 1,
       "bytes": 11224,
-      "checked_at": "2026-07-22T04:33:45Z",
+      "checked_at": "2026-07-23T04:33:23Z",
       "content_type": "image/png",
       "core": true,
       "etag": "\"d2546a6307634b69271a38fa4dbc62263febb50f98d72931aa8596a779b491f4\"",
@@ -611,7 +631,7 @@
     {
       "attempt": 1,
       "bytes": 10231,
-      "checked_at": "2026-07-22T04:33:45Z",
+      "checked_at": "2026-07-23T04:33:24Z",
       "content_type": "image/png",
       "core": true,
       "etag": "\"cf1578829f6e3880383ddddc9dbfa3c3fdf85758d506721dc9e1bec7175087e5\"",
@@ -626,7 +646,7 @@
     {
       "attempt": 1,
       "bytes": 9689,
-      "checked_at": "2026-07-22T04:33:46Z",
+      "checked_at": "2026-07-23T04:33:24Z",
       "content_type": "image/png",
       "core": true,
       "etag": "\"cae06672538cede672cfdbb34ca01027bf1050a9809e8e2a95222b08270645cd\"",
@@ -641,7 +661,7 @@
     {
       "attempt": 1,
       "bytes": 13376,
-      "checked_at": "2026-07-22T04:33:46Z",
+      "checked_at": "2026-07-23T04:33:24Z",
       "content_type": "image/png",
       "core": true,
       "etag": "\"cc8161fb882745672797d6d7c707b567dffcb0e6729418c0af9dbe8a941fae0d\"",
@@ -656,7 +676,7 @@
     {
       "attempt": 1,
       "bytes": 13045,
-      "checked_at": "2026-07-22T04:33:46Z",
+      "checked_at": "2026-07-23T04:33:24Z",
       "content_type": "image/png",
       "core": true,
       "etag": "\"667f7a130e7fe70ee19ab159760e66e49f8b70f2787b26aee3be4d99be161302\"",
@@ -671,7 +691,7 @@
     {
       "attempt": 1,
       "bytes": 5837,
-      "checked_at": "2026-07-22T04:33:46Z",
+      "checked_at": "2026-07-23T04:33:24Z",
       "content_type": "image/png",
       "core": true,
       "etag": "\"14fa202637b7900702b96d1dce05e40229eca7298bcce087c4827c87f8d82b4b\"",
@@ -686,7 +706,7 @@
     {
       "attempt": 1,
       "bytes": 7051,
-      "checked_at": "2026-07-22T04:33:46Z",
+      "checked_at": "2026-07-23T04:33:24Z",
       "content_type": "image/png",
       "core": true,
       "etag": "\"ad6bbb5f9829cc9091968051dd487c9552f70b1ec021c2cde101d306bea3e28c\"",
@@ -701,7 +721,7 @@
     {
       "attempt": 1,
       "bytes": 11854,
-      "checked_at": "2026-07-22T04:33:47Z",
+      "checked_at": "2026-07-23T04:33:24Z",
       "content_type": "image/png",
       "core": true,
       "etag": "\"5f30f6c1f5158f3c733d3266fa44ba4d3c4fd24eafa6edfadb566cd3ff416d3e\"",
@@ -716,7 +736,7 @@
     {
       "attempt": 1,
       "bytes": 16709,
-      "checked_at": "2026-07-22T04:33:47Z",
+      "checked_at": "2026-07-23T04:33:24Z",
       "content_type": "image/png",
       "core": true,
       "etag": "\"881fe254036d80d290c4f471e67a2ef8265904c4170ee05048832ef9c13484b8\"",
@@ -731,7 +751,7 @@
     {
       "attempt": 1,
       "bytes": 8754,
-      "checked_at": "2026-07-22T04:33:47Z",
+      "checked_at": "2026-07-23T04:33:25Z",
       "content_type": "image/png",
       "core": true,
       "etag": "\"051113e1b94f875399f15b3b6aa8513e45f732ae42698b8f4089b1ee98031632\"",
@@ -746,7 +766,7 @@
     {
       "attempt": 1,
       "bytes": 10961,
-      "checked_at": "2026-07-22T04:33:47Z",
+      "checked_at": "2026-07-23T04:33:25Z",
       "content_type": "image/png",
       "core": true,
       "etag": "\"d0fab13fa1543b76a8ab4b90a04acc8e10682ed79bee8385c023fcc20cb5dbb1\"",
@@ -761,7 +781,7 @@
     {
       "attempt": 1,
       "bytes": 12542,
-      "checked_at": "2026-07-22T04:33:47Z",
+      "checked_at": "2026-07-23T04:33:25Z",
       "content_type": "image/png",
       "core": true,
       "etag": "\"86ce7fff131955fec55b6c1c1887d74c1390934e933ad23579cf9ebda466f123\"",
@@ -776,7 +796,7 @@
     {
       "attempt": 1,
       "bytes": 1243,
-      "checked_at": "2026-07-22T04:33:47Z",
+      "checked_at": "2026-07-23T04:33:25Z",
       "content_type": "image/png",
       "core": true,
       "etag": "\"8aa4f4499b01ad828290d45dd9f467221df547c81ef8b15eb39dc15821c2fc1f\"",
@@ -791,7 +811,7 @@
     {
       "attempt": 1,
       "bytes": 3875,
-      "checked_at": "2026-07-22T04:33:48Z",
+      "checked_at": "2026-07-23T04:33:25Z",
       "content_type": "image/png",
       "core": true,
       "etag": "\"0b592a9131b4e8c868b366164ffb83f9ea3f51b8891d981531f5445e355d6128\"",
@@ -806,7 +826,7 @@
     {
       "attempt": 1,
       "bytes": 9416,
-      "checked_at": "2026-07-22T04:33:48Z",
+      "checked_at": "2026-07-23T04:33:25Z",
       "content_type": "image/png",
       "core": true,
       "etag": "\"b329da4270841f6cd36910886659a45e514abcc451dc4c6f5fe3d01edbdbfebd\"",
@@ -820,8 +840,23 @@
     },
     {
       "attempt": 1,
+      "bytes": 10248,
+      "checked_at": "2026-07-23T04:33:25Z",
+      "content_type": "image/png",
+      "core": true,
+      "etag": "\"8a7cc8ce9bd1d6a609905811e5e289ad41bd8b2861ce2890207ea64d5eca23d6\"",
+      "last_modified": null,
+      "ok": true,
+      "sha256": "20e1442d8498615dc1cdfcdb51775aceafb4ad380110c17d41b3d80c169e91bd",
+      "source": "Koolson/Qure",
+      "status": 200,
+      "tls_verified": true,
+      "url": "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Speedtest.png"
+    },
+    {
+      "attempt": 1,
       "bytes": 17767,
-      "checked_at": "2026-07-22T04:33:48Z",
+      "checked_at": "2026-07-23T04:33:25Z",
       "content_type": "image/png",
       "core": true,
       "etag": "\"cd45fed5ec5720053af9112f1b0c74105841801e74ba514771b5ed60dc023f18\"",
@@ -836,7 +871,7 @@
     {
       "attempt": 1,
       "bytes": 10457,
-      "checked_at": "2026-07-22T04:33:48Z",
+      "checked_at": "2026-07-23T04:33:26Z",
       "content_type": "image/png",
       "core": true,
       "etag": "\"a16413a1fd56b3ac2100bf4923bde1fcc3f64814376a1a6e58ce24742a0d905b\"",
@@ -851,7 +886,7 @@
     {
       "attempt": 1,
       "bytes": 10667,
-      "checked_at": "2026-07-22T04:33:48Z",
+      "checked_at": "2026-07-23T04:33:26Z",
       "content_type": "image/png",
       "core": true,
       "etag": "\"b501db79538b0ecb83694964c879bdd69c31ad4f6c0e4c81241223fa61f94bed\"",
@@ -866,7 +901,7 @@
     {
       "attempt": 1,
       "bytes": 13559,
-      "checked_at": "2026-07-22T04:33:49Z",
+      "checked_at": "2026-07-23T04:33:26Z",
       "content_type": "image/png",
       "core": true,
       "etag": "\"2f4d621056ad11b4b2c120285c6f76af5126e28f436f87778f8ca90fee18cdd1\"",
@@ -881,7 +916,7 @@
     {
       "attempt": 1,
       "bytes": 8365,
-      "checked_at": "2026-07-22T04:33:52Z",
+      "checked_at": "2026-07-23T04:33:26Z",
       "content_type": "image/png",
       "core": true,
       "etag": "\"5b1ca9c98a1185af00b4d9bc81b67aa975246c806930b25a83f65a211336f76a\"",
@@ -896,7 +931,7 @@
     {
       "attempt": 1,
       "bytes": 7919,
-      "checked_at": "2026-07-22T04:33:53Z",
+      "checked_at": "2026-07-23T04:33:26Z",
       "content_type": "image/png",
       "core": true,
       "etag": "\"3280546b1b846bde709378ff964bdf1719276407541a435293244bc78e0f73cb\"",
@@ -911,7 +946,7 @@
     {
       "attempt": 1,
       "bytes": 12522,
-      "checked_at": "2026-07-22T04:33:53Z",
+      "checked_at": "2026-07-23T04:33:26Z",
       "content_type": "image/png",
       "core": true,
       "etag": "\"6dafa4523d44508e77bcc12a1a1a7e1f3536c80e360e287f4a4ca0d0b895bd92\"",
@@ -926,7 +961,7 @@
     {
       "attempt": 1,
       "bytes": 20675,
-      "checked_at": "2026-07-22T04:33:53Z",
+      "checked_at": "2026-07-23T04:33:26Z",
       "content_type": "image/png",
       "core": true,
       "etag": "\"e6c00e50b75805452840726482740f29e013fe43d7d01b7c9a8583f43d31be75\"",
@@ -941,7 +976,7 @@
     {
       "attempt": 1,
       "bytes": 9092,
-      "checked_at": "2026-07-22T04:33:53Z",
+      "checked_at": "2026-07-23T04:33:26Z",
       "content_type": "image/png",
       "core": true,
       "etag": "\"6e556572691a3bfa72aab0023e8520de2560679d581c66fedcc094d2cb2cb6b7\"",
@@ -956,7 +991,7 @@
     {
       "attempt": 1,
       "bytes": 11576,
-      "checked_at": "2026-07-22T04:33:53Z",
+      "checked_at": "2026-07-23T04:33:27Z",
       "content_type": "image/png",
       "core": true,
       "etag": "\"97f665c8e43d249582cbc664b27cb11a3a1f8ba0c522d367f23ca25b51822aa4\"",
@@ -971,7 +1006,7 @@
     {
       "attempt": 1,
       "bytes": 97315,
-      "checked_at": "2026-07-22T04:33:54Z",
+      "checked_at": "2026-07-23T04:33:27Z",
       "content_type": "image/png",
       "core": false,
       "etag": "\"bc3a876d100fa8665f6e3e0383a4707fe9bd05bc5de630baeb35690894dcfb0b\"",
@@ -986,7 +1021,7 @@
     {
       "attempt": 1,
       "bytes": 1126,
-      "checked_at": "2026-07-22T04:33:54Z",
+      "checked_at": "2026-07-23T04:33:27Z",
       "content_type": "text/plain; charset=utf-8",
       "core": false,
       "etag": "\"7827ee615f9d1c4ee8a898e3305fb1fd41076afbab163034b3819b0b8c9fb8e5\"",
@@ -1001,7 +1036,7 @@
     {
       "attempt": 1,
       "bytes": 311,
-      "checked_at": "2026-07-22T04:33:54Z",
+      "checked_at": "2026-07-23T04:33:27Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "etag": "\"e536142b53c9b091a0a734f8a897f382d6a4052a8b6fbb3b16f268955b54c158\"",
@@ -1016,7 +1051,7 @@
     {
       "attempt": 1,
       "bytes": 749,
-      "checked_at": "2026-07-22T04:33:54Z",
+      "checked_at": "2026-07-23T04:33:27Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "etag": "\"bffa5a58688a5d9ef5d739854eb4b91dda69202f31db3d425f22a44924122451\"",
@@ -1031,7 +1066,7 @@
     {
       "attempt": 1,
       "bytes": 1468,
-      "checked_at": "2026-07-22T04:33:54Z",
+      "checked_at": "2026-07-23T04:33:28Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "etag": "\"97a5bd827289eddac664205e30c4bc3998de20caae366405797eca81b3badc95\"",
@@ -1046,7 +1081,7 @@
     {
       "attempt": 1,
       "bytes": 766,
-      "checked_at": "2026-07-22T04:33:55Z",
+      "checked_at": "2026-07-23T04:33:28Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "etag": "\"e01daefa8cbc5ef90f6778c410954ddd9529598818b67abd9673a856445043ed\"",
@@ -1061,7 +1096,7 @@
     {
       "attempt": 1,
       "bytes": 324,
-      "checked_at": "2026-07-22T04:33:55Z",
+      "checked_at": "2026-07-23T04:33:28Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "etag": "\"c4179b14ef45d106465a0df73a14f24d5c6a4cf03fe8d811ab527bfd788c03da\"",
@@ -1076,7 +1111,7 @@
     {
       "attempt": 1,
       "bytes": 4523,
-      "checked_at": "2026-07-22T04:33:55Z",
+      "checked_at": "2026-07-23T04:33:28Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "etag": "\"f9032a745a7cd57bd4d8373a2b49fa1250d229b25d7ce8cef468ac4e60f1eb68\"",
@@ -1091,7 +1126,7 @@
     {
       "attempt": 1,
       "bytes": 638,
-      "checked_at": "2026-07-22T04:33:55Z",
+      "checked_at": "2026-07-23T04:33:28Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "etag": "\"6590bef7aef39314d2ff012a919efad0d903b3beb64f5dc4b217bac81defa87b\"",
@@ -1106,7 +1141,7 @@
     {
       "attempt": 1,
       "bytes": 558,
-      "checked_at": "2026-07-22T04:33:55Z",
+      "checked_at": "2026-07-23T04:33:28Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "etag": "\"af7cda49d3e4815000c6db4445e8f588e81adbe03283e9c825ca1c73a1d68e30\"",
@@ -1121,7 +1156,7 @@
     {
       "attempt": 1,
       "bytes": 1167,
-      "checked_at": "2026-07-22T04:33:55Z",
+      "checked_at": "2026-07-23T04:33:28Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "etag": "\"9ee845a11579c440c31d75a1f5ec51245494c8c1f3cf2141191b16d8a91d1ef4\"",
@@ -1136,7 +1171,7 @@
     {
       "attempt": 1,
       "bytes": 3305,
-      "checked_at": "2026-07-22T04:33:56Z",
+      "checked_at": "2026-07-23T04:33:28Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "etag": "\"49f58688937412f0277c6bbe10054335fe0653a4d9dd3ae9959b479565f66ae4\"",
@@ -1151,7 +1186,7 @@
     {
       "attempt": 1,
       "bytes": 244,
-      "checked_at": "2026-07-22T04:33:56Z",
+      "checked_at": "2026-07-23T04:33:29Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "etag": "\"560d7aa01da3ea96cf5b8c52e00f8dc8d246bd2193a5753d62d473dc8d619141\"",
@@ -1166,7 +1201,7 @@
     {
       "attempt": 1,
       "bytes": 6490,
-      "checked_at": "2026-07-22T04:33:56Z",
+      "checked_at": "2026-07-23T04:33:29Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "etag": "\"09b2896c5a426c54bb9d894fc26b549b2925404db88cbed941307c4ec85e851b\"",
@@ -1181,7 +1216,7 @@
     {
       "attempt": 1,
       "bytes": 5565,
-      "checked_at": "2026-07-22T04:33:56Z",
+      "checked_at": "2026-07-23T04:33:29Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "etag": "\"75e82c14edc4a2d234a5a09675755ece7edc44ae7b82d5d6c84e67f739fdc19f\"",
@@ -1196,7 +1231,7 @@
     {
       "attempt": 1,
       "bytes": 533,
-      "checked_at": "2026-07-22T04:33:56Z",
+      "checked_at": "2026-07-23T04:33:29Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "etag": "\"d025b98541e7df0240d143fe9746edeb5a70ae631dace10a3b37845343923e8d\"",
@@ -1211,7 +1246,7 @@
     {
       "attempt": 1,
       "bytes": 1629,
-      "checked_at": "2026-07-22T04:33:56Z",
+      "checked_at": "2026-07-23T04:33:29Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "etag": "\"f98ed02cb42c3e4edde4d9eba770da388c7931feefac95382bd1768419e4eb01\"",
@@ -1226,7 +1261,7 @@
     {
       "attempt": 1,
       "bytes": 605,
-      "checked_at": "2026-07-22T04:33:57Z",
+      "checked_at": "2026-07-23T04:33:29Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "etag": "\"56eca4cfa6e1909e80dd076d7a2b352f5a2d57bd58fbda85d54c11db90cad6bc\"",
@@ -1241,7 +1276,7 @@
     {
       "attempt": 1,
       "bytes": 19792,
-      "checked_at": "2026-07-22T04:33:57Z",
+      "checked_at": "2026-07-23T04:33:29Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "etag": "\"539529f5825f5e5e6feed45a5a71738d3757618fcededac324ca10a051534e4a\"",
@@ -1256,7 +1291,7 @@
     {
       "attempt": 1,
       "bytes": 1738,
-      "checked_at": "2026-07-22T04:33:57Z",
+      "checked_at": "2026-07-23T04:33:29Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "etag": "\"71cb4a22c59a48411dd05aecd0306d32458bf5137893256dcbbb9eac1c0ff839\"",
@@ -1271,7 +1306,7 @@
     {
       "attempt": 1,
       "bytes": 1701,
-      "checked_at": "2026-07-22T04:33:57Z",
+      "checked_at": "2026-07-23T04:33:29Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "etag": "\"70936b006afc04b5c547fa0a0a7738909b17f385873fb896588f764621c9a1f5\"",
@@ -1286,7 +1321,7 @@
     {
       "attempt": 1,
       "bytes": 287,
-      "checked_at": "2026-07-22T04:33:57Z",
+      "checked_at": "2026-07-23T04:33:30Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "etag": "\"c4b41a7c42259da40b14f22e72de9bb76d60841065639773a85be4f79b0abc82\"",
@@ -1301,7 +1336,7 @@
     {
       "attempt": 1,
       "bytes": 509,
-      "checked_at": "2026-07-22T04:33:58Z",
+      "checked_at": "2026-07-23T04:33:30Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "etag": "\"b9408ed4b12a1279e92e415192ab14e67b8ebc64044a87886b7774c36e48e5d7\"",
@@ -1316,7 +1351,7 @@
     {
       "attempt": 1,
       "bytes": 20536,
-      "checked_at": "2026-07-22T04:33:58Z",
+      "checked_at": "2026-07-23T04:33:30Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "etag": "\"1b1fd9c1f31b720f05fe5b71fd6fccb67b7a7b118fab8b11878b2d6673c15c98\"",
@@ -1331,7 +1366,7 @@
     {
       "attempt": 1,
       "bytes": 40369,
-      "checked_at": "2026-07-22T04:33:58Z",
+      "checked_at": "2026-07-23T04:33:30Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "etag": "\"755d7f2ebaf2117038c9dbfcd6d228b861382f839c41e7738fa4055da37c8433\"",
@@ -1346,7 +1381,7 @@
     {
       "attempt": 1,
       "bytes": 1353,
-      "checked_at": "2026-07-22T04:33:58Z",
+      "checked_at": "2026-07-23T04:33:30Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "etag": "\"da7a9e1c695bf7baaefbfb8630fe0e024b8d320be1affa23adcbbc16e0175fe6\"",
@@ -1361,7 +1396,7 @@
     {
       "attempt": 1,
       "bytes": 4391,
-      "checked_at": "2026-07-22T04:33:58Z",
+      "checked_at": "2026-07-23T04:33:30Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "etag": "\"e95fca42330bf0caa967145870c9c9d1e88106e553ee8e26d21e583ce88420b6\"",
@@ -1376,7 +1411,7 @@
     {
       "attempt": 1,
       "bytes": 1197,
-      "checked_at": "2026-07-22T04:33:58Z",
+      "checked_at": "2026-07-23T04:33:30Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "etag": "\"e8f52ec3f5044df4e0e5722d12087a678a5af95c2b7b6d95a3f6a0157749e059\"",
@@ -1391,7 +1426,7 @@
     {
       "attempt": 1,
       "bytes": 1355,
-      "checked_at": "2026-07-22T04:33:59Z",
+      "checked_at": "2026-07-23T04:33:30Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "etag": "\"2c50c87f16b5e77430bffaf36d121fa56915f66793f20dc55443bbe3829f07dd\"",
@@ -1406,7 +1441,7 @@
     {
       "attempt": 1,
       "bytes": 1100,
-      "checked_at": "2026-07-22T04:33:59Z",
+      "checked_at": "2026-07-23T04:33:31Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "etag": "\"90b29161856d08c7c2ae4c418ff197b13a14e97d74db5636df4bf6bd749c0abf\"",
@@ -1421,7 +1456,7 @@
     {
       "attempt": 1,
       "bytes": 616,
-      "checked_at": "2026-07-22T04:33:59Z",
+      "checked_at": "2026-07-23T04:33:31Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "etag": "\"2ab5c07e9e1f5e3d56c8479a48fc36c2a11db6e4564c20eb1b31f193672e2412\"",
@@ -1436,7 +1471,7 @@
     {
       "attempt": 1,
       "bytes": 1085,
-      "checked_at": "2026-07-22T04:33:59Z",
+      "checked_at": "2026-07-23T04:33:31Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "etag": "\"231117464fb0f1fadf961866bda59bfbc7b1ecfc30ebaba6e73817ce7893df36\"",
@@ -1451,7 +1486,7 @@
     {
       "attempt": 1,
       "bytes": 5451,
-      "checked_at": "2026-07-22T04:33:59Z",
+      "checked_at": "2026-07-23T04:33:31Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "etag": "\"63885066bff514c1a2ff8946cba7cc3d179f7b5c11bcc80847ae0b8a42c5b524\"",
@@ -1466,7 +1501,7 @@
     {
       "attempt": 1,
       "bytes": 11246,
-      "checked_at": "2026-07-22T04:33:59Z",
+      "checked_at": "2026-07-23T04:33:31Z",
       "content_type": "image/png",
       "core": true,
       "etag": "\"402abf4519010e40bc428311983d5dba686e76f2d7bcd2e9bf557fa911c19796\"",
