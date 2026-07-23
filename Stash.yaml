@@ -48,6 +48,8 @@ proxy-groups:
   - {name: LinkedIn, icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Linkedin.png", type: select, proxies: [Proxy, DIRECT, US, AU, SG, JP, HK, TW, KR, EU, AS, AM, AF]}
 
   - {name: Emby, icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Emby.png", type: select, proxies: [Proxy, US, AU, SG, JP, HK, TW, KR, EU, AS, AM, AF]}
+  - {name: SpeedtestChina, icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Speedtest.png", type: select, proxies: [DIRECT, Proxy]}
+  - {name: SpeedtestInternational, icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Speedtest.png", type: select, proxies: [Proxy, DIRECT]}
 
   - {name: HK, icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Hong_Kong.png", type: url-test, include-all: true, url: "http://www.gstatic.com/generate_204", interval: 600, tolerance: 50, filter: '(?i)🇭🇰|香港|HK|Hong'}
   - {name: TW, icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Taiwan.png", type: url-test, include-all: true, url: "http://www.gstatic.com/generate_204", interval: 600, tolerance: 50, filter: '(?i)🇨🇳|🇹🇼|台湾|TW|Taiwan'}
@@ -66,6 +68,8 @@ rule-providers:
   AppleUpdate: {behavior: classical, format: text, interval: 86400, url: "https://github.com/fmz200/wool_scripts/raw/main/Loon/rule/apple_update.list"}
   RejectAds: {behavior: classical, format: text, interval: 86400, url: "https://github.com/fmz200/wool_scripts/raw/main/Loon/rule/rejectAd.list"}
   AdRules: {behavior: classical, format: text, interval: 86400, url: "https://raw.githubusercontent.com/Cats-Team/AdRules/main/adrules.list"}
+  SpeedtestChina: {behavior: classical, format: yaml, interval: 86400, url: "https://kelee.one/Tool/Clash/Rule/SpeedtestChina.yaml"}
+  SpeedtestInternational: {behavior: classical, format: yaml, interval: 86400, url: "https://kelee.one/Tool/Clash/Rule/SpeedtestInternational.yaml"}
   Direct: {behavior: classical, format: yaml, interval: 86400, url: "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Direct/Direct.yaml"}
   ChinaMaxNoIP: {behavior: classical, format: yaml, interval: 86400, url: "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/ChinaMaxNoIP/ChinaMaxNoIP.yaml"}
   Proxy: {behavior: classical, format: yaml, interval: 86400, url: "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Proxy/Proxy.yaml"}
@@ -104,6 +108,8 @@ rules:
   - RULE-SET,AppleUpdate,REJECT
   - RULE-SET,RejectAds,REJECT
   - RULE-SET,AdRules,REJECT
+  - RULE-SET,SpeedtestChina,SpeedtestChina
+  - RULE-SET,SpeedtestInternational,SpeedtestInternational
   - RULE-SET,WeChat,WeChat
   - RULE-SET,AliPay,Finance
   - RULE-SET,UnionPay,Finance
