@@ -1,6 +1,6 @@
 {
   "name": "阿啵bb的图标库", 
-  "description": "Custom icons for Loon. Updated: 2026-07-15.",
+  "description": "Custom icons for Loon. Updated: 2026-07-24.",
   "icons": [
     {
       "name": "Claude",
@@ -17,6 +17,10 @@
     {
       "name": "NiceDuck",
       "url": "https://raw.githubusercontent.com/abobb414/loon-config/main/IconSet/Color/NiceDuck.png"
+    },
+    {
+      "name": "Kuaimao",
+      "url": "https://raw.githubusercontent.com/abobb414/loon-config/main/IconSet/Color/Kuaimao.png"
     }
   ]
 }
