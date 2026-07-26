@@ -1,5 +1,6 @@
 # Clash Party / Mihomo override preserving the custom Loon strategy logic.
 # Nodes are supplied by the Clash Party subscription; no private subscription URL is stored here.
+# Clash Party dynamic override: https://raw.githubusercontent.com/abobb414/loon-config/main/ClashParty.js
 
 mode: rule
 log-level: info
