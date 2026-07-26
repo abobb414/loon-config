@@ -1,6 +1,5 @@
-# Clash Party / Mihomo configuration converted from the Loon profile.
-# Add your subscription URL to proxy-providers.Subscribe.url before use.
-# Compatible with Clash Party and Mihomo.
+# Clash Party / Mihomo override converted from the Loon profile.
+# Nodes are supplied by the Clash Party subscription; no private subscription URL is stored here.
 
 mode: rule
 log-level: info
@@ -9,10 +8,6 @@ dns:
   nameserver: [223.5.5.5, 119.29.29.29]
   fake-ip-filter: ['+.lan', '*', '+.local', '+.cmpassport.com', 'id6.me', 'open.e.189.cn', 'mdn.open.wo.cn', 'opencloud.wostore.cn', 'auth.wosms.cn', '+.10099.com.cn', '+.msftconnecttest.com', '+.msftncsi.com', 'lancache.steamcontent.com']
 
-proxy-providers:
-  Subscribe:
-    interval: 86400
-    url: "http://your-service-provider"
 proxy-groups:
   - {name: Proxy, icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Global.png", type: select, proxies: [Available, HK, SG, JP, KR, US, AU, TW, EU, AS, AM, AF]}
   - {name: Available, icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Static.png", type: url-test, include-all: true, url: "http://www.gstatic.com/generate_204", interval: 600, tolerance: 50, filter: '^(?!.*网易云)'}
