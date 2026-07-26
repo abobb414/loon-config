@@ -1,5 +1,6 @@
 # Clash Party / Mihomo override converted from the Loon profile.
 # Nodes are supplied by the Clash Party subscription; no private subscription URL is stored here.
+# Clash Party recommended dynamic override: https://raw.githubusercontent.com/abobb414/loon-config/main/ClashParty.js
 
 mode: rule
 log-level: info
