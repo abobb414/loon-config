@@ -1,228 +1,34 @@
-/*
- * Clash Party dynamic override for abobb414/loon-config.
- *
- * The subscription supplies proxies. This file keeps the custom strategy and
- * rule logic from Stash.yaml, then builds a Mihomo-compatible config around it.
- */
+/*!
+powerfullz 的 Substore 订阅转换脚本
+https://github.com/powerfullz/override-rules
 
-const testUrl = "http://www.gstatic.com/generate_204";
-const interval = 600;
+支持的传入参数：
+- grouptype: 地区代理组类型（0=select 手动选择, 1=url-test 自动测速, 2=load-balance 负载均衡，默认 0）
+  - 向后兼容：若未传 grouptype 但传了 loadbalance，则 loadbalance=true 映射为 grouptype=2，loadbalance=false 映射为 grouptype=1
+- landing: auto-detected from nodes with `dialer-proxy` field; no user parameter needed
+- ipv6: 启用 IPv6 支持（默认 false）
+- tun: 启用 TUN 模式（默认 false）
+- full: 输出完整配置（适合纯内核启动，默认 false）
+- keepalive: 启用 tcp-keep-alive（默认 false）
+- fakeip: DNS 使用 FakeIP 模式（默认 true；传 false 时为 RedirHost）
+- quic: 允许 QUIC 流量（UDP 443，默认 false）
+- threshold: 地区节点数量小于该值时不显示分组 (默认 0)
+- regex: 使用正则过滤模式（include-all + filter）写入各地区代理组，而非直接枚举节点名称（默认 false）
 
-const icons = {
-  global: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Global.png",
-  static: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Static.png",
-  direct: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Direct.png",
-  finance: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Cryptocurrency_1.png",
-  wechat: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/WeChat.png",
-  ai: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/AI.png",
-  openai: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/ChatGPT.png",
-  gemini: "https://raw.githubusercontent.com/fmz200/wool_scripts/main/icons/apps/Gemini_01.png",
-  claude: "https://raw.githubusercontent.com/abobb414/loon-config/main/IconSet/Color/Claude.png",
-  google: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Google_Search.png",
-  apple: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Apple.png",
-  microsoft: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Microsoft.png",
-  netflix: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Netflix.png",
-  disney: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Disney.png",
-  hbo: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/HBO.png",
-  spotify: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Spotify.png",
-  youtube: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/YouTube.png",
-  bilibili: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/bilibili.png",
-  tiktok: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/TikTok.png",
-  douyin: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/TikTok_2.png",
-  instagram: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Instagram.png",
-  telegram: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Telegram.png",
-  linkedin: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Linkedin.png",
-  emby: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Emby.png",
-  speedtest: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Speedtest.png",
-  hk: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Hong_Kong.png",
-  tw: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Taiwan.png",
-  sg: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Singapore.png",
-  jp: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Japan.png",
-  kr: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Korea.png",
-  us: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/United_States.png",
-  au: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Australia.png",
-  eu: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Europe_Map.png",
-  as: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Asia_Map.png",
-  am: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/America_Map.png",
-  af: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Africa_Map.png",
-};
-
-const regions = {
-  HK: { icon: icons.hk, filter: "(?i)🇭🇰|香港|HK|Hong" },
-  TW: { icon: icons.tw, filter: "(?i)🇨🇳|🇹🇼|台湾|TW|Taiwan" },
-  SG: { icon: icons.sg, filter: "(?i)🇸🇬|新加坡|狮城|SG|Singapore" },
-  JP: { icon: icons.jp, filter: "(?i)🇯🇵|日本|东京|大阪|JP|Japan" },
-  KR: { icon: icons.kr, filter: "(?i)🇰🇷|韩国|首尔|KR|Korea" },
-  US: { icon: icons.us, filter: "(?i)🇺🇸|美国|洛杉矶|圣何塞|西雅图|芝加哥|US|United States" },
-  AU: { icon: icons.au, filter: "(?i)澳大利亚|澳洲|悉尼|墨尔本|布里斯班|珀斯|阿德莱德|Australia|Sydney|Melbourne|Brisbane|Perth|Adelaide|AU" },
-  EU: { icon: icons.eu, filter: "(?i)(欧洲|欧盟|德国|法国|英国|荷兰|意大利|西班牙|葡萄牙|爱尔兰|比利时|卢森堡|瑞士|奥地利|波兰|捷克|斯洛伐克|匈牙利|罗马尼亚|保加利亚|希腊|乌克兰|白俄罗斯|俄罗斯|塞尔维亚|克罗地亚|斯洛文尼亚|波黑|阿尔巴尼亚|北马其顿|黑山|科索沃|摩尔多瓦|立陶宛|拉脱维亚|爱沙尼亚|马耳他|冰岛|挪威|瑞典|芬兰|丹麦|塞浦路斯|Europe|Germany|France|United Kingdom|Netherlands|Italy|Spain|Portugal|Ireland|Belgium|Luxembourg|Switzerland|Austria|Poland|Czech|Slovakia|Hungary|Romania|Bulgaria|Greece|Ukraine|Belarus|Russia|Serbia|Croatia|Slovenia|Bosnia|Albania|Macedonia|Montenegro|Kosovo|Moldova|Lithuania|Latvia|Estonia|Malta|Iceland|Norway|Sweden|Finland|Denmark|Cyprus|EU)" },
-  AS: { icon: icons.as, filter: "(?i)^(?!.*(港|香港|HK|Hong|台|台湾|TW|Taiwan|日本|东京|大阪|JP|Japan|韩国|首尔|KR|Korea|新加坡|狮城|SG|Singapore|美国|洛杉矶|圣何塞|西雅图|芝加哥|US|United States|澳大利亚|澳洲|AU|Australia|悉尼|墨尔本|布里斯班|珀斯|阿德莱德|Sydney|Melbourne|Brisbane|Perth|Adelaide)).*(亚洲|土耳其|伊斯坦布尔|以色列|特拉维夫|沙特|利雅得|阿联酋|迪拜|卡塔尔|多哈|印度|新德里|孟买|巴基斯坦|伊朗|伊拉克|科威特|阿曼|巴林|约旦|黎巴嫩|哈萨克斯坦|乌兹别克斯坦|塔吉克斯坦|土库曼斯坦|格鲁吉亚|亚美尼亚|阿塞拜疆|蒙古|马来西亚|泰国|印度尼西亚|印尼|菲律宾|越南|柬埔寨|老挝|缅甸|文莱|孟加拉|斯里兰卡|尼泊尔|俄罗斯|Turkey|Israel|Saudi|United Arab Emirates|UAE|Qatar|India|Pakistan|Iran|Iraq|Kuwait|Oman|Bahrain|Jordan|Lebanon|Kazakhstan|Uzbekistan|Kyrgyzstan|Tajikistan|Turkmenistan|Georgia|Armenia|Azerbaijan|Mongolia|Malaysia|Thailand|Indonesia|Philippines|Vietnam|Cambodia|Laos|Myanmar|Brunei|Bangladesh|Sri Lanka|Nepal|Russia)" },
-  AM: { icon: icons.am, filter: "(?i)^(?!.*(美国|洛杉矶|圣何塞|西雅图|芝加哥|US|United States)).*(美洲|北美|南美|加拿大|多伦多|温哥华|蒙特利尔|墨西哥|墨西哥城|巴西|阿根廷|智利|哥伦比亚|秘鲁|乌拉圭|厄瓜多尔|玻利维亚|巴拉圭|委内瑞拉|圭亚那|苏里南|Canada|Toronto|Vancouver|Montreal|Mexico|Mexico City|Brazil|Argentina|Chile|Colombia|Peru|Uruguay|Ecuador|Bolivia|Paraguay|Venezuela|Guyana|Suriname|North America|South America|America)" },
-  AF: { icon: icons.af, filter: "(?i)(非洲|南非|开普敦|约翰内斯堡|埃及|开罗|尼日利亚|拉各斯|肯尼亚|内罗毕|摩洛哥|卡萨布兰卡|突尼斯|阿尔及利亚|加纳|埃塞俄比亚|坦桑尼亚|乌干达|卢旺达|津巴布韦|赞比亚|博茨瓦纳|纳米比亚|安哥拉|塞内加尔|毛里求斯|South Africa|Egypt|Nigeria|Kenya|Morocco|Tunisia|Algeria|Ghana|Ethiopia|Tanzania|Uganda|Rwanda|Zimbabwe|Zambia|Botswana|Namibia|Angola|Senegal|Mauritius)" },
-};
-
-const regionsForProxy = ["HK", "SG", "JP", "KR", "US", "AU", "TW", "EU", "AS", "AM", "AF"];
-const aiRegions = ["US", "AU", "JP", "SG", "TW", "KR", "EU", "AS", "AM", "AF"];
-
-function testGroup(name, icon, filter) {
-  return {
-    name,
-    icon,
-    type: "url-test",
-    "include-all": true,
-    url: testUrl,
-    interval,
-    tolerance: 50,
-    filter,
-  };
-}
-
-function serviceGroup(name, icon, proxies) {
-  return { name, icon, type: "select", proxies };
-}
-
-function buildProxyGroups() {
-  const groups = [
-    serviceGroup("Proxy", icons.global, ["Available", ...regionsForProxy]),
-    { name: "Available", icon: icons.static, type: "url-test", "include-all": true, url: testUrl, interval, tolerance: 50, filter: "^(?!.*网易云)" },
-    serviceGroup("Final", icons.direct, ["Proxy", "DIRECT"]),
-    serviceGroup("Finance", icons.finance, ["DIRECT", "Proxy"]),
-    serviceGroup("WeChat", icons.wechat, ["DIRECT", "Proxy"]),
-    testGroup("AI", icons.ai, "(?i)^(?!.*(港|香港|HK|Hong)).*(美国|洛杉矶|圣何塞|西雅图|芝加哥|US|United States|日本|东京|大阪|JP|Japan|新加坡|狮城|SG|Singapore|台|台湾|TW|Taiwan|韩国|首尔|KR|Korea|欧洲|欧盟|德国|法国|英国|荷兰|意大利|西班牙|EU|Europe)"),
-    serviceGroup("OpenAI", icons.openai, ["AI", ...aiRegions]),
-    serviceGroup("Gemini", icons.gemini, ["AI", ...aiRegions]),
-    serviceGroup("Claude", icons.claude, ["AI", ...aiRegions]),
-    serviceGroup("Google", icons.google, ["Proxy", ...regionsForProxy]),
-    serviceGroup("Apple", icons.apple, ["DIRECT", "Proxy", ...regionsForProxy]),
-    serviceGroup("Microsoft", icons.microsoft, ["DIRECT", "Proxy", ...regionsForProxy]),
-    serviceGroup("Netflix", icons.netflix, ["Proxy", "US", "AU", "SG", "JP", "HK", "TW", "KR", "EU", "AS", "AM", "AF"]),
-    serviceGroup("Disney", icons.disney, ["Proxy", "US", "AU", "SG", "JP", "HK", "TW", "KR", "EU", "AS", "AM", "AF"]),
-    serviceGroup("HBO", icons.hbo, ["Proxy", "US", "AU", "SG", "HK", "TW", "JP", "KR", "EU", "AS", "AM", "AF"]),
-    serviceGroup("Spotify", icons.spotify, ["Proxy", "DIRECT", "US", "AU", "SG", "JP", "HK", "TW", "KR", "EU", "AS", "AM", "AF"]),
-    serviceGroup("YouTube", icons.youtube, ["Proxy", "US", "AU", "SG", "JP", "HK", "TW", "KR", "EU", "AS", "AM", "AF"]),
-    serviceGroup("Bilibili", icons.bilibili, ["DIRECT", "Proxy", "HK", "TW", "SG", "JP", "KR", "US", "AU", "EU", "AS", "AM", "AF"]),
-    serviceGroup("TikTok", icons.tiktok, ["Proxy", "US", "AU", "SG", "JP", "HK", "TW", "KR", "EU", "AS", "AM", "AF"]),
-    serviceGroup("Douyin", icons.douyin, ["DIRECT", "Proxy"]),
-    serviceGroup("Instagram", icons.instagram, ["Proxy", "US", "AU", "SG", "JP", "HK", "TW", "KR", "EU", "AS", "AM", "AF"]),
-    serviceGroup("Telegram", icons.telegram, ["Proxy", "SG", "US", "AU", "HK", "JP", "TW", "KR", "EU", "AS", "AM", "AF"]),
-    serviceGroup("LinkedIn", icons.linkedin, ["Proxy", "DIRECT", "US", "AU", "SG", "JP", "HK", "TW", "KR", "EU", "AS", "AM", "AF"]),
-    serviceGroup("Emby", icons.emby, ["Proxy", "US", "AU", "SG", "JP", "HK", "TW", "KR", "EU", "AS", "AM", "AF"]),
-    serviceGroup("SpeedtestChina", icons.speedtest, ["DIRECT", "Proxy"]),
-    serviceGroup("SpeedtestInternational", icons.speedtest, ["Proxy", "DIRECT"]),
+源码已迁移至 `src/*.ts`。
+*/
+"use strict";(()=>{var c=(o,r,n)=>()=>{if(n)throw n[0];try{return o&&(r=o(o=0)),r}catch(s){throw n=[s],s}};var ne=(o,r)=>()=>{try{return r||o((r={exports:{}}).exports,r),r.exports}catch(n){throw r=0,n}};function m(o,r=!1){return typeof o>"u"?r:typeof o=="boolean"?o:typeof o=="string"?o.toLowerCase()==="true"||o==="1":!1}function N(o,r=0){if(o===null||typeof o>"u")return r;let n=parseInt(String(o),10);return Number.isNaN(n)?r:n}function I(...o){return o.flat().filter(Boolean)}function $(o){return{source:o,regex:new RegExp(o,"i"),pattern:`(?i)${o}`}}function A(o){return o!==null}var y=c(()=>{"use strict"});var R,t,b,O,e,d,T=c(()=>{"use strict";y();R="节点",t="https://cdn.jsdelivr.net",b="https://cp.cloudflare.com",O=$(String.raw`0\.[0-5]|低倍率|省流|实验性`),e={SELECT:"选择代理",MANUAL:"手动选择",AUTO:"自动选择",FALLBACK:"故障转移",LANDING:"落地节点",LOW_COST:"低倍率节点",FRONT_PROXY:"前置代理",STATIC_RESOURCES:"静态资源",AI_SERVICE:"AI服务",CRYPTO:"加密货币",APPLE:"苹果服务",GOOGLE:"谷歌服务",MICROSOFT:"微软服务",BILIBILI:"哔哩哔哩",BAHAMUT:"巴哈姆特",XBOX:"Xbox",GITHUB:"Github",YOUTUBE:"Youtube",NETFLIX:"Netflix",TIKTOK:"TikTok",SPOTIFY:"Spotify",EHENTAI:"E-Hentai",TELEGRAM:"Telegram",TRUTH_SOCIAL:"Truth Social",TWITTER:"Twitter",TWITCH:"Twitch",WEIBO:"新浪微博",PIKPAK:"PikPak网盘",SSH:"SSH",SOGOU_INPUT:"搜狗输入法",AD_BLOCK:"广告拦截",GLOBAL:"GLOBAL",FINAL:"Final"},d={香港:{weight:10,pattern:"香港|港|\\b(?:HK|hk)(?:[-_ ]?\\d+(?:[-_ ]?[A-Za-z]{2,})?)?\\b|Hong Kong|HongKong|hongkong|HONG KONG|HONGKONG|深港|HKG|九龙|Kowloon|新界|沙田|荃湾|葵涌|🇭🇰",icon:`${t}/gh/Koolson/Qure@master/IconSet/Color/Hong_Kong.png`},澳门:{pattern:"澳门|\\b(?:MO|mo)(?:[-_ ]?\\d+(?:[-_ ]?[A-Za-z]{2,})?)?\\b|Macau|🇲🇴",icon:`${t}/gh/Koolson/Qure@master/IconSet/Color/Macao.png`},台湾:{weight:20,pattern:"台|新北|彰化|\\b(?:TW|tw)(?:[-_ ]?\\d+(?:[-_ ]?[A-Za-z]{2,})?)?\\b|Taiwan|TAIWAN|TWN|TPE|ROC|🇹🇼|🇼🇸",icon:`${t}/gh/Koolson/Qure@master/IconSet/Color/Taiwan.png`},新加坡:{weight:30,pattern:"新加坡|坡|狮城|\\b(?:SG|sg)(?:[-_ ]?\\d+(?:[-_ ]?[A-Za-z]{2,})?)?\\b|Singapore|SINGAPORE|SIN|🇸🇬",icon:`${t}/gh/Koolson/Qure@master/IconSet/Color/Singapore.png`},日本:{weight:40,pattern:"日本|川日|东京|大阪|泉日|埼玉|沪日|深日|\\b(?:JP|jp)(?:[-_ ]?\\d+(?:[-_ ]?[A-Za-z]{2,})?)?\\b|Japan|JAPAN|JPN|NRT|HND|KIX|TYO|OSA|关西|Kansai|KANSAI|🇯🇵",icon:`${t}/gh/Koolson/Qure@master/IconSet/Color/Japan.png`},韩国:{weight:45,pattern:"韩国|韩|韓|春川|Chuncheon|首尔|\\b(?:KR|kr)(?:[-_ ]?\\d+(?:[-_ ]?[A-Za-z]{2,})?)?\\b|Korea|KOREA|KOR|ICN|🇰🇷",icon:`${t}/gh/Koolson/Qure@master/IconSet/Color/Korea.png`},美国:{weight:50,pattern:"美国|美|波特兰|达拉斯|俄勒冈|凤凰城|费利蒙|硅谷|拉斯维加斯|洛杉矶|圣何塞|圣克拉拉|西雅图|芝加哥|纽约|亚特兰大|迈阿密|华盛顿|\\b(?:US|us)(?:[-_ ]?\\d+(?:[-_ ]?[A-Za-z]{2,})?)?\\b|United States|UnitedStates|UNITED STATES|USA|America|AMERICA|JFK|EWR|IAD|ATL|ORD|MIA|NYC|LAX|SFO|SEA|DFW|SJC|🇺🇸",icon:`${t}/gh/Koolson/Qure@master/IconSet/Color/United_States.png`,excludePattern:"美属|亚美尼亚|圣多美|普林西比"},加拿大:{weight:55,pattern:"加拿大|渥太华|温哥华|卡尔加里|蒙特利尔|Montreal|\\b(?:CA|ca)(?:[-_ ]?\\d+(?:[-_ ]?[A-Za-z]{2,})?)?\\b|Canada|CANADA|CAN|YVR|YYZ|YUL|🇨🇦",icon:`${t}/gh/Koolson/Qure@master/IconSet/Color/Canada.png`},英国:{weight:60,pattern:"英国|伦敦|曼彻斯特|Manchester|\\b(?:UK|uk)(?:[-_ ]?\\d+(?:[-_ ]?[A-Za-z]{2,})?)?\\b|Britain|United Kingdom|UNITED KINGDOM|England|GBR|LHR|MAN|🇬🇧",icon:`${t}/gh/Koolson/Qure@master/IconSet/Color/United_Kingdom.png`},澳大利亚:{pattern:"澳洲|澳大利亚|\\b(?:AU|au)(?:[-_ ]?\\d+(?:[-_ ]?[A-Za-z]{2,})?)?\\b|Australia|🇦🇺",icon:`${t}/gh/Koolson/Qure@master/IconSet/Color/Australia.png`},德国:{weight:70,pattern:"德国|德|柏林|法兰克福|慕尼黑|Munich|\\b(?:DE|de)(?:[-_ ]?\\d+(?:[-_ ]?[A-Za-z]{2,})?)?\\b|Germany|GERMANY|DEU|MUC|🇩🇪",icon:`${t}/gh/Koolson/Qure@master/IconSet/Color/Germany.png`,excludePattern:"瓜德罗普"},法国:{weight:80,pattern:"法国|法|巴黎|马赛|Marseille|\\b(?:FR|fr)(?:[-_ ]?\\d+(?:[-_ ]?[A-Za-z]{2,})?)?\\b|France|FRANCE|FRA|CDG|MRS|🇫🇷",icon:`${t}/gh/Koolson/Qure@master/IconSet/Color/France.png`,excludePattern:"法属|布基纳法索|法罗"},俄罗斯:{pattern:"俄罗斯|俄|\\b(?:RU|ru)(?:[-_ ]?\\d+(?:[-_ ]?[A-Za-z]{2,})?)?\\b|Russia|🇷🇺",icon:`${t}/gh/Koolson/Qure@master/IconSet/Color/Russia.png`,excludePattern:"埃塞俄比亚|白俄罗斯"},泰国:{pattern:"泰国|泰|\\b(?:TH|th)(?:[-_ ]?\\d+(?:[-_ ]?[A-Za-z]{2,})?)?\\b|Thailand|🇹🇭",icon:`${t}/gh/Koolson/Qure@master/IconSet/Color/Thailand.png`,excludePattern:"巴泰"},印度:{pattern:"印度|\\b(?:IN|in)(?:[-_ ]?\\d+(?:[-_ ]?[A-Za-z]{2,})?)?\\b|India|🇮🇳",icon:`${t}/gh/Koolson/Qure@master/IconSet/Color/India.png`,excludePattern:"印度洋"},马来西亚:{pattern:"马来西亚|马来|\\b(?:MY|my)(?:[-_ ]?\\d+(?:[-_ ]?[A-Za-z]{2,})?)?\\b|Malaysia|🇲🇾",icon:`${t}/gh/Koolson/Qure@master/IconSet/Color/Malaysia.png`},阿根廷:{pattern:"阿根廷|布宜诺斯艾利斯|\\b(?:AR|ar)(?:[-_ ]?\\d+(?:[-_ ]?[A-Za-z]{2,})?)?\\b|Argentina|EZE|🇦🇷",icon:`${t}/gh/Koolson/Qure@master/IconSet/Color/Argentina.png`},芬兰:{pattern:"芬兰|赫尔辛基|\\b(?:FI|fi)(?:[-_ ]?\\d+(?:[-_ ]?[A-Za-z]{2,})?)?\\b|Finland|HEL|🇫🇮",icon:`${t}/gh/Koolson/Qure@master/IconSet/Color/Finland.png`},埃及:{pattern:"埃及|开罗|\\b(?:EG|eg)(?:[-_ ]?\\d+(?:[-_ ]?[A-Za-z]{2,})?)?\\b|Egypt|CAI|🇪🇬",icon:`${t}/gh/Koolson/Qure@master/IconSet/Color/Egypt.png`},菲律宾:{pattern:"菲律宾|马尼拉|\\b(?:PH|ph)(?:[-_ ]?\\d+(?:[-_ ]?[A-Za-z]{2,})?)?\\b|Philippines|MNL|🇵🇭",icon:`${t}/gh/Koolson/Qure@master/IconSet/Color/Philippines.png`},土耳其:{pattern:"土耳其|伊斯坦布尔|\\b(?:TR|tr)(?:[-_ ]?\\d+(?:[-_ ]?[A-Za-z]{2,})?)?\\b|Turkey|Türkiye|IST|🇹🇷",icon:`${t}/gh/Koolson/Qure@master/IconSet/Color/Turkey.png`},乌克兰:{pattern:"乌克兰|基辅|\\b(?:UA|ua)(?:[-_ ]?\\d+(?:[-_ ]?[A-Za-z]{2,})?)?\\b|Ukraine|KBP|🇺🇦",icon:`${t}/gh/Koolson/Qure@master/IconSet/Color/Ukraine.png`}}});function se(o){if(m(o.loadbalance))return 2;let r=N(o.grouptype,1);return r===0||r===1||r===2?r:1}function G(o){return{groupType:se(o),ipv6Enabled:m(o.ipv6),fullConfig:m(o.full),keepAliveEnabled:m(o.keepalive),fakeIPEnabled:m(o.fakeip,!0),quicEnabled:m(o.quic),regexFilter:m(o.regex),tunEnabled:m(o.tun),countryThreshold:N(o.threshold,2)}}var K=c(()=>{"use strict";y()});function U({name:o,icon:r,groupType:n,nodeSource:s}){switch(n){case 0:return{name:o,icon:r,type:"select",...s};case 1:return{name:o,icon:r,type:"url-test",url:b,interval:60,tolerance:20,...s};case 2:return{name:o,icon:r,type:"load-balance",strategy:"sticky-sessions",url:b,interval:60,tolerance:20,...s}}}function P({regexFilter:o,groupType:r,countryNames:n,countryNodes:s,lowCostNodes:a,landing:l,landingNodes:p,defaultProxies:i,defaultProxiesDirect:E,defaultSelector:S,defaultFallback:C,frontProxySelector:h}){let u=n.includes("台湾"),x=n.includes("香港"),L=n.includes("美国");return[{name:e.SELECT,icon:`${t}/gh/Koolson/Qure@master/IconSet/Color/Proxy.png`,type:"select",proxies:S},{name:e.MANUAL,icon:`${t}/gh/shindgewongxj/WHATSINStash@master/icon/select.png`,"include-all":!0,type:"select"},l?{name:e.FRONT_PROXY,icon:`${t}/gh/Koolson/Qure@master/IconSet/Color/Area.png`,type:"select",proxies:h}:null,l?{name:e.LANDING,icon:`${t}/gh/Koolson/Qure@master/IconSet/Color/Airport.png`,type:"select",proxies:p.map(g=>g.name).filter(A)}:null,{name:e.STATIC_RESOURCES,icon:`${t}/gh/Koolson/Qure@master/IconSet/Color/Cloudflare.png`,type:"select",proxies:i},{name:e.AI_SERVICE,icon:`${t}/gh/Koolson/Qure@master/IconSet/Color/ChatGPT.png`,type:"select",proxies:i},{name:e.CRYPTO,icon:`${t}/gh/Koolson/Qure@master/IconSet/Color/Cryptocurrency_1.png`,type:"select",proxies:i},{name:e.APPLE,icon:`${t}/gh/Koolson/Qure@master/IconSet/Color/Apple_2.png`,type:"select",proxies:i},{name:e.GOOGLE,icon:`${t}/gh/Orz-3/mini@master/Color/Google.png`,type:"select",proxies:i},{name:e.MICROSOFT,icon:`${t}/gh/powerfullz/override-rules@master/icons/Microsoft_Copilot.png`,type:"select",proxies:i},{name:e.XBOX,icon:`${t}/gh/Koolson/Qure@master/IconSet/Color/Xbox.png`,type:"select",proxies:i},{name:e.GITHUB,icon:`${t}/gh/Koolson/Qure@master/IconSet/Color/GitHub.png`,type:"select",proxies:i},{name:e.BILIBILI,icon:`${t}/gh/Koolson/Qure@master/IconSet/Color/bilibili.png`,type:"select",proxies:u&&x?["DIRECT","台湾节点","香港节点"]:E},{name:e.BAHAMUT,icon:`${t}/gh/Koolson/Qure@master/IconSet/Color/Bahamut.png`,type:"select",proxies:u?["台湾节点",e.SELECT,e.MANUAL,"DIRECT"]:i},{name:e.YOUTUBE,icon:`${t}/gh/Koolson/Qure@master/IconSet/Color/YouTube.png`,type:"select",proxies:i},{name:e.TWITCH,icon:`${t}/gh/Koolson/Qure@master/IconSet/Color/Twitch.png`,type:"select",proxies:i},{name:e.NETFLIX,icon:`${t}/gh/Koolson/Qure@master/IconSet/Color/Netflix.png`,type:"select",proxies:i},{name:e.TIKTOK,icon:`${t}/gh/Koolson/Qure@master/IconSet/Color/TikTok.png`,type:"select",proxies:i},{name:e.SPOTIFY,icon:`${t}/gh/Koolson/Qure@master/IconSet/Color/Spotify.png`,type:"select",proxies:i},{name:e.TELEGRAM,icon:`${t}/gh/powerfullz/override-rules@master/icons/Telegram.png`,type:"select",proxies:i},{name:e.TWITTER,icon:`${t}/gh/Koolson/Qure@master/IconSet/Color/Twitter.png`,type:"select",proxies:i},{name:e.WEIBO,icon:`${t}/gh/Koolson/Qure@master/IconSet/Color/Weibo.png`,type:"select","include-all":!0,proxies:E},{name:e.TRUTH_SOCIAL,icon:`${t}/gh/powerfullz/override-rules@master/icons/Truth_Social.png`,type:"select",proxies:L?["美国节点",e.SELECT,e.MANUAL]:i},{name:e.EHENTAI,icon:`${t}/gh/powerfullz/override-rules@master/icons/Ehentai.png`,type:"select",proxies:i},{name:e.PIKPAK,icon:`${t}/gh/powerfullz/override-rules@master/icons/PikPak.png`,type:"select",proxies:i},{name:e.SOGOU_INPUT,icon:`${t}/gh/powerfullz/override-rules@master/icons/Sougou.png`,type:"select",proxies:["DIRECT","REJECT"]},{name:e.SSH,icon:`${t}/gh/Koolson/Qure@master/IconSet/Color/Server.png`,type:"select",proxies:i},{name:e.AD_BLOCK,icon:`${t}/gh/Koolson/Qure@master/IconSet/Color/AdBlack.png`,type:"select",proxies:["REJECT","REJECT-DROP","DIRECT"]},{name:e.FINAL,icon:`${t}/gh/Koolson/Qure@master/IconSet/Color/Final.png`,type:"select",proxies:[e.SELECT,"DIRECT"]},{name:e.AUTO,icon:`${t}/gh/Koolson/Qure@master/IconSet/Color/Auto.png`,type:"url-test",url:b,proxies:C,interval:60,tolerance:20},{name:e.FALLBACK,icon:`${t}/gh/Koolson/Qure@master/IconSet/Color/Available_1.png`,type:"fallback",url:b,proxies:C,interval:60,tolerance:20},a.length>0||o?U({name:e.LOW_COST,icon:`${t}/gh/Koolson/Qure@master/IconSet/Color/Lab.png`,groupType:r,nodeSource:o?{"include-all":!0,filter:O.pattern}:{proxies:a.map(g=>g.name).filter(A)}}):null,...n.map(g=>{let f=d[g];if(!f)return null;let te=o?{"include-all":!0,filter:f.pattern,...f.excludePattern?{"exclude-filter":f.excludePattern}:{}}:{proxies:s[g]?.map(re=>re.name).filter(A)};return U({name:`${g}${R}`,icon:f.icon,groupType:r,nodeSource:te})})].filter(A)}var v=c(()=>{"use strict";T();y()});function D(o){return(o||[]).filter(r=>O.regex.test(r.name||""))}function k(o){let r=[],n=[];for(let s of o||[])s.name&&(s["dialer-proxy"]==="前置代理"?r.push(s):n.push(s));return{landingNodes:r,nonLandingNodes:n}}function F(o){let r=Object.create(null);for(let n of o){let s=n.name||"";for(let[a,l]of Object.entries(ie))if(l.test(s)&&!ae[a]?.test(s)){r[a]||(r[a]=[]),r[a].push(n);break}}return r}function B(o,r){let n=Object.entries(o).filter(([,s])=>s.length>=r);return n.sort(([s],[a])=>{let l=d[s]?.weight??1/0,p=d[a]?.weight??1/0;return l-p}),n.map(([s])=>s)}var ie,ae,M=c(()=>{"use strict";T();ie=Object.fromEntries(Object.entries(d).map(([o,r])=>[o,new RegExp(r.pattern.replace(/^\(\?i\)/,""))])),ae=Object.fromEntries(Object.entries(d).filter(([,o])=>o.excludePattern).map(([o,r])=>[o,new RegExp(r.excludePattern)]))});function w({quicEnabled:o}){let r=[...le];return o||r.unshift("AND,((DST-PORT,443),(NETWORK,UDP)),REJECT"),r}var le,Q=c(()=>{"use strict";T();le=[`DST-PORT,22,${e.SSH}`,"GEOIP,private,DIRECT,no-resolve",`RULE-SET,ADBlock,${e.AD_BLOCK}`,`RULE-SET,AdditionalFilter,${e.AD_BLOCK}`,`RULE-SET,SogouInput,${e.SOGOU_INPUT}`,`DOMAIN-SUFFIX,truthsocial.com,${e.TRUTH_SOCIAL}`,`RULE-SET,StaticResources,${e.STATIC_RESOURCES}`,`RULE-SET,CDNResources,${e.STATIC_RESOURCES}`,`RULE-SET,AdditionalCDNResources,${e.STATIC_RESOURCES}`,`GEOSITE,category-ai-!cn,${e.AI_SERVICE}`,`GEOSITE,bilibili,${e.BILIBILI}`,`GEOSITE,youtube,${e.YOUTUBE}`,`GEOSITE,telegram,${e.TELEGRAM}`,`GEOIP,telegram,${e.TELEGRAM},no-resolve`,`GEOSITE,xbox,${e.XBOX}`,`GEOSITE,github,${e.GITHUB}`,`GEOSITE,netflix,${e.NETFLIX}`,`GEOSITE,twitch,${e.TWITCH}`,`GEOIP,netflix,${e.NETFLIX},no-resolve`,`GEOSITE,spotify,${e.SPOTIFY}`,`GEOSITE,bahamut,${e.BAHAMUT}`,`GEOSITE,pikpak,${e.PIKPAK}`,`GEOSITE,twitter,${e.TWITTER}`,`RULE-SET,Weibo,${e.WEIBO}`,`RULE-SET,EHentai,${e.EHENTAI}`,`RULE-SET,TikTok,${e.TIKTOK}`,"RULE-SET,SteamFix,DIRECT","RULE-SET,GoogleFCM,DIRECT","GEOSITE,google-play@cn,DIRECT","GEOSITE,microsoft@cn,DIRECT",`GEOSITE,apple,${e.APPLE}`,`GEOSITE,microsoft,${e.MICROSOFT}`,`GEOSITE,google,${e.GOOGLE}`,`RULE-SET,Crypto,${e.CRYPTO}`,`RULE-SET,GFWList,${e.SELECT}`,"GEOIP,cn,DIRECT",`MATCH,${e.FINAL}`]});var H,z=c(()=>{"use strict";T();H={ADBlock:{type:"http",behavior:"domain",format:"yaml",interval:86400,url:`${t}/gh/217heidai/adblockfilters@main/rules/adblockmihomolite.yaml`,path:"./ruleset/ADBlock.yaml"},SogouInput:{type:"http",behavior:"classical",format:"text",interval:86400,url:"https://ruleset.skk.moe/Clash/non_ip/sogouinput.txt",path:"./ruleset/SogouInput.txt"},StaticResources:{type:"http",behavior:"domain",format:"text",interval:86400,url:"https://ruleset.skk.moe/Clash/domainset/cdn.txt",path:"./ruleset/StaticResources.txt"},CDNResources:{type:"http",behavior:"classical",format:"text",interval:86400,url:"https://ruleset.skk.moe/Clash/non_ip/cdn.txt",path:"./ruleset/CDNResources.txt"},TikTok:{type:"http",behavior:"classical",format:"text",interval:86400,url:`${t}/gh/powerfullz/override-rules@master/ruleset/TikTok.list`,path:"./ruleset/TikTok.list"},EHentai:{type:"http",behavior:"classical",format:"text",interval:86400,url:`${t}/gh/powerfullz/override-rules@master/ruleset/EHentai.list`,path:"./ruleset/EHentai.list"},SteamFix:{type:"http",behavior:"classical",format:"text",interval:86400,url:`${t}/gh/powerfullz/override-rules@master/ruleset/SteamFix.list`,path:"./ruleset/SteamFix.list"},GoogleFCM:{type:"http",behavior:"classical",format:"text",interval:86400,url:`${t}/gh/powerfullz/override-rules@master/ruleset/FirebaseCloudMessaging.list`,path:"./ruleset/FirebaseCloudMessaging.list"},AdditionalFilter:{type:"http",behavior:"classical",format:"text",interval:86400,url:`${t}/gh/powerfullz/override-rules@master/ruleset/AdditionalFilter.list`,path:"./ruleset/AdditionalFilter.list"},AdditionalCDNResources:{type:"http",behavior:"classical",format:"text",interval:86400,url:`${t}/gh/powerfullz/override-rules@master/ruleset/AdditionalCDNResources.list`,path:"./ruleset/AdditionalCDNResources.list"},Crypto:{type:"http",behavior:"classical",format:"text",interval:86400,url:`${t}/gh/powerfullz/override-rules@master/ruleset/Crypto.list`,path:"./ruleset/Crypto.list"},Weibo:{type:"http",behavior:"classical",format:"text",interval:86400,url:`${t}/gh/powerfullz/override-rules@master/ruleset/Weibo.list`,path:"./ruleset/Weibo.list"},GFWList:{type:"http",behavior:"domain",format:"yaml",interval:86400,url:"https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/gfw.txt",path:"./ruleset/GFWList.yaml"}}});function W({mode:o,ipv6Enabled:r,fakeIpFilter:n}){let s={enable:!0,ipv6:r,"prefer-h3":!0,"enhanced-mode":o,"default-nameserver":["119.29.29.29","223.5.5.5"],nameserver:["system","223.5.5.5","119.29.29.29","180.184.1.1"],fallback:["quic://dns0.eu","https://dns.cloudflare.com/dns-query","https://dns.sb/dns-query","tcp://208.67.222.222","tcp://8.26.56.2"],"proxy-server-nameserver":["https://dns.alidns.com/dns-query","tls://dot.pub"]};return n&&(s["fake-ip-filter"]=n),s}function Y({fakeIPEnabled:o,ipv6Enabled:r}){return W(o?{mode:"fake-ip",ipv6Enabled:r,fakeIpFilter:pe}:{mode:"redir-host",ipv6Enabled:r})}var pe,X,Z=c(()=>{"use strict";pe=["geosite:private","geosite:connectivity-check","Mijia Cloud","dig.io.mi.com","localhost.ptlogin2.qq.com","*.icloud.com","*.stun.*.*","*.stun.*.*.*"],X={sniff:{TLS:{ports:[443,8443]},HTTP:{ports:[80,8080,8880]},QUIC:{ports:[443,8443]}},"override-destination":!1,enable:!0,"force-dns-mapping":!0,"skip-domain":["Mijia Cloud","dlg.io.mi.com","+.push.apple.com"]}});function j(o){return{enable:o,stack:"gvisor",device:"mihomo","route-exclude-address":["100.64.0.0/10","fd7a:115c:a1e0::/48","192.168.0.0/16","fd00::/8"],"dns-hijack":["any:53"],mtu:1500}}var J=c(()=>{"use strict"});function q({landing:o,lowCostNodes:r,countryNames:n,nonLandingNodes:s,regexFilter:a}){let l=n.map(u=>u+R),p=r.length>0||a,i=I(e.AUTO,e.FALLBACK,o&&e.LANDING,l,p&&e.LOW_COST,e.MANUAL,"DIRECT"),E=I(e.SELECT,o&&e.LANDING,l,p&&e.LOW_COST,e.MANUAL,"DIRECT"),S=I("DIRECT",o&&e.LANDING,l,p&&e.LOW_COST,e.SELECT,e.MANUAL),C=I(o&&e.LANDING,l),h=I(l,"DIRECT",!a&&s.map(u=>u.name).filter(Boolean));return{defaultProxies:E,defaultProxiesDirect:S,defaultSelector:i,defaultFallback:C,frontProxySelector:h}}var V=c(()=>{"use strict";T();y()});var fe=ne(()=>{T();K();v();M();Q();z();Z();J();V();var ue={geoip:`${t}/gh/MetaCubeX/meta-rules-dat@release/geoip.dat`,geosite:`${t}/gh/MetaCubeX/meta-rules-dat@release/geosite.dat`,mmdb:`${t}/gh/MetaCubeX/meta-rules-dat@release/country.mmdb`,asn:`${t}/gh/MetaCubeX/meta-rules-dat@release/GeoLite2-ASN.mmdb`};function ce(){try{return $arguments}catch{return{}}}var me=ce(),{groupType:ge,ipv6Enabled:ee,fullConfig:de,keepAliveEnabled:Te,fakeIPEnabled:Ee,quicEnabled:Ce,regexFilter:oe,tunEnabled:Ie,countryThreshold:Se}=G(me);function he(o){if(!o.proxies||!Array.isArray(o.proxies))throw new Error("[powerfullz 的覆写脚本] 错误：Clash 配置中缺少有效的 proxies 字段");let{landingNodes:r,nonLandingNodes:n}=k(o.proxies),s=r.length>0&&n.length>0,a=F(s?n:o.proxies),l=D(s?n:o.proxies),p=B(a,Se),{defaultProxies:i,defaultProxiesDirect:E,defaultSelector:S,defaultFallback:C,frontProxySelector:h}=q({landing:s,lowCostNodes:l,countryNames:p,nonLandingNodes:n,regexFilter:oe}),u=P({regexFilter:oe,groupType:ge,countryNames:p,countryNodes:a,lowCostNodes:l,landing:s,landingNodes:r,defaultProxies:i,defaultProxiesDirect:E,defaultSelector:S,defaultFallback:C,frontProxySelector:h}),x=u.map(_=>String(_.name));u.push({name:e.GLOBAL,icon:`${t}/gh/Koolson/Qure@master/IconSet/Color/Global.png`,"include-all":!0,type:"select",proxies:x});let L=w({quicEnabled:Ce});return{proxies:o.proxies,...de&&{"mixed-port":7890,"redir-port":7892,"tproxy-port":7893,"routing-mark":7894,"allow-lan":!0,"bind-address":"*",ipv6:ee,mode:"rule","unified-delay":!0,"tcp-concurrent":!0,"find-process-mode":"off","log-level":"info","geodata-loader":"standard","external-controller":":9999","disable-keep-alive":!Te,profile:{"store-selected":!0}},"proxy-groups":u,"rule-providers":H,rules:L,sniffer:X,dns:Y({fakeIPEnabled:Ee,ipv6Enabled:ee}),tun:j(Ie),"geodata-mode":!0,"geox-url":ue}}globalThis.main=he});fe();})();
+ 
+// Custom rules: keep these Emby endpoints on DIRECT before any upstream rule.
+const __powerfullzMain = globalThis.main;
+globalThis.main = function (input) {
+  const output = __powerfullzMain(input);
+  const embyDirectRules = [
+    "DOMAIN,iris.niceduck.lol,DIRECT",
+    "DOMAIN,cf.iris520.vip,DIRECT",
+    "DOMAIN,cdn.liminalnet.team,DIRECT",
+    "DOMAIN,limina.552554.xyz,DIRECT",
   ];
-
-  for (const [name, region] of Object.entries(regions)) {
-    groups.push(testGroup(name, region.icon, region.filter));
-  }
-  return groups;
-}
-
-const ruleProviders = {
-  Reject: { type: "http", behavior: "classical", format: "yaml", interval: 86400, url: "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Advertising/Advertising.yaml" },
-  AppleUpdate: { type: "http", behavior: "classical", format: "text", interval: 86400, url: "https://github.com/fmz200/wool_scripts/raw/main/Loon/rule/apple_update.list" },
-  RejectAds: { type: "http", behavior: "classical", format: "text", interval: 86400, url: "https://github.com/fmz200/wool_scripts/raw/main/Loon/rule/rejectAd.list" },
-  AdRules: { type: "http", behavior: "classical", format: "text", interval: 86400, url: "https://raw.githubusercontent.com/Cats-Team/AdRules/main/adrules.list" },
-  SpeedtestChina: { type: "http", behavior: "classical", format: "yaml", interval: 86400, url: "https://kelee.one/Tool/Clash/Rule/SpeedtestChina.yaml" },
-  SpeedtestInternational: { type: "http", behavior: "classical", format: "yaml", interval: 86400, url: "https://kelee.one/Tool/Clash/Rule/SpeedtestInternational.yaml" },
-  Direct: { type: "http", behavior: "classical", format: "yaml", interval: 86400, url: "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Direct/Direct.yaml" },
-  ChinaMaxNoIP: { type: "http", behavior: "classical", format: "yaml", interval: 86400, url: "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/ChinaMaxNoIP/ChinaMaxNoIP.yaml" },
-  Proxy: { type: "http", behavior: "classical", format: "yaml", interval: 86400, url: "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Proxy/Proxy.yaml" },
-  WeChat: { type: "http", behavior: "classical", format: "yaml", interval: 86400, url: "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/WeChat/WeChat.yaml" },
-  AliPay: { type: "http", behavior: "classical", format: "yaml", interval: 86400, url: "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/AliPay/AliPay.yaml" },
-  UnionPay: { type: "http", behavior: "classical", format: "yaml", interval: 86400, url: "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/UnionPay/UnionPay.yaml" },
-  ICBC: { type: "http", behavior: "classical", format: "yaml", interval: 86400, url: "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/ICBC/ICBC.yaml" },
-  CCB: { type: "http", behavior: "classical", format: "yaml", interval: 86400, url: "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/CCB/CCB.yaml" },
-  BOC: { type: "http", behavior: "classical", format: "yaml", interval: 86400, url: "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/BOC/BOC.yaml" },
-  ABC: { type: "http", behavior: "classical", format: "yaml", interval: 86400, url: "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/ABC/ABC.yaml" },
-  CMB: { type: "http", behavior: "classical", format: "yaml", interval: 86400, url: "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/CMB/CMB.yaml" },
-  BOCOM: { type: "http", behavior: "classical", format: "yaml", interval: 86400, url: "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/BOCOM/BOCOM.yaml" },
-  CEB: { type: "http", behavior: "classical", format: "yaml", interval: 86400, url: "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/CEB/CEB.yaml" },
-  YouTube: { type: "http", behavior: "classical", format: "yaml", interval: 86400, url: "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/YouTube/YouTube.yaml" },
-  AI: { type: "http", behavior: "classical", format: "text", interval: 86400, url: "https://github.com/fmz200/wool_scripts/raw/main/Loon/rule/AI.list" },
-  OpenAI: { type: "http", behavior: "classical", format: "yaml", interval: 86400, url: "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/OpenAI/OpenAI.yaml" },
-  Gemini: { type: "http", behavior: "classical", format: "text", interval: 86400, url: "https://raw.githubusercontent.com/abobb414/loon-config/main/rules/Gemini.list" },
-  Claude: { type: "http", behavior: "classical", format: "yaml", interval: 86400, url: "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Claude/Claude.yaml" },
-  Google: { type: "http", behavior: "classical", format: "yaml", interval: 86400, url: "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Google/Google.yaml" },
-  Apple: { type: "http", behavior: "classical", format: "yaml", interval: 86400, url: "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Apple/Apple.yaml" },
-  Microsoft: { type: "http", behavior: "classical", format: "yaml", interval: 86400, url: "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Microsoft/Microsoft.yaml" },
-  Netflix: { type: "http", behavior: "classical", format: "yaml", interval: 86400, url: "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Netflix/Netflix.yaml" },
-  Disney: { type: "http", behavior: "classical", format: "yaml", interval: 86400, url: "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Disney/Disney.yaml" },
-  HBO: { type: "http", behavior: "classical", format: "yaml", interval: 86400, url: "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/HBO/HBO.yaml" },
-  Spotify: { type: "http", behavior: "classical", format: "yaml", interval: 86400, url: "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Spotify/Spotify.yaml" },
-  Bilibili: { type: "http", behavior: "classical", format: "yaml", interval: 86400, url: "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/BiliBili/BiliBili.yaml" },
-  TikTok: { type: "http", behavior: "classical", format: "yaml", interval: 86400, url: "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/TikTok/TikTok.yaml" },
-  Douyin: { type: "http", behavior: "classical", format: "yaml", interval: 86400, url: "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/DouYin/DouYin.yaml" },
-  Instagram: { type: "http", behavior: "classical", format: "yaml", interval: 86400, url: "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Instagram/Instagram.yaml" },
-  Telegram: { type: "http", behavior: "classical", format: "yaml", interval: 86400, url: "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Telegram/Telegram.yaml" },
-  LinkedIn: { type: "http", behavior: "classical", format: "yaml", interval: 86400, url: "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/LinkedIn/LinkedIn.yaml" },
-  Emby: { type: "http", behavior: "classical", format: "yaml", interval: 86400, url: "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Emby/Emby.yaml" },
-};
-
-const rules = [
-  "DOMAIN,iris.niceduck.lol,DIRECT",
-  "DOMAIN,cf.iris520.vip,DIRECT",
-  "DOMAIN,cdn.liminalnet.team,DIRECT",
-  "DOMAIN,limina.552554.xyz,DIRECT",
-  "RULE-SET,Reject,REJECT",
-  "RULE-SET,AppleUpdate,REJECT",
-  "RULE-SET,RejectAds,REJECT",
-  "RULE-SET,AdRules,REJECT",
-  "RULE-SET,SpeedtestChina,SpeedtestChina",
-  "RULE-SET,SpeedtestInternational,SpeedtestInternational",
-  "RULE-SET,WeChat,WeChat",
-  "RULE-SET,AliPay,Finance",
-  "RULE-SET,UnionPay,Finance",
-  "RULE-SET,ICBC,Finance",
-  "RULE-SET,CCB,Finance",
-  "RULE-SET,BOC,Finance",
-  "RULE-SET,ABC,Finance",
-  "RULE-SET,CMB,Finance",
-  "RULE-SET,BOCOM,Finance",
-  "RULE-SET,CEB,Finance",
-  "RULE-SET,YouTube,YouTube",
-  "RULE-SET,OpenAI,OpenAI",
-  "RULE-SET,Gemini,Gemini",
-  "RULE-SET,Claude,Claude",
-  "RULE-SET,Google,Google",
-  "RULE-SET,Apple,Apple",
-  "RULE-SET,AI,AI",
-  "RULE-SET,Microsoft,Microsoft",
-  "RULE-SET,Netflix,Netflix",
-  "RULE-SET,Disney,Disney",
-  "RULE-SET,HBO,HBO",
-  "RULE-SET,Spotify,Spotify",
-  "RULE-SET,Bilibili,Bilibili",
-  "RULE-SET,TikTok,TikTok",
-  "RULE-SET,Douyin,Douyin",
-  "RULE-SET,Instagram,Instagram",
-  "RULE-SET,Telegram,Telegram",
-  "RULE-SET,LinkedIn,LinkedIn",
-  "RULE-SET,Emby,Emby",
-  "RULE-SET,Direct,DIRECT",
-  "RULE-SET,ChinaMaxNoIP,DIRECT",
-  "GEOIP,CN,DIRECT",
-  "RULE-SET,Proxy,Proxy",
-  "MATCH,Final",
-];
-
-function main(input) {
-  if (!input || !Array.isArray(input.proxies)) {
-    throw new Error("Clash Party subscription must provide a proxies array");
-  }
-
-  const output = { ...input };
-  delete output["proxy-providers"];
-  delete output["subscribe-url"];
-  output.mode = "rule";
-  output["log-level"] = "info";
-  output.dns = {
-    nameserver: ["223.5.5.5", "119.29.29.29"],
-    "fake-ip-filter": ["+.lan", "*", "+.local", "+.cmpassport.com", "id6.me", "open.e.189.cn", "mdn.open.wo.cn", "opencloud.wostore.cn", "auth.wosms.cn", "+.10099.com.cn", "+.msftconnecttest.com", "+.msftncsi.com", "lancache.steamcontent.com"],
-  };
-  output["proxy-groups"] = buildProxyGroups();
-  output["rule-providers"] = ruleProviders;
-  output.rules = rules;
+  output.rules = [...embyDirectRules, ...(Array.isArray(output.rules) ? output.rules : [])];
   return output;
-}
-
-globalThis.main = main;
+};
