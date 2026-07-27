@@ -169,8 +169,8 @@ proxy-groups:
   - {name: LINE, <<: *Proxy_first, icon: "https://raw.githubusercontent.com/Lanlan13-14/Rules/refs/heads/main/icon/line.png"}
   - {name: Signal, <<: *Proxy_first, icon: "https://raw.githubusercontent.com/Lanlan13-14/Rules/refs/heads/main/icon/signal.png"}
   - {name: TikTok, <<: *Proxy_first, icon: "https://raw.githubusercontent.com/Lanlan13-14/Rules/refs/heads/main/icon/tiktok.png"}
-  - {name: NETFLIX, <<: *Proxy_first, icon: "https://raw.githubusercontent.com/Lanlan13-14/Rules/refs/heads/main/icon/netfix.png"}
-  - {name: DisneyPlus, <<: *Proxy_first, icon: "https://raw.githubusercontent.com/Lanlan13-14/Rules/refs/heads/main/icon/disneyplus.png"}
+  - {name: NETFLIX, <<: *Proxy_first, icon: "https://raw.githubusercontent.com/Lanlan13-14/Rules/refs/heads/main/icon/netflix.png"}
+  - {name: DisneyPlus, <<: *Proxy_first, icon: "https://raw.githubusercontent.com/Lanlan13-14/Rules/refs/heads/main/icon/disney.png"}
   - {name: HBO, <<: *Proxy_first, icon: "https://raw.githubusercontent.com/Lanlan13-14/Rules/refs/heads/main/icon/hbo.png"}
   - {name: Primevideo, <<: *Proxy_first, icon: "https://raw.githubusercontent.com/Lanlan13-14/Rules/refs/heads/main/icon/primevideo.png"}
   - {name: AppleTV, <<: *Proxy_first, icon: "https://raw.githubusercontent.com/Lanlan13-14/Rules/refs/heads/main/icon/appletv.png"}
