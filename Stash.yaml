@@ -68,6 +68,7 @@ rule-providers:
   AppleUpdate: {behavior: classical, format: text, interval: 86400, url: "https://github.com/fmz200/wool_scripts/raw/main/Loon/rule/apple_update.list"}
   RejectAds: {behavior: classical, format: text, interval: 86400, url: "https://github.com/fmz200/wool_scripts/raw/main/Loon/rule/rejectAd.list"}
   AdRules: {behavior: classical, format: text, interval: 86400, url: "https://raw.githubusercontent.com/Cats-Team/AdRules/main/adrules.list"}
+  AdRulesDomain: {type: http, behavior: domain, format: text, interval: 86400, path: ./ruleset/adrules_domainset.txt, url: "https://raw.githubusercontent.com/Cats-Team/AdRules/main/adrules_domainset.txt"}
   SpeedtestChina: {behavior: classical, format: yaml, interval: 86400, url: "https://kelee.one/Tool/Clash/Rule/SpeedtestChina.yaml"}
   SpeedtestInternational: {behavior: classical, format: yaml, interval: 86400, url: "https://kelee.one/Tool/Clash/Rule/SpeedtestInternational.yaml"}
   Direct: {behavior: classical, format: yaml, interval: 86400, url: "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Direct/Direct.yaml"}
@@ -108,6 +109,7 @@ rules:
   - RULE-SET,AppleUpdate,REJECT
   - RULE-SET,RejectAds,REJECT
   - RULE-SET,AdRules,REJECT
+  - RULE-SET,AdRulesDomain,REJECT
   - RULE-SET,SpeedtestChina,SpeedtestChina
   - RULE-SET,SpeedtestInternational,SpeedtestInternational
   - RULE-SET,WeChat,WeChat
