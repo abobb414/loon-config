@@ -4,10 +4,10 @@
 # UPSTREAM: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Loon/WeChat/WeChat.list
 # GENERATED: scripts/refresh_upstreams.py (edit WeChatSupplement.list for custom rules)
 # DOMAIN: 8
-# DOMAIN-SUFFIX: 28
+# DOMAIN-SUFFIX: 35
 # IP-ASN: 1
 # USER-AGENT: 2
-# TOTAL: 39
+# TOTAL: 46
 
 DOMAIN,apd-pcdnwxlogin.teg.tencent-cloud.net
 DOMAIN,btrace.qq.com
@@ -42,6 +42,13 @@ DOMAIN-SUFFIX,yun-hl.3g.qq.com
 USER-AGENT,MicroMessenger*
 USER-AGENT,WeChat*
 IP-ASN,132203,no-resolve
+DOMAIN-SUFFIX,mmpay.weixin.qq.com
+DOMAIN-SUFFIX,pay.weixin.qq.com
+DOMAIN-SUFFIX,payapp.weixin.qq.com
+DOMAIN-SUFFIX,wx.tenpay.com
+DOMAIN-SUFFIX,wechatpay.cn
+DOMAIN-SUFFIX,long.weixin.qq.com
+DOMAIN-SUFFIX,short.weixin.qq.com
 DOMAIN-SUFFIX,vweixinf.tc.qq.com
 DOMAIN-SUFFIX,wx2.qq.com
 DOMAIN-SUFFIX,wx8.qq.com
