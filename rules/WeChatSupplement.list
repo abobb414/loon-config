@@ -1,4 +1,11 @@
 # Core WeChat domestic endpoints and media/CDN domains.
+DOMAIN-SUFFIX,mmpay.weixin.qq.com
+DOMAIN-SUFFIX,pay.weixin.qq.com
+DOMAIN-SUFFIX,payapp.weixin.qq.com
+DOMAIN-SUFFIX,wx.tenpay.com
+DOMAIN-SUFFIX,wechatpay.cn
+DOMAIN-SUFFIX,long.weixin.qq.com
+DOMAIN-SUFFIX,short.weixin.qq.com
 DOMAIN-SUFFIX,qpic.cn
 DOMAIN-SUFFIX,qlogo.cn
 DOMAIN-SUFFIX,weixin.com
