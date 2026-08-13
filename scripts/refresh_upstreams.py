@@ -55,7 +55,6 @@ WECHAT_RULE_TYPES = (
     "IP-ASN",
     "IP-CIDR",
     "IP-CIDR6",
-    "USER-AGENT",
     "URL-REGEX",
 )
 LAST_UPDATED_RE = re.compile(r"^# Last Updated:.*$", re.MULTILINE)
