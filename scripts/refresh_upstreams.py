@@ -35,28 +35,6 @@ CORE_MARKERS = (
     "github.com/Moli-X/Tool/raw/X/GeoIP",
     "github.com/sub-store-org/Sub-Store/releases",
 )
-GEMINI_UPSTREAM_URL = (
-    "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/"
-    "rule/Loon/Gemini/Gemini.list"
-)
-GEMINI_SUPPLEMENT_PATH = Path("rules/GeminiSupplement.list")
-GEMINI_MERGED_PATH = Path("rules/Gemini.list")
-GEMINI_RULE_TYPES = ("DOMAIN", "DOMAIN-SUFFIX", "DOMAIN-KEYWORD")
-WECHAT_UPSTREAM_URL = (
-    "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/"
-    "rule/Loon/WeChat/WeChat.list"
-)
-WECHAT_SUPPLEMENT_PATH = Path("rules/WeChatSupplement.list")
-WECHAT_MERGED_PATH = Path("rules/WeChat.list")
-WECHAT_RULE_TYPES = (
-    "DOMAIN",
-    "DOMAIN-SUFFIX",
-    "DOMAIN-KEYWORD",
-    "IP-ASN",
-    "IP-CIDR",
-    "IP-CIDR6",
-    "URL-REGEX",
-)
 LAST_UPDATED_RE = re.compile(r"^# Last Updated:.*$", re.MULTILINE)
 SHANGHAI_TZ = dt.timezone(dt.timedelta(hours=8), name="Asia/Shanghai")
 
@@ -117,8 +95,6 @@ def extract_urls(config: Path) -> list[str]:
             url = normalize_url(match)
             if not should_skip(url):
                 urls.add(url)
-    urls.add(GEMINI_UPSTREAM_URL)
-    urls.add(WECHAT_UPSTREAM_URL)
     return sorted(urls)
 
 
@@ -306,109 +282,6 @@ def fetch_text_with_retries(url: str, timeout: int, retries: int) -> str:
     raise RuntimeError(f"Could not fetch {url}: {last_error}")
 
 
-def rule_lines(content: str, allowed_types: tuple[str, ...]) -> list[str]:
-    rules: list[str] = []
-    for raw_line in content.splitlines():
-        line = raw_line.strip()
-        if not line or line.startswith("#"):
-            continue
-        rule_type, separator, _ = line.partition(",")
-        if separator and rule_type in allowed_types:
-            rules.append(line)
-    return rules
-
-
-def build_gemini_rules(upstream: str, supplement: str) -> str:
-    merged: list[str] = []
-    seen: set[str] = set()
-    for line in [
-        *rule_lines(upstream, GEMINI_RULE_TYPES),
-        *rule_lines(supplement, GEMINI_RULE_TYPES),
-    ]:
-        if line not in seen:
-            seen.add(line)
-            merged.append(line)
-
-    if not merged:
-        raise ValueError("Gemini rule sources contained no valid Loon rules")
-
-    counts = {rule_type: 0 for rule_type in GEMINI_RULE_TYPES}
-    for line in merged:
-        rule_type = line.partition(",")[0]
-        counts[rule_type] += 1
-
-    header = [
-        "# NAME: Gemini",
-        "# AUTHOR: blackmatrix7, bol609619914-design",
-        "# REPO: https://github.com/abobb414/loon-config",
-        f"# UPSTREAM: {GEMINI_UPSTREAM_URL}",
-        "# GENERATED: scripts/refresh_upstreams.py (edit GeminiSupplement.list for custom rules)",
-        *[f"# {rule_type}: {counts[rule_type]}" for rule_type in GEMINI_RULE_TYPES],
-        f"# TOTAL: {len(merged)}",
-        "",
-    ]
-    return "\n".join([*header, *merged]) + "\n"
-
-
-def refresh_gemini_rules(timeout: int, retries: int) -> bool:
-    try:
-        upstream = fetch_text_with_retries(GEMINI_UPSTREAM_URL, timeout, retries)
-        supplement = GEMINI_SUPPLEMENT_PATH.read_text(encoding="utf-8")
-        rendered = build_gemini_rules(upstream, supplement)
-    except (OSError, RuntimeError, ValueError) as error:
-        print(f"Gemini rule refresh failed: {error}", file=sys.stderr)
-        return False
-
-    if not GEMINI_MERGED_PATH.exists() or GEMINI_MERGED_PATH.read_text(encoding="utf-8") != rendered:
-        GEMINI_MERGED_PATH.write_text(rendered, encoding="utf-8")
-    return True
-
-
-def build_wechat_rules(upstream: str, supplement: str) -> str:
-    merged: list[str] = []
-    seen: set[str] = set()
-    for line in [
-        *rule_lines(upstream, WECHAT_RULE_TYPES),
-        *rule_lines(supplement, WECHAT_RULE_TYPES),
-    ]:
-        if line not in seen:
-            seen.add(line)
-            merged.append(line)
-
-    if not merged:
-        raise ValueError("WeChat rule sources contained no valid Loon rules")
-
-    counts = {rule_type: 0 for rule_type in WECHAT_RULE_TYPES}
-    for line in merged:
-        counts[line.partition(",")[0]] += 1
-
-    header = [
-        "# NAME: WeChat",
-        "# AUTHOR: blackmatrix7, abobb414",
-        "# REPO: https://github.com/abobb414/loon-config",
-        f"# UPSTREAM: {WECHAT_UPSTREAM_URL}",
-        "# GENERATED: scripts/refresh_upstreams.py (edit WeChatSupplement.list for custom rules)",
-        *[f"# {rule_type}: {counts[rule_type]}" for rule_type in WECHAT_RULE_TYPES if counts[rule_type]],
-        f"# TOTAL: {len(merged)}",
-        "",
-    ]
-    return "\n".join([*header, *merged]) + "\n"
-
-
-def refresh_wechat_rules(timeout: int, retries: int) -> bool:
-    try:
-        upstream = fetch_text_with_retries(WECHAT_UPSTREAM_URL, timeout, retries)
-        supplement = WECHAT_SUPPLEMENT_PATH.read_text(encoding="utf-8")
-        rendered = build_wechat_rules(upstream, supplement)
-    except (OSError, RuntimeError, ValueError) as error:
-        print(f"WeChat rule refresh failed: {error}", file=sys.stderr)
-        return False
-
-    if not WECHAT_MERGED_PATH.exists() or WECHAT_MERGED_PATH.read_text(encoding="utf-8") != rendered:
-        WECHAT_MERGED_PATH.write_text(rendered, encoding="utf-8")
-    return True
-
-
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--config", default="Loon.conf", type=Path)
@@ -423,8 +296,6 @@ def main() -> int:
     previous_resources = load_previous_resources(args.output)
     resources = refresh(urls, args.timeout, args.retries)
     resources = use_stale_core_success(resources, previous_resources)
-    gemini_rules_ok = refresh_gemini_rules(args.timeout, args.retries)
-    wechat_rules_ok = refresh_wechat_rules(args.timeout, args.retries)
     payload = {
         "generated_at": dt.datetime.now(dt.UTC).isoformat(timespec="seconds").replace("+00:00", "Z"),
         "config": str(args.config),
@@ -443,7 +314,7 @@ def main() -> int:
         print("Core upstream failures:", file=sys.stderr)
         for item in failed_core:
             print(f"- {item['status']} {item['url']}", file=sys.stderr)
-    return 1 if args.strict and (failed_core or not gemini_rules_ok or not wechat_rules_ok) else 0
+    return 1 if args.strict and failed_core else 0
 
 
 if __name__ == "__main__":
