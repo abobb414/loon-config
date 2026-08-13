@@ -6,8 +6,7 @@
 # DOMAIN: 8
 # DOMAIN-SUFFIX: 35
 # IP-ASN: 1
-# USER-AGENT: 2
-# TOTAL: 46
+# TOTAL: 44
 
 DOMAIN,apd-pcdnwxlogin.teg.tencent-cloud.net
 DOMAIN,btrace.qq.com
@@ -39,8 +38,6 @@ DOMAIN-SUFFIX,wx.qq.com
 DOMAIN-SUFFIX,wxapp.tc.qq.com
 DOMAIN-SUFFIX,wxs.qq.com
 DOMAIN-SUFFIX,yun-hl.3g.qq.com
-USER-AGENT,MicroMessenger*
-USER-AGENT,WeChat*
 IP-ASN,132203,no-resolve
 DOMAIN-SUFFIX,mmpay.weixin.qq.com
 DOMAIN-SUFFIX,pay.weixin.qq.com
