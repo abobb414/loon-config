@@ -5,11 +5,15 @@
 ## 内容
 
 - `Loon.conf`：主配置文件。
+- `Loon-minimal.conf`：最小化排查配置，仅保留最基础分流，用于逐项定位组件故障。
+- `Stash.yaml`：由 Loon 配置转换而来的 Stash 策略配置。
+- `clash-advanced.yaml`：Clash 进阶配置，含策略组锚点与机场订阅占位。
+- `IconSet/`：策略组图标集，供 Loon 与 Clash 客户端引用。
 - `scripts/refresh_upstreams.py`：扫描配置中的上游资源并生成状态锁定清单。
 - `.github/workflows/refresh-upstreams.yml`：每日自动刷新上游资源元数据。
 - `.upstream/upstreams.lock.json`：上游资源状态、ETag、Last-Modified 与 sha256 记录。
 
-公开版配置不包含节点订阅地址；请在 Loon 本地添加自己的远程代理订阅。
+公开版配置不包含节点订阅地址、客户端私钥与内网凭据；请在 Loon 本地添加自己的远程代理订阅与凭据。
 
 ## 图标库
 
