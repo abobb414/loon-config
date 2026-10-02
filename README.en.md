@@ -2,6 +2,11 @@
 
 <div align="center">
 
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="./docs/images/logo-white.png" />
+  <img src="./docs/images/logo.png" alt="Loon Config" width="124" />
+</picture>
+
 # Loon Config
 
 **A personal Loon traffic routing config. 36 policy groups, 104 upstream resources, automated daily health checks.**

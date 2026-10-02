@@ -2,6 +2,11 @@
 
 <div align="center">
 
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="./docs/images/logo-white.png" />
+  <img src="./docs/images/logo.png" alt="Loon Config" width="124" />
+</picture>
+
 # Loon Config
 
 **一份自用的 Loon 分流配置。36 个策略组、104 个上游资源、每天自动体检。**
