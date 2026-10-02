@@ -1,26 +1,26 @@
 # ============================================================
 # 去广告复写规则（旧版语法 / Build 729+ 全兼容）
 # ------------------------------------------------------------
-# 本文件由 rewrite/gen.py 自动生成，请勿手工编辑。
-# 重新生成: python3 rewrite/gen.py
+# 本文件由 localize.py 自动生成，请勿手工编辑。
 #
-# 由来：Loon.conf [Plugin] 段中各去广告插件的 [Rewrite] 逐条等价转换而来。
+# 由来：各 Loon 去广告插件的 [Rewrite] 逐条等价转换而来。
 #
 # 为什么要固化成本地规则：
 #   插件规则使用新版脚本语法，形如
 #       request  if ${url} ~= /.../i then reject_dict(200)
 #       response if ${url} ~= /.../i then response.json.jq("...")
-#   且插件会随作者更新而变动，行为不由自己掌控。本文件把规则固化下来，
-#   插件怎么更新都不影响；也不会被 App 回写主配置时带走。
+#   该语法需客户端 build >= 978，插件自身常要求 998；build 不够时规则被静默忽略。
+#   且插件随作者更新而变动，行为不由自己掌控。
+#   本文件把规则固化下来：插件怎么更新都不影响，也不会被 App 回写主配置时带走。
 #
 # 动作名对应关系（新版 -> 旧版）：
-#   reject_dict(200)      -> reject-dict          (HTTP 200 + {})
-#   reject(404)           -> reject-dict
-#   reject_img(200)       -> reject-img           (HTTP 200 + 1x1 图)
-#   response.json.jq(x)   -> response-body-json-jq 'x'
-#   response.json.delete  -> response-body-json-del
-#   response.json.replace -> response-body-json-replace
-#   redirect(307,url)     -> 307 url
+#   reject_dict(200) / reject(404) -> reject-dict          (HTTP 200 + {})
+#   reject_img(200)                -> reject-img           (HTTP 200 + 1x1 图)
+#   response.json.jq(x)            -> response-body-json-jq 'x'
+#   response.json.delete           -> response-body-json-del
+#   response.json.replace          -> response-body-json-replace
+#   response.header.add            -> response-header-add
+#   redirect(307,url)              -> 307 url
 #
 # 依据：Loon 官方文档《复写（旧版语法）》https://nsloon.app/docs/Rewrite/
 # ============================================================

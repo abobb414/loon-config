@@ -225,21 +225,63 @@ Moli-X GeoIP、Sub-Store 解析器）。它们若某次抓取失败，**不写 `
 
 ---
 
+## 去广告：规则为什么自己固化
+
+`[Remote Rewrite]` 引用了 `rewrite/adblock.list` —— 19 个插件、311 条去广告规则，**不是「抄一份备份」**，
+是为了绕开两件事：
+
+- **插件规则用的是新版脚本语法**，形如 `request if ${url} ~= /.../i then reject_dict(200)`。
+  该语法自 Loon 3.5.1(978) 引入，而插件头部普遍要求 `#!loon_version=3.5.1(998)`。
+  **build 不够时规则被静默忽略** —— MitM 照常解密（请求列表里有紫锁、能看到完整 URL），
+  rewrite 一条都不执行。表现就是「广告拦不住、Reject 页又空空如也」。
+- **插件会随作者更新而变化**，行为不由自己掌控。
+
+官方文档《匹配顺序》写明：**本地配置的 `[Rewrite]` 优先于插件的 `[Rewrite]`**。
+所以把这些规则逐条等价转成旧版语法（Build 729+ 全兼容）搬到自己的文件里，一次解决。
+
+| 新版 | 旧版 |
+|---|---|
+| `reject_dict(200)` / `reject(404)` | `reject-dict` （HTTP 200 + `{}`） |
+| `reject_img(200)` | `reject-img` |
+| `response.json.jq(x)` | `response-body-json-jq 'x'` |
+| `response.json.delete` | `response-body-json-del` |
+| `response.json.replace` | `response-body-json-replace` |
+| `response.header.add` | `response-header-add` |
+| `redirect(307,url)` | `307 url` |
+
+有 10 条（`response.body.mock` / `response.json.jq_file` / `response.body.replace`）旧语法没有等价动作，
+仍由插件提供，已在规则文件头部注明。
+
+```bash
+# 重新生成（插件更新后跑一次即可）
+python3 rewrite/gen.py
+```
+
+转换逻辑与踩坑记录在 `skills/loon-rewrite-localize/` —— 这条链路上有三个坑：
+插件正则**自带 `^`** 导致重复锚点（生成出 `^^https://…`，整条失效）、
+jq 表达式里的**空格必须转义成 `\x20`**（旧语法按空格分隔参数，不转义会被截断）、
+源站偶发 `SSL: UNEXPECTED_EOF` **必须退避重试**（不加时 30 个插件稳定掉 5 个，规则从 311 掉到 192 且不报错）。
+
+---
+
 ## 文件说明
 
 | 文件 | 行数 | 用途 |
 |---|---|---|
-| `Loon.conf` | 285 | 主配置。36 个策略组、34 条本地规则、35 条远程规则、28 个插件 |
+| `Loon.conf` | 301 | 主配置。36 个策略组、34 条本地规则、35 条远程规则、28 个插件 |
 | `Loon-minimal.conf` | 32 | **最小化排查配置**：只有基础分流，无插件 / 脚本 / 改写 / 远程规则 / MITM |
 | `Stash.yaml` | 143 | 由 Loon 配置转换而来的 Stash 策略配置 |
 | `clash-advanced.yaml` | 433 | Clash 进阶配置，含策略组锚点与订阅占位 |
+| `rewrite/adblock.list` | 328 | **固化后的去广告规则**：311 条、旧版语法，由 `[Remote Rewrite]` 引用 |
+| `skills/loon-rewrite-localize/` | —— | 可复用的 skill：插件规则本地化（`scripts/localize.py` + 方法论与踩坑） |
 | `scripts/refresh_upstreams.py` | 321 | 上游资源体检脚本 |
 | `IconSet/Color/` | 6 | 策略组图标与 `icons-all.json` |
+
 | `.upstream/upstreams.lock.json` | —— | 104 条资源的 ETag / Last-Modified / sha256 台账 |
 
 ### 最小化配置是干什么的
 
-排查「某个服务访问不了」时，最怕的是**在 285 行的主配置里逐条注释试验**。
+排查「某个服务访问不了」时，最怕的是**在 301 行的主配置里逐条注释试验**。
 `Loon-minimal.conf` 把变量砍到只剩 5 条规则 + 2 个组，用它做 A/B：
 
 - 最小化配置下正常 ⇒ 主配置的某个组件有问题，逐项加回定位
@@ -273,7 +315,7 @@ python3 scripts/refresh_upstreams.py
 
 ## 工程笔记：那些踩过的坑
 
-配置 285 行，但不少行数花在了**看起来不重要、实际会要命的地方**。
+配置 301 行，但不少行数花在了**看起来不重要、实际会要命的地方**。
 
 <table>
 <tr><th width="34%">症状</th><th width="66%">根因与解法</th></tr>
@@ -286,6 +328,14 @@ python3 scripts/refresh_upstreams.py
 判据是响应头 <code>cf-mitigated: challenge</code> + <code>Just a moment...</code> ——
 看到这个特征就不该说「站点挂了」，而应问「这个出口为何被挑中」。<br/>
 解法是<b>两侧同时</b>加 <code>DOMAIN-SUFFIX,kelee.one,DIRECT</code>。</td>
+</tr>
+<tr>
+<td><b>去广告插件「下载正常、MitM 也正常，就是拦不住」</b></td>
+<td>插件规则是<b>新版脚本语法</b>（自 Loon 3.5.1(978) 引入），插件头部普遍要求 <code>#!loon_version=3.5.1(998)</code>。
+build 不够时规则被<b>静默忽略</b>：MitM 照常解密（请求列表有紫锁、看得见完整 URL），rewrite 却一条不执行
+—— 于是「Reject 页无记录」与「广告照样弹」同时出现。<br/>
+⚠️ 「Reject 页无记录」<b>不能单独作为失效判据</b>：只清字段（<code>response.json.jq</code>）不拦请求的规则本来就不进 Reject 页。<br/>
+解法：依官方「本地 Rewrite 优先于插件」，把 311 条规则转成旧版语法固化到 <code>rewrite/adblock.list</code>。</td>
 </tr>
 <tr>
 <td><b>被 403 误导，差点得出完全错的结论</b></td>

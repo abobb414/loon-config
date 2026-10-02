@@ -223,21 +223,64 @@ The approach is to replace every real value with a placeholder — `<client-priv
 
 ---
 
+## Ad Blocking: Why the Rules Live Here
+
+`[Remote Rewrite]` points at `rewrite/adblock.list` — 19 plugins, 311 ad-blocking rules. It is **not a "backup copy"**;
+it exists to sidestep two things:
+
+- **Plugin rules use the new script syntax**, e.g. `request if ${url} ~= /.../i then reject_dict(200)`.
+  That syntax landed in Loon 3.5.1(978), while plugin headers commonly demand `#!loon_version=3.5.1(998)`.
+  **When the client build is too low the rules are silently ignored** — MITM still decrypts (the request list shows a
+  padlock and the full URL), yet not a single rewrite fires. The symptom is "ads still get through, and the Reject page is empty".
+- **Plugins change with the author's updates**, so their behaviour isn't under your control.
+
+The official docs on matching order state that **local `[Rewrite]` rules take precedence over plugin `[Rewrite]` rules**.
+Converting these rules one-for-one into the old syntax (compatible with Build 729+) and moving them into our own file
+fixes it once and for all.
+
+| New syntax | Old syntax |
+|---|---|
+| `reject_dict(200)` / `reject(404)` | `reject-dict` (HTTP 200 + `{}`) |
+| `reject_img(200)` | `reject-img` |
+| `response.json.jq(x)` | `response-body-json-jq 'x'` |
+| `response.json.delete` | `response-body-json-del` |
+| `response.json.replace` | `response-body-json-replace` |
+| `response.header.add` | `response-header-add` |
+| `redirect(307,url)` | `307 url` |
+
+10 rules (`response.body.mock` / `response.json.jq_file` / `response.body.replace`) have no old-syntax equivalent and
+are still provided by the plugins; this is noted in the rule file's header.
+
+```bash
+# Regenerate (run once after plugins update)
+python3 rewrite/gen.py
+```
+
+The conversion logic and the pitfalls we hit live in `skills/loon-rewrite-localize/`. Three of them:
+plugin regexes **already start with `^`** (naively prefixing produces `^^https://…`, killing the whole rule);
+spaces inside jq expressions **must be escaped as `\x20`** (the old syntax separates arguments by spaces);
+and the source site intermittently throws `SSL: UNEXPECTED_EOF`, so **retry with backoff is mandatory**
+(without it 30 plugins reliably lose 5, dropping the rule count from 311 to 192 — silently).
+
+---
+
 ## Files
 
 | File | Lines | Purpose |
 |---|---|---|
-| `Loon.conf` | 285 | Main config. 36 policy groups, 34 local rules, 35 remote rules, 28 plugins |
+| `Loon.conf` | 301 | Main config. 36 policy groups, 34 local rules, 35 remote rules, 28 plugins |
 | `Loon-minimal.conf` | 32 | **Minimal troubleshooting config**: base routing only, no plugins / scripts / rewrites / remote rules / MITM |
 | `Stash.yaml` | 143 | Stash policy config converted from the Loon config |
 | `clash-advanced.yaml` | 433 | Advanced Clash config, with policy group anchors and subscription placeholders |
+| `rewrite/adblock.list` | 328 | **Consolidated ad-blocking rules**: 311 rules in old syntax, referenced by `[Remote Rewrite]` |
+| `skills/loon-rewrite-localize/` | —— | Reusable skill: localizing plugin rules (`scripts/localize.py` + methodology and pitfalls) |
 | `scripts/refresh_upstreams.py` | 321 | Upstream resource health check script |
 | `IconSet/Color/` | 6 | Policy group icons and `icons-all.json` |
 | `.upstream/upstreams.lock.json` | —— | Ledger of ETag / Last-Modified / sha256 for all 104 resources |
 
 ### What the Minimal Config Is For
 
-When troubleshooting "some service won't load," the worst approach is **toggling rules one by one in the 285-line main config**.
+When troubleshooting "some service won't load," the worst approach is **toggling rules one by one in the 301-line main config**.
 `Loon-minimal.conf` cuts the variables down to just 5 rules + 2 groups, so you can A/B against it:
 
 - Works on the minimal config ⇒ some component in the main config is at fault; re-add items one by one to locate it
@@ -271,7 +314,7 @@ python3 scripts/refresh_upstreams.py
 
 ## Engineering Notes: Pitfalls We Hit
 
-The config is 285 lines, but a good chunk of them went into places that **look unimportant yet turn out to be critical**.
+The config is 301 lines, but a good chunk of them went into places that **look unimportant yet turn out to be critical**.
 
 <table>
 <tr><th width="34%">Symptom</th><th width="66%">Root cause & fix</th></tr>
@@ -284,6 +327,17 @@ so it went to the on-prem proxy core first, which then sent it abroad, and the e
 The tell is the response headers <code>cf-mitigated: challenge</code> + <code>Just a moment...</code> —
 when you see this signature you shouldn't say "the site is down"; you should ask "why was this egress singled out".<br/>
 The fix is adding <code>DOMAIN-SUFFIX,kelee.one,DIRECT</code> on <b>both sides at once</b>.</td>
+</tr>
+<tr>
+<td><b>Ad plugins "download fine, MITM works, still block nothing"</b></td>
+<td>Plugin rules use the <b>new script syntax</b> (since Loon 3.5.1(978)), and plugin headers commonly require
+<code>#!loon_version=3.5.1(998)</code>. When the build is too low the rules are <b>silently ignored</b>:
+MITM still decrypts (padlock + full URL in the request list), yet no rewrite fires — so
+"empty Reject page" and "ads keep showing" appear together.<br/>
+⚠️ An empty Reject page is <b>not sufficient evidence on its own</b>: field-cleaning rules
+(<code>response.json.jq</code>) never reject the request, so they never show up there.<br/>
+Fix: per the official "local Rewrite takes precedence over plugin Rewrite", convert all 311 rules to old syntax
+and pin them in <code>rewrite/adblock.list</code>.</td>
 </tr>
 <tr>
 <td><b>Misled by 403s, nearly reached a completely wrong conclusion</b></td>
