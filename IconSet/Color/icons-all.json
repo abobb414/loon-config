@@ -1,26 +1,122 @@
 {
   "name": "阿啵bb的图标库",
-  "description": "Custom icons for Loon. Updated: 2026-07-29.",
+  "description": "Custom icons for Loon. Updated: 2026-10-04.",
   "icons": [
     {
-      "name": "Claude",
-      "url": "https://raw.githubusercontent.com/abobb414/loon-config/main/IconSet/Color/Claude.png"
+      "name": "AI",
+      "url": "https://raw.githubusercontent.com/abobb414/loon-config/main/IconSet/Color/AI.png"
+    },
+    {
+      "name": "Apple",
+      "url": "https://raw.githubusercontent.com/abobb414/loon-config/main/IconSet/Color/Apple.png"
+    },
+    {
+      "name": "Available",
+      "url": "https://raw.githubusercontent.com/abobb414/loon-config/main/IconSet/Color/Available.png"
+    },
+    {
+      "name": "Bilibili",
+      "url": "https://raw.githubusercontent.com/abobb414/loon-config/main/IconSet/Color/Bilibili.png"
+    },
+    {
+      "name": "Bot",
+      "url": "https://raw.githubusercontent.com/abobb414/loon-config/main/IconSet/Color/Bot.png"
     },
     {
       "name": "ChuiXueCloud",
       "url": "https://raw.githubusercontent.com/abobb414/loon-config/main/IconSet/Color/ChuiXueCloud.png"
     },
     {
+      "name": "Claude",
+      "url": "https://raw.githubusercontent.com/abobb414/loon-config/main/IconSet/Color/Claude.png"
+    },
+    {
       "name": "Cloudfisher",
       "url": "https://raw.githubusercontent.com/abobb414/loon-config/main/IconSet/Color/Cloudfisher.png"
+    },
+    {
+      "name": "Disney",
+      "url": "https://raw.githubusercontent.com/abobb414/loon-config/main/IconSet/Color/Disney.png"
+    },
+    {
+      "name": "Emby",
+      "url": "https://raw.githubusercontent.com/abobb414/loon-config/main/IconSet/Color/Emby.png"
+    },
+    {
+      "name": "Final",
+      "url": "https://raw.githubusercontent.com/abobb414/loon-config/main/IconSet/Color/Final.png"
+    },
+    {
+      "name": "Finance",
+      "url": "https://raw.githubusercontent.com/abobb414/loon-config/main/IconSet/Color/Finance.png"
+    },
+    {
+      "name": "Gemini",
+      "url": "https://raw.githubusercontent.com/abobb414/loon-config/main/IconSet/Color/Gemini.png"
+    },
+    {
+      "name": "Google",
+      "url": "https://raw.githubusercontent.com/abobb414/loon-config/main/IconSet/Color/Google.png"
+    },
+    {
+      "name": "Haomao",
+      "url": "https://raw.githubusercontent.com/abobb414/loon-config/main/IconSet/Color/Haomao.png"
+    },
+    {
+      "name": "HBO",
+      "url": "https://raw.githubusercontent.com/abobb414/loon-config/main/IconSet/Color/HBO.png"
+    },
+    {
+      "name": "HomeNAS",
+      "url": "https://raw.githubusercontent.com/abobb414/loon-config/main/IconSet/Color/HomeNAS.png"
+    },
+    {
+      "name": "Instagram",
+      "url": "https://raw.githubusercontent.com/abobb414/loon-config/main/IconSet/Color/Instagram.png"
+    },
+    {
+      "name": "LinkedIn",
+      "url": "https://raw.githubusercontent.com/abobb414/loon-config/main/IconSet/Color/LinkedIn.png"
+    },
+    {
+      "name": "Microsoft",
+      "url": "https://raw.githubusercontent.com/abobb414/loon-config/main/IconSet/Color/Microsoft.png"
+    },
+    {
+      "name": "Netflix",
+      "url": "https://raw.githubusercontent.com/abobb414/loon-config/main/IconSet/Color/Netflix.png"
     },
     {
       "name": "NiceDuck",
       "url": "https://raw.githubusercontent.com/abobb414/loon-config/main/IconSet/Color/NiceDuck.png"
     },
     {
-      "name": "Haomao",
-      "url": "https://raw.githubusercontent.com/abobb414/loon-config/main/IconSet/Color/Haomao.png"
+      "name": "OpenAI",
+      "url": "https://raw.githubusercontent.com/abobb414/loon-config/main/IconSet/Color/OpenAI.png"
+    },
+    {
+      "name": "Proxy",
+      "url": "https://raw.githubusercontent.com/abobb414/loon-config/main/IconSet/Color/Proxy.png"
+    },
+    {
+      "name": "Speedtest",
+      "url": "https://raw.githubusercontent.com/abobb414/loon-config/main/IconSet/Color/Speedtest.png"
+    },
+    {
+      "name": "Spotify",
+      "url": "https://raw.githubusercontent.com/abobb414/loon-config/main/IconSet/Color/Spotify.png"
+    },
+    {
+      "name": "Telegram",
+      "url": "https://raw.githubusercontent.com/abobb414/loon-config/main/IconSet/Color/Telegram.png"
+    },
+    {
+      "name": "TikTok",
+      "url": "https://raw.githubusercontent.com/abobb414/loon-config/main/IconSet/Color/TikTok.png"
+    },
+    {
+      "name": "YouTube",
+      "url": "https://raw.githubusercontent.com/abobb414/loon-config/main/IconSet/Color/YouTube.png"
     }
   ]
 }

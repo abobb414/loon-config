@@ -74,6 +74,8 @@ def source_name(url: str) -> str:
         return "Moli-X/Tool"
     if "sub-store-org/Sub-Store" in url:
         return "sub-store-org/Sub-Store"
+    if "abobb414/loon-config" in url:
+        return "abobb414/loon-config"
     if "sub.store" in url:
         return "Sub-Store subscription"
     if "kelee.one" in url:
