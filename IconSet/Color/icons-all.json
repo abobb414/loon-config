@@ -67,6 +67,10 @@
       "url": "https://raw.githubusercontent.com/abobb414/loon-config/main/IconSet/Color/HBO.png"
     },
     {
+      "name": "HomeGateway",
+      "url": "https://raw.githubusercontent.com/abobb414/loon-config/main/IconSet/Color/HomeGateway.png"
+    },
+    {
       "name": "HomeNAS",
       "url": "https://raw.githubusercontent.com/abobb414/loon-config/main/IconSet/Color/HomeNAS.png"
     },
@@ -75,8 +79,16 @@
       "url": "https://raw.githubusercontent.com/abobb414/loon-config/main/IconSet/Color/Instagram.png"
     },
     {
+      "name": "LiangXinCloud",
+      "url": "https://raw.githubusercontent.com/abobb414/loon-config/main/IconSet/Color/LiangXinCloud.png"
+    },
+    {
       "name": "LinkedIn",
       "url": "https://raw.githubusercontent.com/abobb414/loon-config/main/IconSet/Color/LinkedIn.png"
+    },
+    {
+      "name": "MagicRing",
+      "url": "https://raw.githubusercontent.com/abobb414/loon-config/main/IconSet/Color/MagicRing.png"
     },
     {
       "name": "Microsoft",
