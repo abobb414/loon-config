@@ -1,7 +1,7 @@
 ---
 name: loon-rewrite-localize
-description: 把 Loon 插件（.lpx）的 [Rewrite] 去广告规则固化成自己掌控的本地规则文件，根治「插件规则用新版脚本语法、客户端 build 不够导致静默失效」与「插件自动更新、App 回写配置导致行为不可控」两类问题。含新旧语法动作映射表、可复现的转换脚本、四个坑（kelee 源站的双闸 403——UA 客户端校验 + 机房出口的 Cloudflare 挑战、正则重复锚点、jq 表达式空格未转义、源站 SSL EOF）、以及「公开仓库脱敏模板 ≠ 真机配置」的铁律。触发词：loon 插件不生效、去广告没拦住、插件规则失效、kelee 403、插件下载 403、reject_dict 不执行、response.json.jq 无效、插件升级后失效、怕插件自动更新改坏、固化插件规则、把插件规则搬到本地、loon 复写规则、Remote Rewrite、本地规则优先于插件。
-version: 1.0.0
+description: 把 Loon 插件（.lpx）的 [Rewrite] 去广告规则固化成自己掌控的本地规则文件，并把策略组/订阅图标自托管到自己的仓库，根治「插件规则用新版脚本语法、客户端 build 不够导致静默失效」「插件自动更新、App 回写配置导致行为不可控」「图标外链别人仓库、换图后客户端仍显示旧图」三类问题。含新旧语法动作映射表、可复现的转换脚本、五个坑（kelee 源站的双闸 403——UA 客户端校验 + 机房出口的 Cloudflare 挑战、正则重复锚点、jq 表达式空格未转义、源站 SSL EOF、图标缓存按 URL 命中导致同名覆盖永不生效）、以及「公开仓库脱敏模板 ≠ 真机配置」的铁律。触发词：loon 插件不生效、去广告没拦住、插件规则失效、kelee 403、插件下载 403、reject_dict 不执行、response.json.jq 无效、插件升级后失效、怕插件自动更新改坏、固化插件规则、把插件规则搬到本地、loon 复写规则、Remote Rewrite、本地规则优先于插件、自托管图标、图标不更新、图标缓存、img-url 不生效、策略组图标换了没变、图标库刷新不出新图。
+version: 1.1.0
 agent_created: true
 read_when:
   - Loon 去广告插件不生效 / 广告照样弹
@@ -10,14 +10,18 @@ read_when:
   - 需要把插件 [Rewrite] 规则搬进本地配置或自己的仓库
   - 手改的配置被 Loon App 回写覆盖
   - 在公开仓库里维护 Loon 配置，怕把真实凭据推上去
+  - 策略组 / 订阅图标自托管到自己的仓库
+  - 图标换了、仓库里也是新图，但客户端仍显示旧图标
+  - 图标库里某一格刷新不出新图，别的格都正常
 ---
 
-# Loon 插件规则本地化（固化去广告）
+# Loon 插件规则本地化（固化去广告）与图标自托管
 
 ## 一句话
 
 插件规则是**别人的、会变、且依赖客户端 build**；官方文档写明「**本地配置 Rewrite 优先于插件 Rewrite**」，
 所以把插件的规则转成**旧版语法**（Build 729+ 全兼容）搬进自己的规则文件，一次根治。
+图标同理 —— 外链别人仓库等于把「图还在不在」的主动权交出去，**自托管 + 换图时改名**才是稳的。
 
 ---
 
@@ -46,6 +50,9 @@ read_when:
 | 完整 URL + 紫锁 + `GET/POST` | MitM 已解密 → 语法层问题，看第 1 节 |
 | 只有 `主机:443` + `TCP` + 无锁 | 未解密 → 域名不在 MitM 列表，或真走了 QUIC |
 | 显示 `UDP` | 真走了 QUIC |
+
+> 上面这套是**规则不生效**的分层。如果问题是**图标不刷新**（换了图但客户端还是旧图），
+> 不属于这三层 —— 那是客户端缓存层，直接跳 **坑 4**。
 
 ---
 
@@ -102,7 +109,7 @@ App 的 mtop 客户端视为空响应、不弹网络错误；后者直接断连�
 
 ---
 
-## 3. 四个坑（都踩过）
+## 3. 五个坑（都踩过）
 
 ### 坑 0：下载前必须冒充 Loon —— 但**两道闸，UA 只过第一道**
 
@@ -178,6 +185,98 @@ for i in range(retries):
         last = exc
         time.sleep(1.2 * (i + 1))
 ```
+
+### 坑 4：图标换图后客户端仍显示旧图 —— **缓存 key 是 URL，不是内容**
+
+**症状**：给自托管图标换了新图、仓库上确认是新字节、`curl` 也是新字节，
+但客户端里**只有那几格**还显示旧图，其余格都刷新了。用户的原话往往是
+「替换我库里别的图标都行，唯独替换这几个就显示旧图标」。
+
+**根因**：客户端图标缓存**按 URL 命中**。所以——
+
+| 这次操作 | URL | 缓存 | 表现 |
+|---|---|---|---|
+| **新增**文件（如 `Airport.png` `HomeGateway.png`） | 全新，从未请求过 | 无 | ✅ 第一次拉就是新图 |
+| **同名覆盖**字节（如 `AI.png` `NiceDuck.png`） | 没变，早已请求过 | 有 | ❌ 永远吐缓存里的旧图 |
+
+「别的能换、就这几格不能换」这个**选择性症状本身就是判据**：
+把两次操作按「新增 / 覆盖」分个类，覆盖的那几个必然中招。与图标库（`icons-all.json`）无关 ——
+库只是索引，每格预览走的还是各自 `url` 的缓存。
+
+🔴 **光让用户去清缓存是错的**。Loon 没有 Quantumult X 那种「其它设置 → 资源模块 → 删除图片缓存」入口，
+清了也要重下；**换 URL 是唯一稳的解**。
+
+**正解：改名（换缓存键），不是清缓存**
+
+```bash
+# 1) 换文件名（内容不变）
+git mv IconSet/Color/AI.png IconSet/Color/AI-v2.png
+
+# 2) 配置里 img-url 改指新名（策略组 + [Remote Proxy] 都要看一遍）
+#    img-url=.../IconSet/Color/AI-v2.png
+
+# 3) 图标库里「显示名不动、url 换新」—— 列表里名字仍是 AI，不会变成 AI-v2
+#    {"name": "AI", "url": ".../IconSet/Color/AI-v2.png"}
+
+# 4) 🔴 把新内容再复制回旧名当别名，避免旧 URL 404 让其它设备/旧备份掉图
+cp IconSet/Color/AI-v2.png IconSet/Color/AI.png
+```
+
+第 4 步容易漏。只做 1~3 会让旧 URL 变 404 —— 你自己那份改过来了没事，
+但**别的设备、旧备份、第三方配置里还写着旧名**，它们会直接掉图。留着别名，两套 URL 都能取到新图。
+
+**收尾判据**（别只说「改好了」）：
+
+```bash
+# 新旧 URL 都应 200，且尺寸/字节正确
+for n in AI AI-v2; do curl -so /dev/null -w "$n %{http_code} %{size_download}\n" \
+  "https://raw.githubusercontent.com/<user>/<repo>/main/IconSet/Color/$n.png"; done
+```
+
+然后**必须让用户在 App 里重新加载配置 + 重新导入一次图标库**（Mac 改的是文件，不重载不生效）。
+
+> 一句话记住：**自托管图标，要么换文件名，要么永远别指望覆盖生效。**
+> 「新增文件」天然生效，「同名覆盖」必须配一次改名。改名后记得留旧名别名。
+
+---
+
+## 3.5 图标自托管：整体流程（换图之外的日常）
+
+策略组与订阅图标全部自托管到本仓库，**不再外链 Koolson/Qure 或 fmz200**，好处是作者改图与你无关、
+不会被上游删文件搞成 404。取图与入库：
+
+**取图（icons8）**
+
+```bash
+# 风格参数 pulsar-color；1600px 是官方最大源图，免登录免 key
+https://img.icons8.com/pulsar-color/1600/<slug>.png
+
+# slug ≠ 显示名，拿不准先搜索（返回 icons[].commonName 即 slug）
+https://search-app.icons8.com/api/iconsets/v5/search?term=router&platform=pulsar-color
+```
+
+⚠️ **必须串行 + 间隔 0.7~1.2s**，并发会触发限速。slug 猜错会 404，先探再下。
+
+**从 igoutu.cn 链接反查 slug**（页面 id 不是 slug）：页面 HTML 里有
+`<link rel="alternate" hreflang="en" href="https://icons8.com/icon/<id>/<slug>">`，
+一条 grep 就能拿到 slug；也可直接用 `https://img.icons8.com/?size=1600&id=<id>&format=png`（免 slug）。
+
+**入库**
+
+1. 文件放 `IconSet/Color/<Name>.png`（1600×1600 RGBA，与既有图标统一）
+2. 重建 `icons-all.json`（索引：`name` + `url`），Loon 可把它作为图标库订阅导入
+3. 需要引用时在配置里写绝对 URL：`img-url=https://raw.githubusercontent.com/<user>/<repo>/main/IconSet/Color/<Name>.png`
+4. `[Proxy]` / `[Remote Proxy]` 的单条节点、`[Proxy Group]` 的策略组**都能接 `img-url=`**（行尾逗号分隔追加）
+
+**命名建议**：按**图形语义**取，不要按 slug 直译。例：icons8 的 slug `airport` 那张图其实是飞机，
+叫 `AirportTerminal` 名不副实；`Airport.png` 这种「用途名」容易被先前占用，注意别撞。
+
+**选型方法（截图指定图标时）**：把截图里的小图标前景掩膜与候选图标 alpha 掩膜都归一化到
+96×96 算 **IoU**，组内最高者为最像 —— 比肉眼在小图上犹豫可靠得多。
+
+**审计引用**：删旧图标前先做引用审计，正则**必须锚到本仓库路径**
+（`<user>/<repo>/(?:main|master)/IconSet/Color/`），否则会把 `Stash.yaml` / `clash-advanced.yaml`
+里 **Koolson/Qure 同路径片段**误判成悬空引用。
 
 ---
 
@@ -260,6 +359,8 @@ python3 .../localize.py --conf Loon.conf --dry-run
 
 改完不要只说"改好了"，给出可自查的判据：
 
+**规则类**
+
 1. **规则文件语法自检**：产物里不应出现 `^^`（坑 1 的标志）；
    `grep -c '^\\^' adblock.list` 的条数应与转换统计一致。
 2. **手机重载配置**（Mac 改的是 iCloud 文件，不重载不生效）。
@@ -267,6 +368,18 @@ python3 .../localize.py --conf Loon.conf --dry-run
 4. 两者都对 → 生效；仍无记录 → 回到第 0 节排除 ①/② 层。
 5. 顺带让用户报 **Loon 版本号**（设置 → 关于，格式 `3.5.x(build)`）——
    build 号决定插件本身还加不加载。
+
+**图标类**
+
+6. 新增/改名的图标 URL 实测 `HTTP 200` 且 **sha256 与本地一致**（不能只看 200）；
+   改过名的，**旧名别名 URL 也要 200**（坑 4 第 4 步）。
+7. `icons-all.json` 条目数与 `IconSet/Color/*.png` 数量对齐，且改过名的条目
+   **`name` 保持原显示名、`url` 指向新文件**。
+8. 配置内 `img-url` 全部指向本仓库（`grep -o 'Color/[A-Za-z-]*\.png' Loon.conf | sort -u`），
+   没有残留的上游（Koolson/Qure、fmz200）或已改名前的旧 URL。
+9. 真机 + 各副本 `sha256` 一致（`shasum -a 256` 三份对一下）。
+10. 🔴 **最终判据只能在 App 里看**：重新加载配置 + 重新导入图标库后，
+    逐个核对那几格是否刷新。客户端缓存不归仓库管，服务端全绿也不能替用户下结论。
 
 ---
 
@@ -286,4 +399,5 @@ python3 .../localize.py --conf Loon.conf --dry-run
 - 上游排障方法论（下载层 / 加载层 / 双重出海 / 出口 IP 风控 / App 回写）见 skill **`loon-config-troubleshoot`**
 - 官方文档：《复写（旧版语法）》<https://nsloon.app/docs/Rewrite/>、
   《规则匹配顺序》<https://nsloon.app/docs/Rule/>、《插件》<https://nsloon.app/docs/Plugin/>
+- 图标素材：<https://icons8.com>（Pulsar Color 风格，1600px 源图）/ <https://igoutu.cn>（中文镜像）
 - 实战仓库：[abobb414/loon-config](https://github.com/abobb414/loon-config)（`rewrite/adblock.list` + 生成脚本）
