@@ -301,7 +301,7 @@ jq 表达式里的**空格必须转义成 `\x20`**（旧语法按空格分隔参
 | `rewrite/adblock.list` | 328 | **固化后的去广告规则**：311 条、旧版语法，由 `[Remote Rewrite]` 引用 |
 | `skills/loon-rewrite-localize/` | —— | 可复用的 skill：插件规则本地化（`scripts/localize.py` + 方法论与踩坑） |
 | `scripts/refresh_upstreams.py` | 385 | 上游资源体检脚本（客户端门禁资源单独计数） |
-| `IconSet/Color/` | 33 | 策略组与订阅图标（icons8 Pulsar Color，1600px PNG）与 `icons-all.json` |
+| `IconSet/Color/` | 29 | 策略组与订阅图标（icons8 Pulsar Color，1600px PNG）与 `icons-all.json` |
 
 | `.upstream/upstreams.lock.json` | —— | 91 条资源的 ETag / Last-Modified / sha256 台账 |
 
