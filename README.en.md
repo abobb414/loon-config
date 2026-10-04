@@ -306,6 +306,16 @@ and the source site intermittently throws `SSL: UNEXPECTED_EOF`, so **retry with
 
 | `.upstream/upstreams.lock.json` | —— | Ledger of ETag / Last-Modified / sha256 for all 91 resources |
 
+> **About `AI-v2` / `NiceDuck-v2` / `ChuiXueCloud-v2`**
+>
+> The client's icon cache is **keyed by URL**: after overwriting a file's bytes at the
+> same path, Loon keeps serving the cached old image. Changing an icon therefore requires
+> **changing its filename**. These three were renamed to `*-v2`; in `icons-all.json` the
+> **display names stay the same** and only the `url` points at `-v2`. The new bytes are
+> also copied back under the old names so **legacy URLs keep working** (other devices /
+> old backups won't lose their icons). See pitfall 4 in
+> [`skills/loon-rewrite-localize/SKILL.md`](skills/loon-rewrite-localize/SKILL.md).
+
 ### What the Minimal Config Is For
 
 When troubleshooting "some service won't load," the worst approach is **toggling rules one by one in the 282-line main config**.
