@@ -301,7 +301,7 @@ jq 表达式里的**空格必须转义成 `\x20`**（旧语法按空格分隔参
 | `rewrite/adblock.list` | 328 | **固化后的去广告规则**：311 条、旧版语法，由 `[Remote Rewrite]` 引用 |
 | `skills/loon-rewrite-localize/` | —— | 可复用的 skill：插件规则本地化（`scripts/localize.py` + 方法论与踩坑） |
 | `scripts/refresh_upstreams.py` | 385 | 上游资源体检脚本（客户端门禁资源单独计数） |
-| `IconSet/Color/` | 30 | 策略组图标（icons8 Pulsar Color，1600px PNG）与 `icons-all.json` |
+| `IconSet/Color/` | 33 | 策略组与订阅图标（icons8 Pulsar Color，1600px PNG）与 `icons-all.json` |
 
 | `.upstream/upstreams.lock.json` | —— | 91 条资源的 ETag / Last-Modified / sha256 台账 |
 
@@ -434,9 +434,9 @@ build 不够时规则被<b>静默忽略</b>：MitM 照常解密（请求列表�
 
 - [blackmatrix7/ios_rule_script](https://github.com/blackmatrix7/ios_rule_script)：Loon 远程分流规则
 - [Cats-Team/AdRules](https://github.com/Cats-Team/AdRules)：广告拦截规则
-- [icons8](https://icons8.com) / [igoutu.cn](https://igoutu.cn)：策略组图标（**Pulsar Color** 风格，
+- [icons8](https://icons8.com) / [igoutu.cn](https://igoutu.cn)：策略组与订阅图标（**Pulsar Color** 风格，
   1600px PNG 由本仓库自托管；按免费许可要求在此署名）
-- [Koolson/Qure](https://github.com/Koolson/Qure)：早期策略组图标来源（现已改为自托管）
+- [Koolson/Qure](https://github.com/Koolson/Qure)：早期图标来源（现已改为自托管）
 - [fmz200/wool_scripts](https://github.com/fmz200/wool_scripts)：插件、广告规则与补充图标
 - [Moli-X/Tool](https://github.com/Moli-X/Tool)：配置结构参考、GeoIP / ASN 资源
 - [sub-store-org/Sub-Store](https://github.com/sub-store-org/Sub-Store)：订阅解析器与订阅管理生态

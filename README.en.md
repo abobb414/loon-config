@@ -302,7 +302,7 @@ and the source site intermittently throws `SSL: UNEXPECTED_EOF`, so **retry with
 | `rewrite/adblock.list` | 375 | **Consolidated ad-blocking rules**: 311 rules in old syntax, referenced by `[Remote Rewrite]` |
 | `skills/loon-rewrite-localize/` | —— | Reusable skill: localizing plugin rules (`scripts/localize.py` + methodology and pitfalls) |
 | `scripts/refresh_upstreams.py` | 385 | Upstream resource health check script (client-gated resources counted apart) |
-| `IconSet/Color/` | 30 | Policy group icons (icons8 Pulsar Color, 1600px PNG) and `icons-all.json` |
+| `IconSet/Color/` | 33 | Policy-group and subscription icons (icons8 Pulsar Color, 1600px PNG) plus `icons-all.json` |
 
 | `.upstream/upstreams.lock.json` | —— | Ledger of ETag / Last-Modified / sha256 for all 91 resources |
 
@@ -435,8 +435,8 @@ WeChat core domains are now pinned to DNSPod as a safety net.</td>
 
 - [blackmatrix7/ios_rule_script](https://github.com/blackmatrix7/ios_rule_script): Loon remote traffic routing rules
 - [Cats-Team/AdRules](https://github.com/Cats-Team/AdRules): ad-blocking rules
-- [icons8](https://icons8.com) / [igoutu.cn](https://igoutu.cn): policy group icons (**Pulsar Color** style, 1600px PNGs self-hosted by this repo; credited here as the free licence requires)
-- [Koolson/Qure](https://github.com/Koolson/Qure): the earlier source of policy group icons (now self-hosted)
+- [icons8](https://icons8.com) / [igoutu.cn](https://igoutu.cn): policy-group and subscription icons (**Pulsar Color** style, 1600px PNGs self-hosted by this repo; credited here as the free licence requires)
+- [Koolson/Qure](https://github.com/Koolson/Qure): the earlier source of icons (now self-hosted)
 - [fmz200/wool_scripts](https://github.com/fmz200/wool_scripts): plugins, ad rules and extra icons
 - [Moli-X/Tool](https://github.com/Moli-X/Tool): config structure reference, GeoIP / ASN resources
 - [sub-store-org/Sub-Store](https://github.com/sub-store-org/Sub-Store): subscription parser and subscription management ecosystem
