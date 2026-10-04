@@ -43,6 +43,10 @@
       "url": "https://raw.githubusercontent.com/abobb414/loon-config/main/IconSet/Color/ChuiXueCloud-v2.png"
     },
     {
+      "name": "CloudLighting",
+      "url": "https://raw.githubusercontent.com/abobb414/loon-config/main/IconSet/Color/CloudLighting.png"
+    },
+    {
       "name": "Disney",
       "url": "https://raw.githubusercontent.com/abobb414/loon-config/main/IconSet/Color/Disney.png"
     },
@@ -91,6 +95,10 @@
       "url": "https://raw.githubusercontent.com/abobb414/loon-config/main/IconSet/Color/LiangXinCloud.png"
     },
     {
+      "name": "LightSnow",
+      "url": "https://raw.githubusercontent.com/abobb414/loon-config/main/IconSet/Color/LightSnow.png"
+    },
+    {
       "name": "LinkedIn",
       "url": "https://raw.githubusercontent.com/abobb414/loon-config/main/IconSet/Color/LinkedIn.png"
     },
@@ -121,6 +129,22 @@
     {
       "name": "Rain",
       "url": "https://raw.githubusercontent.com/abobb414/loon-config/main/IconSet/Color/Rain.png"
+    },
+    {
+      "name": "Sleet",
+      "url": "https://raw.githubusercontent.com/abobb414/loon-config/main/IconSet/Color/Sleet.png"
+    },
+    {
+      "name": "Snow",
+      "url": "https://raw.githubusercontent.com/abobb414/loon-config/main/IconSet/Color/Snow.png"
+    },
+    {
+      "name": "Snowflake",
+      "url": "https://raw.githubusercontent.com/abobb414/loon-config/main/IconSet/Color/Snowflake.png"
+    },
+    {
+      "name": "SnowStorm",
+      "url": "https://raw.githubusercontent.com/abobb414/loon-config/main/IconSet/Color/SnowStorm.png"
     },
     {
       "name": "Speedtest",
