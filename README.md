@@ -305,6 +305,13 @@ jq 表达式里的**空格必须转义成 `\x20`**（旧语法按空格分隔参
 
 | `.upstream/upstreams.lock.json` | —— | 91 条资源的 ETag / Last-Modified / sha256 台账 |
 
+> **关于 `AI-v2` / `NiceDuck-v2` / `ChuiXueCloud-v2`**
+>
+> 客户端图标缓存**按 URL 命中**：同名覆盖字节后，Loon 仍返回缓存里的旧图。
+> 所以换图必须**换文件名**。这三个改成 `*-v2` 后，`icons-all.json` 里**显示名保持原样**、
+> 只把 `url` 指向 `-v2`；同时把新内容复制回旧名，**旧 URL 不会 404**（其它设备 / 旧备份仍可用）。
+> 详见 [`skills/loon-rewrite-localize/SKILL.md`](skills/loon-rewrite-localize/SKILL.md) 坑 4。
+
 ### 最小化配置是干什么的
 
 排查「某个服务访问不了」时，最怕的是**在 282 行的主配置里逐条注释试验**。
