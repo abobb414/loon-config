@@ -7,6 +7,10 @@
       "url": "https://raw.githubusercontent.com/abobb414/loon-config/main/IconSet/Color/AI.png"
     },
     {
+      "name": "Airport",
+      "url": "https://raw.githubusercontent.com/abobb414/loon-config/main/IconSet/Color/Airport.png"
+    },
+    {
       "name": "Apple",
       "url": "https://raw.githubusercontent.com/abobb414/loon-config/main/IconSet/Color/Apple.png"
     },
@@ -59,12 +63,12 @@
       "url": "https://raw.githubusercontent.com/abobb414/loon-config/main/IconSet/Color/Google.png"
     },
     {
-      "name": "Haomao",
-      "url": "https://raw.githubusercontent.com/abobb414/loon-config/main/IconSet/Color/Haomao.png"
-    },
-    {
       "name": "HBO",
       "url": "https://raw.githubusercontent.com/abobb414/loon-config/main/IconSet/Color/HBO.png"
+    },
+    {
+      "name": "Haomao",
+      "url": "https://raw.githubusercontent.com/abobb414/loon-config/main/IconSet/Color/Haomao.png"
     },
     {
       "name": "HomeGateway",
