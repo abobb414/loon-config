@@ -1,6 +1,6 @@
 ---
 name: loon-rewrite-localize
-description: 把 Loon 插件（.lpx）的 [Rewrite] 去广告规则固化成自己掌控的本地规则文件，根治「插件规则用新版脚本语法、客户端 build 不够导致静默失效」与「插件自动更新、App 回写配置导致行为不可控」两类问题。含新旧语法动作映射表、可复现的转换脚本、三个转换坑（正则重复锚点、jq 表达式空格未转义、源站 SSL EOF）、以及「公开仓库脱敏模板 ≠ 真机配置」的铁律。触发词：loon 插件不生效、去广告没拦住、插件规则失效、reject_dict 不执行、response.json.jq 无效、插件升级后失效、怕插件自动更新改坏、固化插件规则、把插件规则搬到本地、loon 复写规则、Remote Rewrite、本地规则优先于插件。
+description: 把 Loon 插件（.lpx）的 [Rewrite] 去广告规则固化成自己掌控的本地规则文件，根治「插件规则用新版脚本语法、客户端 build 不够导致静默失效」与「插件自动更新、App 回写配置导致行为不可控」两类问题。含新旧语法动作映射表、可复现的转换脚本、四个坑（kelee 源站的 UA 客户端校验导致 403、正则重复锚点、jq 表达式空格未转义、源站 SSL EOF）、以及「公开仓库脱敏模板 ≠ 真机配置」的铁律。触发词：loon 插件不生效、去广告没拦住、插件规则失效、kelee 403、插件下载 403、reject_dict 不执行、response.json.jq 无效、插件升级后失效、怕插件自动更新改坏、固化插件规则、把插件规则搬到本地、loon 复写规则、Remote Rewrite、本地规则优先于插件。
 version: 1.0.0
 agent_created: true
 read_when:
@@ -28,7 +28,8 @@ read_when:
 ```
 插件不生效
  ├─ ① 下载层：带 Loon UA 的 curl 能否 200 拿到 .lpx？
- │              403 → 出口 IP 被风控 / 双重出海（改规则无用）
+ │              UA 不含「Loon/ 开头 + CFNetwork/ + Darwin/」→ 403（见坑 0，改规则无用）
+ │              换成合规 UA 后仍 403 → 才轮到怀疑出口 IP 被风控
  ├─ ② 加载层：客户端 build ≥ 插件头部 #!loon_version？
  │              不够 → 升级客户端（改规则无用）
  └─ ③ 执行层：规则语法是否需要更高 build？目标是否真的被 MitM 解密？
@@ -50,7 +51,7 @@ read_when:
 ## 1. 判定：插件规则是不是「新版脚本语法」
 
 ```bash
-# 必须带 Loon 的 UA，裸 curl 会被源站判定非客户端而 403
+# UA 必须是「Loon/ 开头 + CFNetwork/ + Darwin/」的形状，否则源站一律 403（见坑 0）
 UA='Loon/998 CFNetwork/3896.100.1.1.1 Darwin/27.0.0'
 curl -s -A "$UA" -o /tmp/p.lpx "https://kelee.one/Tool/Loon/Lpx/Cainiao_remove_ads.lpx"
 head -3 /tmp/p.lpx                      # 看 #!loon_version=3.5.1(998)
@@ -99,7 +100,30 @@ App 的 mtop 客户端视为空响应、不弹网络错误；后者直接断连�
 
 ---
 
-## 3. 三个转换坑（都踩过）
+## 3. 四个坑（都踩过）
+
+### 坑 0：下载前必须冒充 Loon —— 而且「UA 里有 Loon 字样」还不够
+
+kelee.one 挂在 Cloudflare 后面，站方给资源路径设了**客户端身份校验**，不过关一律 403：
+返回 `<title>Attention Required! | Cloudflare</title>` 的拦截页，
+响应头里**没有** `cf-mitigated` —— 是**拦截（block）不是人机挑战（challenge）**，别按 challenge 去解释。
+
+| UA | 结果 |
+|---|---|
+| `curl/8.4.0` / Chrome / `my-script/1.0`（脚本自己的名字） | 403 |
+| `Loon/998` | 403 —— 缺 `CFNetwork/` 与 `Darwin/` |
+| `X Loon/998 CFNetwork/3896 Darwin/27.0.0` | 403 —— `Loon/` 不在**开头** |
+| `Loon/3.5.1 CFNetwork/1494.0.7 Darwin/23.4.0` | **200 ✅** |
+
+规则归纳：**`Loon/` 前缀锚定 + 同时含 `CFNetwork/` 与 `Darwin/`**（`loon/` 小写也放行）。
+
+🔴 **不要用「换出口就 200」解释 403**。同一台机器、同一个出口、同一个 URL，只换 UA 就能翻转 403/200；
+反过来，「换成某国节点就绿了」也可能只是顺带换了 UA。**出口、UA、URL 三个变量分别控制**，
+才有资格下结论 —— 这条错结论（「出口被 Cloudflare 挑中」）曾被写进 README，后来被推翻。
+
+🔴 **同一坑的第二个变体**：自动化体检脚本特别容易中招，因为脚本的默认 UA 是
+`Python-urllib/3.x` 或项目自取的名字，而 **Loon 本体下载插件时发的就是这个形状的 UA**，
+所以「手机上一切正常、只有体检台账天天红 30 条」这种症状，第一嫌疑就是脚本的 UA。
 
 ### 坑 1：插件的正则**自带 `^`**，不要无脑再补
 

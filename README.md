@@ -9,7 +9,7 @@
 
 # Loon Config
 
-**一份自用的 Loon 分流配置。36 个策略组、104 个上游资源、每天自动体检。**
+**一份自用的 Loon 分流配置。23 个策略组、91 个上游资源、每天自动体检。**
 
 分流不是把节点全堆进一个组就完事 —— 广告要拦在 MITM 之前、苹果要抢在去广告规则之前、
 AI 要避开港区、上游挂了要能看出来是哪一条挂的。
@@ -17,9 +17,9 @@ AI 要避开港区、上游挂了要能看出来是哪一条挂的。
 [Loon.conf](./Loon.conf) &nbsp;·&nbsp; [分流设计](#分流设计) &nbsp;·&nbsp; [上游体检](#上游体检每天一次) &nbsp;·&nbsp; [工程笔记](#工程笔记那些踩过的坑)
 
 [![Loon](https://img.shields.io/badge/Loon-3.x-0EA5E9?style=flat-square)](https://apps.apple.com/app/loon/id1373567447)
-[![Policy Groups](https://img.shields.io/badge/策略组-36-8B5CF6?style=flat-square)](#分流设计)
-[![Upstreams](https://img.shields.io/badge/上游资源-104-0EA5E9?style=flat-square)](#上游体检每天一次)
-[![Checks](https://img.shields.io/badge/核心资源-67%2F67%20可达-22C55E?style=flat-square)](#上游体检每天一次)
+[![Policy Groups](https://img.shields.io/badge/策略组-23-8B5CF6?style=flat-square)](#分流设计)
+[![Upstreams](https://img.shields.io/badge/上游资源-91-0EA5E9?style=flat-square)](#上游体检每天一次)
+[![Checks](https://img.shields.io/badge/核心资源-31%2F31%20可达-22C55E?style=flat-square)](#上游体检每天一次)
 [![Secret Scan](https://img.shields.io/badge/推送前-凭据扫描-F59E0B?style=flat-square)](#不要提交真实凭据)
 [![Usage](https://img.shields.io/badge/用途-个人备份-64748B?style=flat-square)](#说明)
 
@@ -29,28 +29,26 @@ AI 要避开港区、上游挂了要能看出来是哪一条挂的。
 
 ## 预览
 
-没有界面 —— 产物就是手机上的分流行为，和每天一份的上游体检台账。以下是 **2026-09-30** 的实际记录：
+没有界面 —— 产物就是手机上的分流行为，和每天一份的上游体检台账。以下是 **2026-10-04** 的实际记录：
 
 ```
 $ python3 scripts/refresh_upstreams.py
-扫描 Loon.conf -> 提取 104 个上游资源
-  [200]  74 条可达
-  [403]  30 条不可达   ← 全部来自 kelee.one
-
-generated_at   : 2026-09-30T06:42:40Z
-resource_count : 104
-合计校验       : 15.8 MB / 104 个 sha256
+扫描 Loon.conf -> 提取 91 个上游资源
+  [200]  91 条可达
+generated_at   : 2026-10-03T23:59:30Z
+resource_count : 91
+合计校验       : 18.0 MB / 91 个 sha256
 ```
 
 近 6 次上游体检（每天定时触发，全部成功）：
 
-| 日期 | 09-30 | 09-29 | 09-28 | 09-27 | 09-26 | 09-25 |
+| 日期 | 10-03 | 10-02 | 10-01 | 09-30 | 09-29 | 09-28 |
 |---|---|---|---|---|---|---|
 | 结果 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 
-> 台账是**实测**，不是占位符。上表 09-30 那次 30 条 403 全部指向 `kelee.one` ——
-> 那不是上游挂了，是采集机的出口 IP 被 Cloudflare 挑战了。这件事后来成了
-> [工程笔记](#工程笔记那些踩过的坑)里的头号坑，也直接催生了配置里那条 `kelee.one` 直连规则。
+> 台账是**实测**，不是占位符。这份记录曾经连续多日挂着 **30 条来自 `kelee.one` 的 403**，
+> 而真凶不是上游、不是出口、更不是「站点挂了」—— 是体检脚本自己的 UA 没装成 Loon。
+> 详见 [工程笔记](#工程笔记那些踩过的坑)头两行。
 
 ---
 
@@ -63,7 +61,7 @@ resource_count : 104
 - 去广告规则是 `REJECT`，苹果服务域混在 `icloud.com` 这种通用后缀里 —— 谁先匹配谁说了算，
   规则顺序错了就是「苹果偶尔打不开」。
 - AI 服务对出口地区敏感，港区线路时好时坏，混进 `url-test` 里会被测速选成最优。
-- 上游资源有 104 个，跨 6 个来源。某天 `raw.githubusercontent.com` 抽风，
+- 上游资源有 91 个，跨 6 个来源。某天 `raw.githubusercontent.com` 抽风，
   你不知道是它挂了还是自己网络的问题。
 - 配置里还有一堆**真实凭据**（私钥、代理口令），而仓库是公开的。
 
@@ -84,8 +82,8 @@ flowchart TD
     G -->|"是"| H["REJECT<br/>10 条固化 OTA 域名"]
     G -->|"否"| I{"Apple 核心域？"}
     I -->|"是"| J["Apple 组<br/>默认 DIRECT"]
-    I -->|"否"| K["[Remote Rule]<br/>35 条远程规则表"]
-    K --> L["36 个策略组"]
+    I -->|"否"| K["[Remote Rule]<br/>34 条远程规则表"]
+    K --> L["23 个策略组"]
     L --> M{"命中？"}
     M -->|"是"| N["对应平台组<br/>Netflix / AI / Finance …"]
     M -->|"否"| O["GEOIP,CN → DIRECT"]
@@ -116,7 +114,7 @@ flowchart TD
 > 先放白名单，屏蔽就失效；先放 REJECT，白名单救不回来。
 > 这是踩过「苹果偶尔打不开」之后才定下来的。
 
-### 36 个策略组的分层
+### 23 个策略组的分层
 
 不是按国家粗暴分组，而是**按「同一类服务对出口的共同诉求」分组**：
 
@@ -127,10 +125,15 @@ flowchart TD
 | 流媒体 | `Netflix` `Disney` `HBO` `Spotify` `YouTube` `Bilibili` | `Bilibili` 默认 `DIRECT` |
 | 社交 | `Instagram` `Telegram` `LinkedIn` | —— |
 | 金融 | `Finance` | 覆盖支付宝、云闪付与 8 家国内银行，默认 `DIRECT` |
-| 短视频 | `TikTok` `Douyin` | `Douyin` 默认 `DIRECT` |
-| 区域 | `HK` `TW` `SG` `JP` `KR` `US` `AU` `EU` `AS` `AM` `AF` `CF` | `AS` 用负向断言排除已列出的亚洲节点，`AM` 排除美国 |
+| 短视频 | `TikTok` | 抖音不再单列组，域名走 `ChinaMaxNoIP`、IP 走 `GEOIP,CN`，自然直连 |
 | AI | `AI` `OpenAI` `Gemini` `Claude` | **全部不含香港节点** |
 | 其他 | `Emby` `HomeNAS` `Speedtest` | `Emby` 默认走代理，4 个地址强制直连 |
+
+> **2026-10-04 精简掉的那一层**：原先是 36 个组，多出来的是 12 个按国家/大洲分的 `url-test` 组
+> （`HK` `TW` `SG` `JP` `KR` `US` `AU` `EU` `AS` `AM` `AF` `CF`）和 12 条配套的 `NameRegex` 过滤器。
+> 出口只有「OpenClash 网关」和「`Available` 自动测速」两条腿，这几个组本就是空的 ——
+> 但空组照样占着 `Proxy` 的成员列表，切一次错一次，所以连过滤器一起删了。
+> 同理，`Douyin` 组被删掉后抖音回到 `GEOIP,CN` 的直连兜底，行为不变而少一个组。
 
 ### AI 组为什么排除香港
 
@@ -151,12 +154,12 @@ AI_NoHK_Filter = NameRegex, FilterKey = "(?i)^(?!.*(港|香港|HK|Hong)).*(美�
 
 ## 上游体检（每天一次）
 
-104 个上游资源跨 6 个来源，靠 GitHub Actions 每天跑一次 `refresh_upstreams.py`
+91 个上游资源跨 6 个来源，靠 GitHub Actions 每天跑一次 `refresh_upstreams.py`
 （321 行 / 14 个函数）。
 
 ```mermaid
 flowchart LR
-    A["Loon.conf<br/>提取 104 个 URL"] --> B["并发抓取<br/>带重试 + TLS 校验"]
+    A["Loon.conf<br/>提取 91 个 URL"] --> B["并发抓取<br/>带重试 + TLS 校验"]
     B --> C{"HTTP 2xx/3xx？"}
     C -->|"是"| D["记录 sha256<br/>etag / last-modified"]
     C -->|"否"| E{"是核心资源？"}
@@ -181,29 +184,40 @@ Moli-X GeoIP、Sub-Store 解析器）。它们若某次抓取失败，**不写 `
 而是回退上次成功值并打 `stale: true`** —— 避免偶发网络抖动让每日任务产生假警报，
 也避免把「上游真的挂了」淹没在噪声里。
 
-最新一次体检（2026-09-30）实测：
+> 改成自托管图标后，本配置已不再外链 `Koolson/Qure`，`CORE_MARKERS` 里那一条随之落空 ——
+> 实际命中的只有 blackmatrix7 规则 30 条与 Sub-Store 解析器 1 条，共 **31 条**。
+> 自托管图标**故意不算核心资源**：上游抽风应当被看见，而自家仓库 404 是必须修的 bug，
+> 不该被 `stale` 掩盖。
+
+最新一次体检（2026-10-04）实测：
 
 | 指标 | 值 |
 |---|---|
-| 资源总数 | 104 |
-| 可达 | 74 |
-| 不可达 | 30（全部为 `kelee.one`） |
-| **核心资源** | **67 / 67 可达** |
-| 合计校验字节 | 15.8 MB |
+| 资源总数 | 91 |
+| 可达 | 91 |
+| 不可达 | 0 |
+| **核心资源** | **31 / 31 可达** |
+| 合计校验字节 | 18.0 MB |
 
 按来源分布：
 
 | 来源 | 条数 | 说明 |
 |---|---|---|
-| `Koolson/Qure` | 35 | 策略组图标 |
-| `blackmatrix7/ios_rule_script` | 31 | 远程分流规则 |
-| `Kelee plugin` | 30 | 插件与脚本（本次全红，见下） |
-| `fmz200/wool_scripts` | 4 | 插件与补充图标 |
+| `abobb414/loon-config` | 24 | 自托管策略组图标 23 条 + 去广告规则 1 条 |
+| `blackmatrix7/ios_rule_script` | 30 | 远程分流规则 |
+| `Kelee plugin` | 30 | 插件与脚本 |
+| `fmz200/wool_scripts` | 3 | 插件与定时任务 |
 | `sub-store-org/Sub-Store` | 1 | 订阅解析器 |
-| 其他 | 3 | GeoIP / ASN 等 |
+| 其他 | 3 | GeoIP / ASN / AdRules |
 
-> 核心资源 67/67 全绿。30 条红的全在 `kelee.one` —— 采集机在境外，
-> 出口被 Cloudflare 挑战。**这不代表插件挂了**，同一时刻从国内直连是全 200 的。
+> 全绿。这 30 条 `kelee.one` 曾经**每天都红**，被误判成「采集机在境外、出口被 Cloudflare 挑战」——
+> 实际是脚本发的 UA（`loon-config-upstream-refresh/1.0`）不是 Loon，
+> 撞上站方的客户端校验。脚本现在带 `Loon/998 CFNetwork/3896.100.1.1.1 Darwin/27.0.0`，
+> 同一台机器、同一个出口，403 直接变 200。
+>
+> 顺带修掉另一个长期的假警报：`[Rewrite]` 段那 4 条本地正则（`^https://host\.tld/path reject-dict`）
+> 会被 URL 正则捞出来当成上游资源，抓一次失败一次，每天固定污染 4 条「不可达」。
+> 现在按「含反斜杠转义即本地正则」跳过 —— 于是资源数从 95 收敛到 91。
 
 ---
 
@@ -268,20 +282,20 @@ jq 表达式里的**空格必须转义成 `\x20`**（旧语法按空格分隔参
 
 | 文件 | 行数 | 用途 |
 |---|---|---|
-| `Loon.conf` | 301 | 主配置。36 个策略组、34 条本地规则、35 条远程规则、28 个插件 |
+| `Loon.conf` | 282 | 主配置。23 个策略组、34 条本地规则、34 条远程规则、28 个插件 |
 | `Loon-minimal.conf` | 32 | **最小化排查配置**：只有基础分流，无插件 / 脚本 / 改写 / 远程规则 / MITM |
 | `Stash.yaml` | 143 | 由 Loon 配置转换而来的 Stash 策略配置 |
 | `clash-advanced.yaml` | 433 | Clash 进阶配置，含策略组锚点与订阅占位 |
 | `rewrite/adblock.list` | 328 | **固化后的去广告规则**：311 条、旧版语法，由 `[Remote Rewrite]` 引用 |
 | `skills/loon-rewrite-localize/` | —— | 可复用的 skill：插件规则本地化（`scripts/localize.py` + 方法论与踩坑） |
-| `scripts/refresh_upstreams.py` | 321 | 上游资源体检脚本 |
-| `IconSet/Color/` | 6 | 策略组图标与 `icons-all.json` |
+| `scripts/refresh_upstreams.py` | 328 | 上游资源体检脚本 |
+| `IconSet/Color/` | 30 | 策略组图标（icons8 Pulsar Color，1600px PNG）与 `icons-all.json` |
 
-| `.upstream/upstreams.lock.json` | —— | 104 条资源的 ETag / Last-Modified / sha256 台账 |
+| `.upstream/upstreams.lock.json` | —— | 91 条资源的 ETag / Last-Modified / sha256 台账 |
 
 ### 最小化配置是干什么的
 
-排查「某个服务访问不了」时，最怕的是**在 301 行的主配置里逐条注释试验**。
+排查「某个服务访问不了」时，最怕的是**在 282 行的主配置里逐条注释试验**。
 `Loon-minimal.conf` 把变量砍到只剩 5 条规则 + 2 个组，用它做 A/B：
 
 - 最小化配置下正常 ⇒ 主配置的某个组件有问题，逐项加回定位
@@ -315,19 +329,25 @@ python3 scripts/refresh_upstreams.py
 
 ## 工程笔记：那些踩过的坑
 
-配置 301 行，但不少行数花在了**看起来不重要、实际会要命的地方**。
+配置 282 行，但不少行数花在了**看起来不重要、实际会要命的地方**。
 
 <table>
 <tr><th width="34%">症状</th><th width="66%">根因与解法</th></tr>
 <tr>
-<td><b>国内去广告插件集体失效</b></td>
-<td>根因<b>不是插件源挂了</b>，是<b>双重出海</b>：<code>kelee.one</code> 在 Loon 与网关两侧都没被判定直连，
-先交给内网代理内核、内核又把它送出国，出口 IP 被 Cloudflare 下发
-<code>cf-mitigated: challenge</code> 人机验证。Loon 用 <code>CFNetwork/URLSession</code> 拉插件，
-<b>不执行 JS，永远过不去</b>。<br/>
-判据是响应头 <code>cf-mitigated: challenge</code> + <code>Just a moment...</code> ——
-看到这个特征就不该说「站点挂了」，而应问「这个出口为何被挑中」。<br/>
-解法是<b>两侧同时</b>加 <code>DOMAIN-SUFFIX,kelee.one,DIRECT</code>。</td>
+<td><b>kelee.one 的插件 / 脚本批量 403</b></td>
+<td>根因是<b>客户端身份校验</b>，不是站点挂了、也不是「出口被 Cloudflare 挑中」：
+站方给资源路径设了规则，<b>UA 必须以 <code>Loon/</code> 开头</b>（前缀锚定，前面加任何东西都不行），
+且同时带 <code>CFNetwork/</code> 与 <code>Darwin/</code> 两段，否则一律 403 加一张
+<code>Attention Required!</code> 拦截页（注意：是 block，不是 <code>cf-mitigated: challenge</code>）。<br/>
+判据是<b>同一出口、同一 URL，只换 UA 就能翻转状态码</b>。本次实测：<br/>
+<code>loon-config-upstream-refresh/1.0</code> → 403 · <code>curl/8.4.0</code> → 403 ·
+Chrome UA → 403 · <code>Loon/998</code> → 403（缺 CFNetwork/Darwin）·
+<code>X Loon/998 …</code> → 403（<code>Loon/</code> 不在开头）·
+<code>Loon/3.5.1 CFNetwork/1494.0.7 Darwin/23.4.0</code> → <b>200 ✅</b>。<br/>
+因为 Loon 本体下载插件时发的就是这个形状的 UA，所以手机上一直是好的 ——
+<b>红的只有体检脚本</b>，每天固定报 30 条假「不可达」。<br/>
+解法：脚本改用 Loon UA；配置里那条 <code>DOMAIN-SUFFIX,kelee.one,DIRECT</code> 继续保留，
+它管的是下载走直连、不绕代理内核。</td>
 </tr>
 <tr>
 <td><b>去广告插件「下载正常、MitM 也正常，就是拦不住」</b></td>
@@ -342,7 +362,10 @@ build 不够时规则被<b>静默忽略</b>：MitM 照常解密（请求列表�
 <td>第一次排查在单一出口采样，全 403 → 写下「上游遭全站封锁」。<b>换一个出口，同一时刻全是 200。</b><br/>
 教训：<b>403 判定必须多出口对照</b>。固定 URL + 固定 UA，同时记录出口 IP，
 做「出口 IP × 状态码」二维统计。单点采样会得出完全错的结论。<br/>
-当时实测：出口 SG-Amazon 全 403 ×6，出口 JP-GSL 全 200 ×6，6/6 稳定复现。</td>
+当时实测：出口 SG-Amazon 全 403 ×6，出口 JP-GSL 全 200 ×6，6/6 稳定复现。<br/>
+⚠️ 事后的补充：这张二维表还差一个维度 —— <b>UA</b>。第一行那个坑就是同一出口下
+只换 UA 就翻转 403/200；反过来，「换出口变 200」也可能只是碰巧换了 UA。
+<b>出口、UA、URL 三个变量都钉死，才有资格下结论。</b></td>
 </tr>
 <tr>
 <td><b>苹果「偶尔访问不了」</b></td>
@@ -382,9 +405,10 @@ build 不够时规则被<b>静默忽略</b>：MitM 照常解密（请求列表�
 ## 限制
 
 - **不含节点订阅**：公开版只有占位符，需自备订阅与凭据。
-- **地区策略是经验的**：`AS` / `AM` / `EU` 用负向断言排除已列地区，节点命名一变就可能漏网。
-- **体检采集机在境外**：`kelee.one` 的 30 条 403 是采集环境所致，不代表资源不可用 ——
-  台账里 `ok=false` 需要结合出口地区读。
+- **不按地区分组**：策略组里没有 `HK` / `SG` / `JP` 这类地区组，要临时走某个地区，
+  直接从节点列表里选。想恢复按地区分组，把 `NameRegex` 过滤器加回来即可。
+- **体检脚本会冒充 Loon**：`kelee.one` 按客户端身份放行，脚本必须带
+  `Loon/… CFNetwork/… Darwin/…` 形状的 UA，否则 30 条资源全红。这不是「站点挂了」的判据。
 - **AI 地区白名单会变**：`AI` 组排除香港是当前结论，服务端策略调整后需重新测绘。
 
 ---
@@ -393,7 +417,9 @@ build 不够时规则被<b>静默忽略</b>：MitM 照常解密（请求列表�
 
 - [blackmatrix7/ios_rule_script](https://github.com/blackmatrix7/ios_rule_script)：Loon 远程分流规则
 - [Cats-Team/AdRules](https://github.com/Cats-Team/AdRules)：广告拦截规则
-- [Koolson/Qure](https://github.com/Koolson/Qure)：策略组图标
+- [icons8](https://icons8.com) / [igoutu.cn](https://igoutu.cn)：策略组图标（**Pulsar Color** 风格，
+  1600px PNG 由本仓库自托管；按免费许可要求在此署名）
+- [Koolson/Qure](https://github.com/Koolson/Qure)：早期策略组图标来源（现已改为自托管）
 - [fmz200/wool_scripts](https://github.com/fmz200/wool_scripts)：插件、广告规则与补充图标
 - [Moli-X/Tool](https://github.com/Moli-X/Tool)：配置结构参考、GeoIP / ASN 资源
 - [sub-store-org/Sub-Store](https://github.com/sub-store-org/Sub-Store)：订阅解析器与订阅管理生态
