@@ -302,7 +302,7 @@ and the source site intermittently throws `SSL: UNEXPECTED_EOF`, so **retry with
 | `rewrite/adblock.list` | 375 | **Consolidated ad-blocking rules**: 311 rules in old syntax, referenced by `[Remote Rewrite]` |
 | `skills/loon-rewrite-localize/` | —— | Reusable skill: localizing plugin rules (`scripts/localize.py` + methodology and pitfalls) |
 | `scripts/refresh_upstreams.py` | 385 | Upstream resource health check script (client-gated resources counted apart) |
-| `IconSet/Color/` | 33 | Policy-group and subscription icons (icons8 Pulsar Color, 1600px PNG) plus `icons-all.json` |
+| `IconSet/Color/` | 29 | Policy-group and subscription icons (icons8 Pulsar Color, 1600px PNG) plus `icons-all.json` |
 
 | `.upstream/upstreams.lock.json` | —— | Ledger of ETag / Last-Modified / sha256 for all 91 resources |
 
