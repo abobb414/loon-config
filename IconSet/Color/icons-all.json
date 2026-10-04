@@ -4,7 +4,7 @@
   "icons": [
     {
       "name": "AI",
-      "url": "https://raw.githubusercontent.com/abobb414/loon-config/main/IconSet/Color/AI.png"
+      "url": "https://raw.githubusercontent.com/abobb414/loon-config/main/IconSet/Color/AI-v2.png"
     },
     {
       "name": "Airplane",
@@ -40,7 +40,7 @@
     },
     {
       "name": "ChuiXueCloud",
-      "url": "https://raw.githubusercontent.com/abobb414/loon-config/main/IconSet/Color/ChuiXueCloud.png"
+      "url": "https://raw.githubusercontent.com/abobb414/loon-config/main/IconSet/Color/ChuiXueCloud-v2.png"
     },
     {
       "name": "Disney",
@@ -108,7 +108,7 @@
     },
     {
       "name": "NiceDuck",
-      "url": "https://raw.githubusercontent.com/abobb414/loon-config/main/IconSet/Color/NiceDuck.png"
+      "url": "https://raw.githubusercontent.com/abobb414/loon-config/main/IconSet/Color/NiceDuck-v2.png"
     },
     {
       "name": "OpenAI",
