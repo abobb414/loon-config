@@ -28,15 +28,16 @@ Traffic routing isn't just dumping every node into one group — ads must be blo
 
 ## Preview
 
-There's no UI — the deliverable is the routing behavior on the phone, plus a daily upstream health check ledger. Below is the actual record from **2026-10-04**:
+There's no UI — the deliverable is the routing behavior on the phone, plus a daily upstream health check ledger. Below is the actual record from **2026-10-04** on CI (GitHub Actions):
 
 ```
 $ python3 scripts/refresh_upstreams.py
 扫描 Loon.conf -> 提取 91 个上游资源
-  [200]  91 条可达
-generated_at   : 2026-10-03T23:59:30Z
+  [200]  61 条可达
+  [---]  30 条客户端门禁   <- Kelee plugin 30: Loon client only; datacenter egress can't pass the Cloudflare challenge
+generated_at   : 2026-10-04T00:02:31Z
 resource_count : 91
-合计校验       : 18.0 MB / 91 个 sha256
+合计校验       : 17.3 MB / 61 个 sha256
 ```
 
 The last 6 upstream health checks (triggered on a daily schedule, all successful):
@@ -45,9 +46,10 @@ The last 6 upstream health checks (triggered on a daily schedule, all successful
 |---|---|---|---|---|---|---|
 | Result | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 
-> The ledger is **measured**, not a placeholder. This record used to carry **30 `kelee.one` 403s** for days on end,
-> and the culprit was neither the upstream, nor the egress, nor "the site being down" —
-> it was the health check script's own UA failing to dress up as Loon.
+> The ledger is **measured**, not a placeholder — and it was **wrong** for a while. It carried 30 red
+> "unreachable" entries from `kelee.one` for days on end, explained first as "the site is down" and then as
+> "the collection machine is overseas and its egress is challenged by Cloudflare". Neither holds:
+> **two independent gates stack up**, and one of them (Cloudflare's bot challenge) is **unsolvable from CI**.
 > See the first two rows of the [Engineering Notes](#engineering-notes-pitfalls-we-hit).
 
 ---
@@ -153,7 +155,7 @@ and you can also pin them to a specific region manually.
 ## Daily Upstream Health Check
 
 91 upstream resources across 6 sources, checked once a day by GitHub Actions running `refresh_upstreams.py`
-(361 lines / 14 functions).
+(385 lines / 16 functions).
 
 ```mermaid
 flowchart LR
@@ -187,15 +189,16 @@ from transient network jitter, and avoiding drowning a genuinely dead upstream i
 > Self-hosted icons are **deliberately not core resources**: upstream flakiness deserves to be seen, whereas a 404 on
 > our own repo is a bug that must be fixed, not something to paper over with `stale`.
 
-Latest health check (2026-10-04), measured:
+Latest health check (2026-10-04, CI side), measured:
 
 | Metric | Value |
 |---|---|
 | Total resources | 91 |
-| Reachable | 91 |
-| Unreachable | 0 |
+| Reachable | 61 |
+| Client-gated (not counted as failures) | 30 |
+| **Genuinely unreachable** | **0** |
 | **Core resources** | **31 / 31 reachable** |
-| Total bytes verified | 18.0 MB |
+| Total bytes verified | 17.3 MB |
 
 Breakdown by source:
 
@@ -203,16 +206,24 @@ Breakdown by source:
 |---|---|---|
 | `abobb414/loon-config` | 24 | 23 self-hosted policy-group icons + 1 ad-blocking rule list |
 | `blackmatrix7/ios_rule_script` | 30 | Remote traffic routing rules |
-| `Kelee plugin` | 30 | Plugins and scripts |
+| `Kelee plugin` | 30 | Plugins and scripts (all client-gated on CI — see below) |
 | `fmz200/wool_scripts` | 3 | Plugins and scheduled tasks |
 | `sub-store-org/Sub-Store` | 1 | Subscription parser |
 | Others | 3 | GeoIP / ASN / AdRules |
 
-> All green. Those 30 `kelee.one` entries used to go **red every single day**, and were misdiagnosed as
-> "the collection machine is overseas and its egress is challenged by Cloudflare" — the real cause was that the UA
-> the script sent (`loon-config-upstream-refresh/1.0`) wasn't Loon, tripping the site's client check.
-> The script now sends `Loon/998 CFNetwork/3896.100.1.1.1 Darwin/27.0.0`, and on the same machine through the same
-> egress the 403s turn into 200s.
+> Those 30 `kelee.one` entries aren't "unreachable" — they're **unverifiable from a server**. The site only
+> serves the Loon client, on top of Cloudflare's challenge against datacenter IPs. The same script, then:
+>
+> | Where it runs | UA | Result |
+> |---|---|---|
+> | This Mac (residential egress) | `curl/8.7.1` | 403 · `Attention Required!` |
+> | This Mac (residential egress) | `Loon/998 CFNetwork/… Darwin/…` | **200 ✅** |
+> | GitHub Actions (Azure datacenter IP) | same | 403 · **`cf-mitigated: challenge`** |
+>
+> So dressing up the UA only clears gate 1. A CI runner is a datacenter IP, and gate 2 (a challenge page
+> that needs JS execution) can never be cleared. The script now tags these resources `gated` and counts them
+> **separately from real failures** — instead of feeding 30 false alarms a day. The real damage of a false
+> alarm is that nobody looks at the true failures anymore.
 >
 > One more long-standing false alarm fixed along the way: the 4 local regexes in `[Rewrite]`
 > (`^https://host\.tld/path reject-dict`) get scraped out by the URL regex as if they were upstream resources,
@@ -290,7 +301,7 @@ and the source site intermittently throws `SSL: UNEXPECTED_EOF`, so **retry with
 | `clash-advanced.yaml` | 433 | Advanced Clash config, with policy group anchors and subscription placeholders |
 | `rewrite/adblock.list` | 375 | **Consolidated ad-blocking rules**: 311 rules in old syntax, referenced by `[Remote Rewrite]` |
 | `skills/loon-rewrite-localize/` | —— | Reusable skill: localizing plugin rules (`scripts/localize.py` + methodology and pitfalls) |
-| `scripts/refresh_upstreams.py` | 361 | Upstream resource health check script |
+| `scripts/refresh_upstreams.py` | 385 | Upstream resource health check script (client-gated resources counted apart) |
 | `IconSet/Color/` | 30 | Policy group icons (icons8 Pulsar Color, 1600px PNG) and `icons-all.json` |
 
 | `.upstream/upstreams.lock.json` | —— | Ledger of ETag / Last-Modified / sha256 for all 91 resources |
@@ -337,19 +348,21 @@ The config is 282 lines, but a good chunk of them went into places that **look u
 <tr><th width="34%">Symptom</th><th width="66%">Root cause & fix</th></tr>
 <tr>
 <td><b>Bulk 403s on kelee.one plugins / scripts</b></td>
-<td>The root cause is a <b>client-identity check</b> — not the site being down, and not "the egress being singled out by Cloudflare".
-The site has a rule on its resource paths: the <b>UA must start with <code>Loon/</code></b> (anchored at the start — anything in front of it fails),
-and it must carry both <code>CFNetwork/</code> and <code>Darwin/</code>. Anything else gets a flat 403 with an
-<code>Attention Required!</code> page (note: a <i>block</i>, not a <code>cf-mitigated: challenge</code>).<br/>
-The tell is that <b>the same egress and the same URL flip their status code purely on UA</b>. Measured this round:<br/>
-<code>loon-config-upstream-refresh/1.0</code> → 403 · <code>curl/8.4.0</code> → 403 ·
-Chrome UA → 403 · <code>Loon/998</code> → 403 (missing CFNetwork/Darwin) ·
-<code>X Loon/998 …</code> → 403 (<code>Loon/</code> not at the start) ·
-<code>Loon/3.5.1 CFNetwork/1494.0.7 Darwin/23.4.0</code> → <b>200 ✅</b>.<br/>
-Because Loon itself sends a UA of exactly that shape when downloading plugins, the phone was never affected —
-<b>the only thing going red was the health check script</b>, reporting 30 fake "unreachable" entries every day.<br/>
-Fix: the script now sends a Loon UA. The <code>DOMAIN-SUFFIX,kelee.one,DIRECT</code> rule in the config stays —
-that one is about downloading over DIRECT instead of detouring through the proxy core.</td>
+<td><b>Two gates stack up</b> here, and missing either one leads to the wrong fix.<br/>
+<b>Gate 1 · site-side client check (looks at UA)</b>: the resource paths require the UA to <b>start with
+<code>Loon/</code></b> (anchored — anything in front of it fails) and to carry both
+<code>CFNetwork/</code> and <code>Darwin/</code>. Otherwise you get a flat 403 with an
+<code>Attention Required!</code> page (Cloudflare <i>block</i>, with <b>no</b> <code>cf-mitigated</code> header).<br/>
+<b>Gate 2 · Cloudflare bot challenge (looks at egress IP)</b>: datacenter IPs get served
+<code>cf-mitigated: challenge</code>, which needs JS execution to clear — <b>a perfect-looking UA buys you nothing</b>.<br/>
+Measured matrix (fixed URL, one variable at a time):<br/>
+<code>local + curl UA</code> → 403 block · <code>local + Loon UA</code> → <b>200 ✅</b> ·
+<code>CI + any UA (Loon included)</code> → 403 challenge.<br/>
+So the phone was always fine, while <b>the health check script can never get those 30 from CI</b>.<br/>
+Fix in two halves: send a Loon UA (clears gate 1); gate 2 is unsolvable on CI, so those 30 are tagged
+<code>gated</code> and counted apart from real failures — the point is <b>to stop them contributing 30 false
+alarms a day</b>. The <code>DOMAIN-SUFFIX,kelee.one,DIRECT</code> rule in the config stays — that one is about
+downloading over DIRECT instead of detouring through the proxy core.</td>
 </tr>
 <tr>
 <td><b>Ad plugins "download fine, MITM works, still block nothing"</b></td>
@@ -370,7 +383,10 @@ and build a two-way "egress IP × status code" table. Single-point sampling will
 Measured at the time: egress SG-Amazon all 403 ×6, egress JP-GSL all 200 ×6, 6/6 stably reproducible.<br/>
 ⚠️ A later addendum: that two-way table was still missing a dimension — <b>UA</b>. The row above is exactly the case where
 only the UA changed and 403/200 flipped; conversely, "switching egress turned it into 200" may just have been a changed UA.
-<b>Pin down egress, UA and URL together before you're allowed to conclude anything.</b></td>
+And <b>there is more than one kind of 403</b>: a body of <code>Attention Required!</code> is a <i>block</i>
+(server-side rule, fixable via UA), while <code>cf-mitigated: challenge</code> is a <i>challenge</i>
+(egress-IP risk control, not fixable via UA).<br/>
+<b>Pin down egress, UA and URL, and identify which 403 you got, before you're allowed to conclude anything.</b></td>
 </tr>
 <tr>
 <td><b>Apple "sometimes unreachable"</b></td>
@@ -410,7 +426,7 @@ WeChat core domains are now pinned to DNSPod as a safety net.</td>
 
 - **No node subscriptions included**: the public version only has placeholders; bring your own subscriptions and credentials.
 - **No region grouping**: there are no `HK` / `SG` / `JP` groups; to route through a region temporarily, pick a node from the list directly. To restore region grouping, add the `NameRegex` filters back.
-- **The health check script impersonates Loon**: `kelee.one` grants access by client identity, so the script must send a `Loon/… CFNetwork/… Darwin/…` shaped UA, otherwise all 30 of its resources go red. That is not evidence of "the site being down".
+- **The 30 kelee resources can't be verified on CI**: the site only serves the Loon client (gate 1, UA), and Cloudflare challenges datacenter IPs on top (gate 2, unsolvable). The script tags them `gated` rather than failed — when reading the ledger, check `ok=false` for a `gated` marker first. To get sha256s for those 30, run `refresh_upstreams.py` locally from a residential egress.
 - **AI region whitelists change**: excluding HK from the `AI` group is the current conclusion; once server-side policies shift, it needs re-mapping.
 
 ---

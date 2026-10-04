@@ -1,6 +1,6 @@
 ---
 name: loon-rewrite-localize
-description: 把 Loon 插件（.lpx）的 [Rewrite] 去广告规则固化成自己掌控的本地规则文件，根治「插件规则用新版脚本语法、客户端 build 不够导致静默失效」与「插件自动更新、App 回写配置导致行为不可控」两类问题。含新旧语法动作映射表、可复现的转换脚本、四个坑（kelee 源站的 UA 客户端校验导致 403、正则重复锚点、jq 表达式空格未转义、源站 SSL EOF）、以及「公开仓库脱敏模板 ≠ 真机配置」的铁律。触发词：loon 插件不生效、去广告没拦住、插件规则失效、kelee 403、插件下载 403、reject_dict 不执行、response.json.jq 无效、插件升级后失效、怕插件自动更新改坏、固化插件规则、把插件规则搬到本地、loon 复写规则、Remote Rewrite、本地规则优先于插件。
+description: 把 Loon 插件（.lpx）的 [Rewrite] 去广告规则固化成自己掌控的本地规则文件，根治「插件规则用新版脚本语法、客户端 build 不够导致静默失效」与「插件自动更新、App 回写配置导致行为不可控」两类问题。含新旧语法动作映射表、可复现的转换脚本、四个坑（kelee 源站的双闸 403——UA 客户端校验 + 机房出口的 Cloudflare 挑战、正则重复锚点、jq 表达式空格未转义、源站 SSL EOF）、以及「公开仓库脱敏模板 ≠ 真机配置」的铁律。触发词：loon 插件不生效、去广告没拦住、插件规则失效、kelee 403、插件下载 403、reject_dict 不执行、response.json.jq 无效、插件升级后失效、怕插件自动更新改坏、固化插件规则、把插件规则搬到本地、loon 复写规则、Remote Rewrite、本地规则优先于插件。
 version: 1.0.0
 agent_created: true
 read_when:
@@ -28,8 +28,9 @@ read_when:
 ```
 插件不生效
  ├─ ① 下载层：带 Loon UA 的 curl 能否 200 拿到 .lpx？
- │              UA 不含「Loon/ 开头 + CFNetwork/ + Darwin/」→ 403（见坑 0，改规则无用）
- │              换成合规 UA 后仍 403 → 才轮到怀疑出口 IP 被风控
+ │              UA 不含「Loon/ 开头 + CFNetwork/ + Darwin/」→ 403 block（见坑 0 闸 1，改规则无用）
+ │              合规 UA 仍 403，且响应头有 cf-mitigated: challenge → 403 出自闸 2（出口 IP 风控，UA 无解）
+ │              ⚠️ CI / 机房出口必然落在闸 2，别再折腾 UA
  ├─ ② 加载层：客户端 build ≥ 插件头部 #!loon_version？
  │              不够 → 升级客户端（改规则无用）
  └─ ③ 执行层：规则语法是否需要更高 build？目标是否真的被 MitM 解密？
@@ -51,7 +52,8 @@ read_when:
 ## 1. 判定：插件规则是不是「新版脚本语法」
 
 ```bash
-# UA 必须是「Loon/ 开头 + CFNetwork/ + Darwin/」的形状，否则源站一律 403（见坑 0）
+# UA 必须是「Loon/ 开头 + CFNetwork/ + Darwin/」的形状，否则源站一律 403（见坑 0 闸 1）
+# 注意：在 CI / 机房出口上，合规 UA 也会撞上闸 2 的 cf-mitigated: challenge —— 那是 IP 风控，UA 无解
 UA='Loon/998 CFNetwork/3896.100.1.1.1 Darwin/27.0.0'
 curl -s -A "$UA" -o /tmp/p.lpx "https://kelee.one/Tool/Loon/Lpx/Cainiao_remove_ads.lpx"
 head -3 /tmp/p.lpx                      # 看 #!loon_version=3.5.1(998)
@@ -102,13 +104,15 @@ App 的 mtop 客户端视为空响应、不弹网络错误；后者直接断连�
 
 ## 3. 四个坑（都踩过）
 
-### 坑 0：下载前必须冒充 Loon —— 而且「UA 里有 Loon 字样」还不够
+### 坑 0：下载前必须冒充 Loon —— 但**两道闸，UA 只过第一道**
 
-kelee.one 挂在 Cloudflare 后面，站方给资源路径设了**客户端身份校验**，不过关一律 403：
-返回 `<title>Attention Required! | Cloudflare</title>` 的拦截页，
-响应头里**没有** `cf-mitigated` —— 是**拦截（block）不是人机挑战（challenge）**，别按 challenge 去解释。
+kelee.one 的 403 有**两个独立成因**，混为一谈就会开出错的药方：
 
-| UA | 结果 |
+**闸 1 · 站方客户端校验（变量 = UA）**
+站方给资源路径设了客户端身份校验，不过关回 403 + `<title>Attention Required! | Cloudflare</title>`
+拦截页，响应头里**没有** `cf-mitigated` —— 是**拦截（block）不是人机挑战（challenge）**。
+
+| UA（固定出口、固定 URL） | 结果 |
 |---|---|
 | `curl/8.4.0` / Chrome / `my-script/1.0`（脚本自己的名字） | 403 |
 | `Loon/998` | 403 —— 缺 `CFNetwork/` 与 `Darwin/` |
@@ -117,13 +121,29 @@ kelee.one 挂在 Cloudflare 后面，站方给资源路径设了**客户端身�
 
 规则归纳：**`Loon/` 前缀锚定 + 同时含 `CFNetwork/` 与 `Darwin/`**（`loon/` 小写也放行）。
 
-🔴 **不要用「换出口就 200」解释 403**。同一台机器、同一个出口、同一个 URL，只换 UA 就能翻转 403/200；
-反过来，「换成某国节点就绿了」也可能只是顺带换了 UA。**出口、UA、URL 三个变量分别控制**，
-才有资格下结论 —— 这条错结论（「出口被 Cloudflare 挑中」）曾被写进 README，后来被推翻。
+**闸 2 · Cloudflare 机器人挑战（变量 = 出口 IP）**
+机房 / 数据中心 IP 会被下发 `cf-mitigated: challenge`，挑战页需要执行 JS 才过得去 ——
+**UA 装得再像也没用**。判据是响应头里有 `cf-mitigated: challenge`（不是 `Attention Required!`）。
 
-🔴 **同一坑的第二个变体**：自动化体检脚本特别容易中招，因为脚本的默认 UA 是
-`Python-urllib/3.x` 或项目自取的名字，而 **Loon 本体下载插件时发的就是这个形状的 UA**，
-所以「手机上一切正常、只有体检台账天天红 30 条」这种症状，第一嫌疑就是脚本的 UA。
+| 跑在哪 | UA | 结果 |
+|---|---|---|
+| 本机（住宅出口，代理落 JP/NRT） | `curl/8.7.1` | 403 · `Attention Required!` |
+| 本机（住宅出口，同上） | `Loon/998 CFNetwork/… Darwin/…` | **200 ✅** |
+| GitHub Actions（Azure westus3 / LAX 机房 IP） | 同左 | 403 · **`cf-mitigated: challenge`** |
+
+🔴 **结论：CI / 服务端永远拿不到 kelee 的资源**（闸 2 无解），别把「体检脚本改 UA 后本地全绿」
+当成「CI 也会全绿」去写进文档 —— 我就是这么错过一次。正解是把这类资源标记成
+`gated`（客户端门禁），与真失败分开统计，别让 30 条假警报每天淹没真失败。
+
+🔴 **不要用单一变量解释 403**。同一台机器、同一个出口、同一个 URL，只换 UA 就能翻转 403/200；
+反过来「换成某国节点就绿了」也可能只是顺带换了 UA，或者换到了非机房出口。
+**出口、UA、URL 三个变量分别控制，并且先看清 403 是 block 还是 challenge**，才有资格下结论 ——
+「出口被 Cloudflare 挑中」与「站点挂了」这两条错结论，都曾被写进 README 后被推翻。
+
+🔴 **自动化体检脚本是重灾区**：脚本默认 UA 是 `Python-urllib/3.x` 或项目自取的名字，
+而 **Loon 本体下载插件时发的就是这个形状的 UA**。所以「手机上一切正常、只有体检台账天天红 30 条」
+这种症状，第一嫌疑是脚本的 UA（闸 1）；如果换成合规 UA 仍然是 `challenge`，那就是闸 2，
+**此时不要再折腾 UA**，直接归类为门禁。
 
 ### 坑 1：插件的正则**自带 `^`**，不要无脑再补
 
