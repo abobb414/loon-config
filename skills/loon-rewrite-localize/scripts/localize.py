@@ -116,7 +116,9 @@ def fetch(url, retries=6, ua=UA, timeout=30):
     """下载插件。源站偶发 SSL UNEXPECTED_EOF / 连接中断，必须退避重试。
 
     不加重试的话，30 个插件会稳定掉 5 个左右（规则数从 311 掉到 192）。
-    另外必须带 Loon 的 UA：裸 curl / 浏览器 UA 会被源站判定非客户端而 403。
+    另外 UA 必须冒充 Loon：源站按客户端身份放行，形态是「Loon/ 前缀锚定 + CFNetwork/ + Darwin/」。
+    实测同一出口同一 URL —— curl/浏览器/脚本自取名 → 403；仅 'Loon/998' → 403（缺 CFNetwork、Darwin）；
+    'X Loon/998 …' → 403（Loon/ 不在开头）；'Loon/3.5.1 CFNetwork/… Darwin/…' → 200。
     """
     last = None
     for i in range(retries):

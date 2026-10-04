@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import collections
 import datetime as dt
 import hashlib
 import json
@@ -18,6 +19,24 @@ from typing import Iterable
 
 
 URL_RE = re.compile(r"https?://[^\s,]+")
+
+# 必须冒充 Loon 客户端，否则 kelee.one 一律 403。
+#
+# kelee.one 挂在 Cloudflare 后面，站方给资源路径设了客户端校验：UA 必须以
+# "Loon/" 开头（前缀锚定，前面加任何东西都不行），且同时带 CFNetwork/ 与
+# Darwin/ 两段。实测（同一出口 IP、同一 URL，只换 UA）：
+#
+#   loon-config-upstream-refresh/1.0                          -> 403
+#   curl/8.4.0                                               -> 403
+#   Mozilla/5.0 ... Chrome/126.0 Safari/537.36                -> 403
+#   Loon/998                                                 -> 403（缺 CFNetwork/Darwin）
+#   X Loon/998 CFNetwork/3896 Darwin/27.0.0                   -> 403（Loon/ 不在开头）
+#   Loon/3.5.1 CFNetwork/1494.0.7 Darwin/23.4.0               -> 200 ✅
+#
+# 因为 Loon 本体下载插件时发的就是这个形状的 UA，所以手机上一直是好的 ——
+# 只有体检脚本会中招，每天固定报 30 条假「不可达」。别再用「出口被 Cloudflare
+# 挑战」解释它：换 UA 就能翻转，说明卡的是客户端身份，不是 IP 归属。
+LOON_UA = "Loon/998 CFNetwork/3896.100.1.1.1 Darwin/27.0.0"
 SKIP_HOSTS = (
     "dns.alidns.com",
     "223.5.5.5",
@@ -95,6 +114,11 @@ def extract_urls(config: Path) -> list[str]:
             continue
         for match in URL_RE.findall(line):
             url = normalize_url(match)
+            if "\\" in url:
+                # [Rewrite] 段里的本地正则行（^https://host\.tld/path reject-dict）会被
+                # URL_RE 捞出来，但它们不是可抓取的资源，抓一次失败一次，会每天污染
+                # 「不可达」统计。反斜杠转义只出现在这类正则里，据此排除。
+                continue
             if not should_skip(url):
                 urls.add(url)
     return sorted(urls)
@@ -104,7 +128,7 @@ def fetch(url: str, timeout: int) -> dict[str, object]:
     request = urllib.request.Request(
         url,
         headers={
-            "User-Agent": "loon-config-upstream-refresh/1.0",
+            "User-Agent": LOON_UA,
             "Accept": "*/*",
         },
     )
@@ -252,7 +276,7 @@ def fetch_text(url: str, timeout: int) -> str:
     request = urllib.request.Request(
         url,
         headers={
-            "User-Agent": "loon-config-upstream-refresh/1.0",
+            "User-Agent": LOON_UA,
             "Accept": "text/plain,*/*",
         },
     )
@@ -297,12 +321,12 @@ def main() -> int:
     urls = extract_urls(args.config)
     previous_resources = load_previous_resources(args.output)
     resources = refresh(urls, args.timeout, args.retries)
-    resources = use_stale_core_success(resources, previous_resources)
+    resolved = use_stale_core_success(resources, previous_resources)
     payload = {
         "generated_at": dt.datetime.now(dt.UTC).isoformat(timespec="seconds").replace("+00:00", "Z"),
         "config": str(args.config),
-        "resource_count": len(resources),
-        "resources": resources,
+        "resource_count": len(resolved),
+        "resources": resolved,
     }
 
     args.output.parent.mkdir(parents=True, exist_ok=True)
@@ -311,7 +335,21 @@ def main() -> int:
         encoding="utf-8",
     )
 
-    failed_core = [item for item in resources if item["core"] and not item["ok"]]
+    failed = [item for item in resolved if not item["ok"]]
+    total_bytes = sum(int(item.get("bytes", 0)) for item in resolved if item["ok"])
+    print(f"扫描 {args.config} -> 提取 {len(resolved)} 个上游资源")
+    print(f"  [200]  {len(resolved) - len(failed)} 条可达")
+    if failed:
+        by_status = collections.Counter(str(item.get("status") or "-") for item in failed)
+        detail = " / ".join(f"{status} {count} 条" for status, count in by_status.most_common())
+        print(f"  [xxx]  {len(failed)} 条不可达   <- {detail}")
+        by_source = collections.Counter(str(item["source"]) for item in failed)
+        print(f"         来源：{' / '.join(f'{k} {v}' for k, v in by_source.most_common())}")
+    print(f"generated_at   : {payload['generated_at']}")
+    print(f"resource_count : {payload['resource_count']}")
+    print(f"合计校验       : {total_bytes / 1024 / 1024:.1f} MB / {len(resolved)} 个 sha256")
+
+    failed_core = [item for item in resolved if item["core"] and not item["ok"]]
     if failed_core:
         print("Core upstream failures:", file=sys.stderr)
         for item in failed_core:

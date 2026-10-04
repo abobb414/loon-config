@@ -9,16 +9,16 @@
 
 # Loon Config
 
-**A personal Loon traffic routing config. 36 policy groups, 104 upstream resources, automated daily health checks.**
+**A personal Loon traffic routing config. 23 policy groups, 91 upstream resources, automated daily health checks.**
 
 Traffic routing isn't just dumping every node into one group — ads must be blocked before MITM kicks in, Apple must be matched before ad-blocking rules, AI traffic must avoid the HK region, and when an upstream goes down you should be able to tell exactly which one broke.
 
 [Loon.conf](./Loon.conf) &nbsp;·&nbsp; [Traffic Routing Design](#traffic-routing-design) &nbsp;·&nbsp; [Daily Upstream Health Check](#daily-upstream-health-check) &nbsp;·&nbsp; [Engineering Notes](#engineering-notes-pitfalls-we-hit)
 
 [![Loon](https://img.shields.io/badge/Loon-3.x-0EA5E9?style=flat-square)](https://apps.apple.com/app/loon/id1373567447)
-[![Policy Groups](https://img.shields.io/badge/Policy%20Groups-36-8B5CF6?style=flat-square)](#traffic-routing-design)
-[![Upstreams](https://img.shields.io/badge/Upstreams-104-0EA5E9?style=flat-square)](#daily-upstream-health-check)
-[![Checks](https://img.shields.io/badge/Core%20Resources-67%2F67%20reachable-22C55E?style=flat-square)](#daily-upstream-health-check)
+[![Policy Groups](https://img.shields.io/badge/Policy%20Groups-23-8B5CF6?style=flat-square)](#traffic-routing-design)
+[![Upstreams](https://img.shields.io/badge/Upstreams-91-0EA5E9?style=flat-square)](#daily-upstream-health-check)
+[![Checks](https://img.shields.io/badge/Core%20Resources-31%2F31%20reachable-22C55E?style=flat-square)](#daily-upstream-health-check)
 [![Secret Scan](https://img.shields.io/badge/Pre--push-Credential%20Scan-F59E0B?style=flat-square)](#dont-commit-real-credentials)
 [![Usage](https://img.shields.io/badge/Purpose-Personal%20Backup-64748B?style=flat-square)](#disclaimer)
 
@@ -28,29 +28,27 @@ Traffic routing isn't just dumping every node into one group — ads must be blo
 
 ## Preview
 
-There's no UI — the deliverable is the routing behavior on the phone, plus a daily upstream health check ledger. Below is the actual record from **2026-09-30**:
+There's no UI — the deliverable is the routing behavior on the phone, plus a daily upstream health check ledger. Below is the actual record from **2026-10-04**:
 
 ```
 $ python3 scripts/refresh_upstreams.py
-扫描 Loon.conf -> 提取 104 个上游资源
-  [200]  74 条可达
-  [403]  30 条不可达   ← 全部来自 kelee.one
-
-generated_at   : 2026-09-30T06:42:40Z
-resource_count : 104
-合计校验       : 15.8 MB / 104 个 sha256
+扫描 Loon.conf -> 提取 91 个上游资源
+  [200]  91 条可达
+generated_at   : 2026-10-03T23:59:30Z
+resource_count : 91
+合计校验       : 18.0 MB / 91 个 sha256
 ```
 
 The last 6 upstream health checks (triggered on a daily schedule, all successful):
 
-| Date | 09-30 | 09-29 | 09-28 | 09-27 | 09-26 | 09-25 |
+| Date | 10-03 | 10-02 | 10-01 | 09-30 | 09-29 | 09-28 |
 |---|---|---|---|---|---|---|
 | Result | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 
-> The ledger is **measured**, not a placeholder. In the 09-30 run above, all 30 of the 403s point at `kelee.one` —
-> that's not the upstream being down; it's the collection machine's egress IP being challenged by Cloudflare.
-> This later became the #1 pitfall in the [Engineering Notes](#engineering-notes-pitfalls-we-hit), and it directly
-> motivated the `kelee.one` DIRECT rule in the config.
+> The ledger is **measured**, not a placeholder. This record used to carry **30 `kelee.one` 403s** for days on end,
+> and the culprit was neither the upstream, nor the egress, nor "the site being down" —
+> it was the health check script's own UA failing to dress up as Loon.
+> See the first two rows of the [Engineering Notes](#engineering-notes-pitfalls-we-hit).
 
 ---
 
@@ -62,7 +60,7 @@ The hard part was never stacking up nodes — it's **ordering and boundaries**:
 
 - Ad-blocking rules are `REJECT`, while Apple service domains are mixed into generic suffixes like `icloud.com` — whoever matches first wins. Get the rule order wrong and you get "Apple sometimes won't open."
 - AI services are sensitive to the egress region; HK lines are hit-or-miss, and if they get mixed into a `url-test` group they'll be picked as the fastest.
-- There are 104 upstream resources across 6 sources. Some day `raw.githubusercontent.com` acts up and you can't tell whether it's down or it's your own network.
+- There are 91 upstream resources across 6 sources. Some day `raw.githubusercontent.com` acts up and you can't tell whether it's down or it's your own network.
 - The config also contains **real credentials** (private keys, proxy passwords), and the repo is public.
 
 So the effort distribution of this config is **70% ordering and boundaries, 30% nodes**.
@@ -82,8 +80,8 @@ flowchart TD
     G -->|"Yes"| H["REJECT<br/>10 pinned OTA domains"]
     G -->|"No"| I{"Apple core domain?"}
     I -->|"Yes"| J["Apple group<br/>default DIRECT"]
-    I -->|"No"| K["[Remote Rule]<br/>35 remote rule sets"]
-    K --> L["36 policy groups"]
+    I -->|"No"| K["[Remote Rule]<br/>34 remote rule sets"]
+    K --> L["23 policy groups"]
     L --> M{"Match?"}
     M -->|"Yes"| N["Corresponding platform group<br/>Netflix / AI / Finance …"]
     M -->|"No"| O["GEOIP,CN → DIRECT"]
@@ -113,7 +111,7 @@ The part of the config that took the most thought isn't the policy groups — it
 > whitelist first and the blocking never works; REJECT first and the whitelist can't rescue it.
 > This was settled only after we'd been bitten by "Apple sometimes won't open."
 
-### How the 36 Policy Groups Are Layered
+### How the 23 Policy Groups Are Layered
 
 Groups aren't split crudely by country — they're grouped **by the shared egress needs of a class of services**:
 
@@ -124,10 +122,16 @@ Groups aren't split crudely by country — they're grouped **by the shared egres
 | Streaming | `Netflix` `Disney` `HBO` `Spotify` `YouTube` `Bilibili` | `Bilibili` defaults to `DIRECT` |
 | Social | `Instagram` `Telegram` `LinkedIn` | —— |
 | Finance | `Finance` | Covers Alipay, UnionPay and 8 domestic banks; defaults to `DIRECT` |
-| Short video | `TikTok` `Douyin` | `Douyin` defaults to `DIRECT` |
-| Region | `HK` `TW` `SG` `JP` `KR` `US` `AU` `EU` `AS` `AM` `AF` `CF` | `AS` uses negative lookaheads to exclude already-listed Asian nodes, `AM` excludes the US |
+| Short video | `TikTok` | Douyin (抖音) no longer has its own group: its domains match `ChinaMaxNoIP` and its IPs match `GEOIP,CN`, so it lands on DIRECT on its own |
 | AI | `AI` `OpenAI` `Gemini` `Claude` | **None of them contain HK nodes** |
 | Other | `Emby` `HomeNAS` `Speedtest` | `Emby` defaults to proxy, with 4 addresses forced to DIRECT |
+
+> **The layer trimmed on 2026-10-04**: there used to be 36 groups. The extras were 12 per-country/per-continent
+> `url-test` groups (`HK` `TW` `SG` `JP` `KR` `US` `AU` `EU` `AS` `AM` `AF` `CF`) plus their 12 companion
+> `NameRegex` filters. Egress only ever had two legs — the OpenClash gateway and the `Available` auto test —
+> so those groups were empty anyway. But an empty group still occupies a slot in `Proxy`'s member list, and every
+> pick lands on a dead entry, so the filters went with them. Same reasoning retired the `Douyin` group: Douyin
+> falls back to the `GEOIP,CN` DIRECT rule, behaviour unchanged, one group fewer.
 
 ### Why the AI Groups Exclude Hong Kong
 
@@ -148,12 +152,12 @@ and you can also pin them to a specific region manually.
 
 ## Daily Upstream Health Check
 
-104 upstream resources across 6 sources, checked once a day by GitHub Actions running `refresh_upstreams.py`
-(321 lines / 14 functions).
+91 upstream resources across 6 sources, checked once a day by GitHub Actions running `refresh_upstreams.py`
+(361 lines / 14 functions).
 
 ```mermaid
 flowchart LR
-    A["Loon.conf<br/>extract 104 URLs"] --> B["Concurrent fetch<br/>with retries + TLS verification"]
+    A["Loon.conf<br/>extract 91 URLs"] --> B["Concurrent fetch<br/>with retries + TLS verification"]
     B --> C{"HTTP 2xx/3xx?"}
     C -->|"Yes"| D["Record sha256<br/>etag / last-modified"]
     C -->|"No"| E{"Core resource?"}
@@ -178,30 +182,42 @@ Moli-X GeoIP, Sub-Store parsers). If a fetch of one of them fails, the script **
 instead it falls back to the last successful value and flags `stale: true`** — avoiding false alarms in the daily job
 from transient network jitter, and avoiding drowning a genuinely dead upstream in noise.
 
-Latest health check (2026-09-30), measured:
+> After moving to self-hosted icons this config no longer links to `Koolson/Qure`, so that marker never fires —
+> the ones that actually hit are just the 30 blackmatrix7 rule sets and 1 Sub-Store parser, **31 in total**.
+> Self-hosted icons are **deliberately not core resources**: upstream flakiness deserves to be seen, whereas a 404 on
+> our own repo is a bug that must be fixed, not something to paper over with `stale`.
+
+Latest health check (2026-10-04), measured:
 
 | Metric | Value |
 |---|---|
-| Total resources | 104 |
-| Reachable | 74 |
-| Unreachable | 30 (all `kelee.one`) |
-| **Core resources** | **67 / 67 reachable** |
-| Total bytes verified | 15.8 MB |
+| Total resources | 91 |
+| Reachable | 91 |
+| Unreachable | 0 |
+| **Core resources** | **31 / 31 reachable** |
+| Total bytes verified | 18.0 MB |
 
 Breakdown by source:
 
 | Source | Count | Notes |
 |---|---|---|
-| `Koolson/Qure` | 35 | Policy group icons |
-| `blackmatrix7/ios_rule_script` | 31 | Remote traffic routing rules |
-| `Kelee plugin` | 30 | Plugins and scripts (all red this run, see below) |
-| `fmz200/wool_scripts` | 4 | Plugins and extra icons |
+| `abobb414/loon-config` | 24 | 23 self-hosted policy-group icons + 1 ad-blocking rule list |
+| `blackmatrix7/ios_rule_script` | 30 | Remote traffic routing rules |
+| `Kelee plugin` | 30 | Plugins and scripts |
+| `fmz200/wool_scripts` | 3 | Plugins and scheduled tasks |
 | `sub-store-org/Sub-Store` | 1 | Subscription parser |
-| Others | 3 | GeoIP / ASN etc. |
+| Others | 3 | GeoIP / ASN / AdRules |
 
-> Core resources are 67/67 all green. All 30 red entries are on `kelee.one` — the collection machine is
-> overseas and its egress is challenged by Cloudflare. **This does not mean the plugins are down**; at the
-> same moment, DIRECT from inside China returned all 200s.
+> All green. Those 30 `kelee.one` entries used to go **red every single day**, and were misdiagnosed as
+> "the collection machine is overseas and its egress is challenged by Cloudflare" — the real cause was that the UA
+> the script sent (`loon-config-upstream-refresh/1.0`) wasn't Loon, tripping the site's client check.
+> The script now sends `Loon/998 CFNetwork/3896.100.1.1.1 Darwin/27.0.0`, and on the same machine through the same
+> egress the 403s turn into 200s.
+>
+> One more long-standing false alarm fixed along the way: the 4 local regexes in `[Rewrite]`
+> (`^https://host\.tld/path reject-dict`) get scraped out by the URL regex as if they were upstream resources,
+> and fail on every run, contaminating exactly 4 "unreachable" entries daily. They're now skipped by
+> "contains a backslash escape ⇒ local regex" — so the resource count settled from 95 down to 91.
 
 ---
 
@@ -268,19 +284,20 @@ and the source site intermittently throws `SSL: UNEXPECTED_EOF`, so **retry with
 
 | File | Lines | Purpose |
 |---|---|---|
-| `Loon.conf` | 301 | Main config. 36 policy groups, 34 local rules, 35 remote rules, 28 plugins |
+| `Loon.conf` | 282 | Main config. 23 policy groups, 34 local rules, 34 remote rules, 28 plugins |
 | `Loon-minimal.conf` | 32 | **Minimal troubleshooting config**: base routing only, no plugins / scripts / rewrites / remote rules / MITM |
 | `Stash.yaml` | 143 | Stash policy config converted from the Loon config |
 | `clash-advanced.yaml` | 433 | Advanced Clash config, with policy group anchors and subscription placeholders |
-| `rewrite/adblock.list` | 328 | **Consolidated ad-blocking rules**: 311 rules in old syntax, referenced by `[Remote Rewrite]` |
+| `rewrite/adblock.list` | 375 | **Consolidated ad-blocking rules**: 311 rules in old syntax, referenced by `[Remote Rewrite]` |
 | `skills/loon-rewrite-localize/` | —— | Reusable skill: localizing plugin rules (`scripts/localize.py` + methodology and pitfalls) |
-| `scripts/refresh_upstreams.py` | 321 | Upstream resource health check script |
-| `IconSet/Color/` | 6 | Policy group icons and `icons-all.json` |
-| `.upstream/upstreams.lock.json` | —— | Ledger of ETag / Last-Modified / sha256 for all 104 resources |
+| `scripts/refresh_upstreams.py` | 361 | Upstream resource health check script |
+| `IconSet/Color/` | 30 | Policy group icons (icons8 Pulsar Color, 1600px PNG) and `icons-all.json` |
+
+| `.upstream/upstreams.lock.json` | —— | Ledger of ETag / Last-Modified / sha256 for all 91 resources |
 
 ### What the Minimal Config Is For
 
-When troubleshooting "some service won't load," the worst approach is **toggling rules one by one in the 301-line main config**.
+When troubleshooting "some service won't load," the worst approach is **toggling rules one by one in the 282-line main config**.
 `Loon-minimal.conf` cuts the variables down to just 5 rules + 2 groups, so you can A/B against it:
 
 - Works on the minimal config ⇒ some component in the main config is at fault; re-add items one by one to locate it
@@ -314,19 +331,25 @@ python3 scripts/refresh_upstreams.py
 
 ## Engineering Notes: Pitfalls We Hit
 
-The config is 301 lines, but a good chunk of them went into places that **look unimportant yet turn out to be critical**.
+The config is 282 lines, but a good chunk of them went into places that **look unimportant yet turn out to be critical**.
 
 <table>
 <tr><th width="34%">Symptom</th><th width="66%">Root cause & fix</th></tr>
 <tr>
-<td><b>China ad-blocking plugins failing en masse</b></td>
-<td>The root cause was <b>not the plugin sources being down</b> — it was <b>double egress</b>: <code>kelee.one</code> wasn't judged as DIRECT on either the Loon side or the gateway side,
-so it went to the on-prem proxy core first, which then sent it abroad, and the egress IP got a
-<code>cf-mitigated: challenge</code> CAPTCHA from Cloudflare. Loon fetches plugins via <code>CFNetwork/URLSession</code>,
-<b>doesn't run JS, and can never pass</b>.<br/>
-The tell is the response headers <code>cf-mitigated: challenge</code> + <code>Just a moment...</code> —
-when you see this signature you shouldn't say "the site is down"; you should ask "why was this egress singled out".<br/>
-The fix is adding <code>DOMAIN-SUFFIX,kelee.one,DIRECT</code> on <b>both sides at once</b>.</td>
+<td><b>Bulk 403s on kelee.one plugins / scripts</b></td>
+<td>The root cause is a <b>client-identity check</b> — not the site being down, and not "the egress being singled out by Cloudflare".
+The site has a rule on its resource paths: the <b>UA must start with <code>Loon/</code></b> (anchored at the start — anything in front of it fails),
+and it must carry both <code>CFNetwork/</code> and <code>Darwin/</code>. Anything else gets a flat 403 with an
+<code>Attention Required!</code> page (note: a <i>block</i>, not a <code>cf-mitigated: challenge</code>).<br/>
+The tell is that <b>the same egress and the same URL flip their status code purely on UA</b>. Measured this round:<br/>
+<code>loon-config-upstream-refresh/1.0</code> → 403 · <code>curl/8.4.0</code> → 403 ·
+Chrome UA → 403 · <code>Loon/998</code> → 403 (missing CFNetwork/Darwin) ·
+<code>X Loon/998 …</code> → 403 (<code>Loon/</code> not at the start) ·
+<code>Loon/3.5.1 CFNetwork/1494.0.7 Darwin/23.4.0</code> → <b>200 ✅</b>.<br/>
+Because Loon itself sends a UA of exactly that shape when downloading plugins, the phone was never affected —
+<b>the only thing going red was the health check script</b>, reporting 30 fake "unreachable" entries every day.<br/>
+Fix: the script now sends a Loon UA. The <code>DOMAIN-SUFFIX,kelee.one,DIRECT</code> rule in the config stays —
+that one is about downloading over DIRECT instead of detouring through the proxy core.</td>
 </tr>
 <tr>
 <td><b>Ad plugins "download fine, MITM works, still block nothing"</b></td>
@@ -341,10 +364,13 @@ and pin them in <code>rewrite/adblock.list</code>.</td>
 </tr>
 <tr>
 <td><b>Misled by 403s, nearly reached a completely wrong conclusion</b></td>
-<td>The first investigation sampled from a single egress, got all 403s → wrote down "upstreams are block site-wide." <b>Switch egresses, and at the very same moment everything is 200.</b><br/>
+<td>The first investigation sampled from a single egress, got all 403s → wrote down "upstreams are blocked site-wide." <b>Switch egresses, and at the very same moment everything is 200.</b><br/>
 Lesson: <b>a 403 verdict must be cross-checked from multiple egresses</b>. Fixed URL + fixed UA, log the egress IP at the same time,
 and build a two-way "egress IP × status code" table. Single-point sampling will give you a completely wrong conclusion.<br/>
-Measured at the time: egress SG-Amazon all 403 ×6, egress JP-GSL all 200 ×6, 6/6 stably reproducible.</td>
+Measured at the time: egress SG-Amazon all 403 ×6, egress JP-GSL all 200 ×6, 6/6 stably reproducible.<br/>
+⚠️ A later addendum: that two-way table was still missing a dimension — <b>UA</b>. The row above is exactly the case where
+only the UA changed and 403/200 flipped; conversely, "switching egress turned it into 200" may just have been a changed UA.
+<b>Pin down egress, UA and URL together before you're allowed to conclude anything.</b></td>
 </tr>
 <tr>
 <td><b>Apple "sometimes unreachable"</b></td>
@@ -383,9 +409,8 @@ WeChat core domains are now pinned to DNSPod as a safety net.</td>
 ## Limitations
 
 - **No node subscriptions included**: the public version only has placeholders; bring your own subscriptions and credentials.
-- **Region policies are empirical**: `AS` / `AM` / `EU` use negative lookaheads to exclude already-listed regions; any change in node naming may let some slip through.
-- **The health check collector is overseas**: the 30 `kelee.one` 403s are an artifact of the collection environment, not proof the resources are unusable —
-  `ok=false` entries in the ledger must be read together with the egress region.
+- **No region grouping**: there are no `HK` / `SG` / `JP` groups; to route through a region temporarily, pick a node from the list directly. To restore region grouping, add the `NameRegex` filters back.
+- **The health check script impersonates Loon**: `kelee.one` grants access by client identity, so the script must send a `Loon/… CFNetwork/… Darwin/…` shaped UA, otherwise all 30 of its resources go red. That is not evidence of "the site being down".
 - **AI region whitelists change**: excluding HK from the `AI` group is the current conclusion; once server-side policies shift, it needs re-mapping.
 
 ---
@@ -394,7 +419,8 @@ WeChat core domains are now pinned to DNSPod as a safety net.</td>
 
 - [blackmatrix7/ios_rule_script](https://github.com/blackmatrix7/ios_rule_script): Loon remote traffic routing rules
 - [Cats-Team/AdRules](https://github.com/Cats-Team/AdRules): ad-blocking rules
-- [Koolson/Qure](https://github.com/Koolson/Qure): policy group icons
+- [icons8](https://icons8.com) / [igoutu.cn](https://igoutu.cn): policy group icons (**Pulsar Color** style, 1600px PNGs self-hosted by this repo; credited here as the free licence requires)
+- [Koolson/Qure](https://github.com/Koolson/Qure): the earlier source of policy group icons (now self-hosted)
 - [fmz200/wool_scripts](https://github.com/fmz200/wool_scripts): plugins, ad rules and extra icons
 - [Moli-X/Tool](https://github.com/Moli-X/Tool): config structure reference, GeoIP / ASN resources
 - [sub-store-org/Sub-Store](https://github.com/sub-store-org/Sub-Store): subscription parser and subscription management ecosystem
