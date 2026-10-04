@@ -33,10 +33,22 @@ URL_RE = re.compile(r"https?://[^\s,]+")
 #   X Loon/998 CFNetwork/3896 Darwin/27.0.0                   -> 403（Loon/ 不在开头）
 #   Loon/3.5.1 CFNetwork/1494.0.7 Darwin/23.4.0               -> 200 ✅
 #
-# 因为 Loon 本体下载插件时发的就是这个形状的 UA，所以手机上一直是好的 ——
-# 只有体检脚本会中招，每天固定报 30 条假「不可达」。别再用「出口被 Cloudflare
-# 挑战」解释它：换 UA 就能翻转，说明卡的是客户端身份，不是 IP 归属。
+# 但 UA 只是第一道闸。kelee.one 在 Cloudflare 后面还有第二道 —— 出口侧风控：
+#
+#   本机（住宅出口，代理落到 JP/NRT）    Loon UA -> 200 ✅    curl UA -> 403
+#   GitHub Actions（Azure westus3/LAX）  Loon UA -> 403 ❌    cf-mitigated: challenge
+#
+# UA 决定站方那层「客户端身份校验」（不过则返回 Attention Required! 拦截页），
+# 出口 IP 归属决定 Cloudflare 那层机器人挑战（过不去会回 cf-mitigated: challenge，
+# 需要执行 JS，脚本永远解不开）。两个变量互不替代，UA 对了不等于拿得到。
+#
+# 结论：kelee.one 的 30 条资源在 CI 上**永远不可验证**，必须与「真失败」分开统计，
+# 否则每天固定产生 30 条假警报，把真正需要看的失败淹没掉。
 LOON_UA = "Loon/998 CFNetwork/3896.100.1.1.1 Darwin/27.0.0"
+
+# 客户端门禁资源：只有 Loon 本体（正确 UA + 非机房出口）拉得到。
+# 在 CI 侧拿到 403 / challenge 属于预期结果，记为 gated 而非 failed。
+CLIENT_GATED_HOSTS = ("kelee.one",)
 SKIP_HOSTS = (
     "dns.alidns.com",
     "223.5.5.5",
@@ -82,6 +94,11 @@ def should_skip(url: str) -> bool:
     return any(host in url for host in SKIP_HOSTS)
 
 
+def is_client_gated(url: str) -> bool:
+    """资源站只对 Loon 客户端放行，服务端/CI 抓取注定被挡。"""
+    return any(host in url for host in CLIENT_GATED_HOSTS)
+
+
 def source_name(url: str) -> str:
     if "blackmatrix7/ios_rule_script" in url:
         return "blackmatrix7/ios_rule_script"
@@ -124,6 +141,33 @@ def extract_urls(config: Path) -> list[str]:
     return sorted(urls)
 
 
+def failure_entry(
+    url: str,
+    status: int | None,
+    error: str,
+    started: dt.datetime,
+    headers: object | None = None,
+) -> dict[str, object]:
+    item: dict[str, object] = {
+        "url": url,
+        "source": source_name(url),
+        "core": is_core(url),
+        "ok": False,
+        "status": status,
+        "error": error,
+        "checked_at": started.isoformat(timespec="seconds").replace("+00:00", "Z"),
+    }
+    if is_client_gated(url):
+        item["gated"] = True
+        item["gated_reason"] = "仅 Loon 客户端可下：站方校验 UA，且非机房出口才过 Cloudflare"
+    mitigated = None
+    if headers is not None:
+        mitigated = headers.get("cf-mitigated") if hasattr(headers, "get") else None
+    if mitigated:
+        item["cf_mitigated"] = mitigated
+    return item
+
+
 def fetch(url: str, timeout: int) -> dict[str, object]:
     request = urllib.request.Request(
         url,
@@ -145,6 +189,7 @@ def fetch(url: str, timeout: int) -> dict[str, object]:
                 "url": url,
                 "source": source_name(url),
                 "core": is_core(url),
+                "gated": is_client_gated(url),
                 "ok": ok,
                 "status": status,
                 "bytes": len(body),
@@ -159,49 +204,22 @@ def fetch(url: str, timeout: int) -> dict[str, object]:
     try:
         return read_response(tls_verified=True)
     except urllib.error.HTTPError as error:
-        return {
-            "url": url,
-            "source": source_name(url),
-            "core": is_core(url),
-            "ok": False,
-            "status": error.code,
-            "error": str(error),
-            "checked_at": started.isoformat(timespec="seconds").replace("+00:00", "Z"),
-        }
+        return failure_entry(url, error.code, str(error), started, error.headers)
     except urllib.error.URLError as error:
         if "CERTIFICATE_VERIFY_FAILED" in str(error):
             context = ssl._create_unverified_context()  # noqa: S323 - metadata refresh fallback.
             try:
                 return read_response(tls_verified=False)
             except Exception as retry_error:  # noqa: BLE001 - keep workflow diagnostics explicit.
-                return {
-                    "url": url,
-                    "source": source_name(url),
-                    "core": is_core(url),
-                    "ok": False,
-                    "status": None,
-                    "error": f"{type(retry_error).__name__}: {retry_error}",
-                    "checked_at": started.isoformat(timespec="seconds").replace("+00:00", "Z"),
-                }
-        return {
-            "url": url,
-            "source": source_name(url),
-            "core": is_core(url),
-            "ok": False,
-            "status": None,
-            "error": f"{type(error).__name__}: {error}",
-            "checked_at": started.isoformat(timespec="seconds").replace("+00:00", "Z"),
-        }
+                return failure_entry(
+                    url,
+                    None,
+                    f"{type(retry_error).__name__}: {retry_error}",
+                    started,
+                )
+        return failure_entry(url, None, f"{type(error).__name__}: {error}", started)
     except Exception as error:  # noqa: BLE001 - keep workflow diagnostics explicit.
-        return {
-            "url": url,
-            "source": source_name(url),
-            "core": is_core(url),
-            "ok": False,
-            "status": None,
-            "error": f"{type(error).__name__}: {error}",
-            "checked_at": started.isoformat(timespec="seconds").replace("+00:00", "Z"),
-        }
+        return failure_entry(url, None, f"{type(error).__name__}: {error}", started)
 
 
 def fetch_with_retries(url: str, timeout: int, retries: int) -> dict[str, object]:
@@ -335,10 +353,16 @@ def main() -> int:
         encoding="utf-8",
     )
 
-    failed = [item for item in resolved if not item["ok"]]
-    total_bytes = sum(int(item.get("bytes", 0)) for item in resolved if item["ok"])
+    reachable = [item for item in resolved if item["ok"]]
+    gated = [item for item in resolved if not item["ok"] and item.get("gated")]
+    failed = [item for item in resolved if not item["ok"] and not item.get("gated")]
+    total_bytes = sum(int(item.get("bytes", 0)) for item in reachable)
     print(f"扫描 {args.config} -> 提取 {len(resolved)} 个上游资源")
-    print(f"  [200]  {len(resolved) - len(failed)} 条可达")
+    print(f"  [200]  {len(reachable)} 条可达")
+    if gated:
+        by_source = collections.Counter(str(item["source"]) for item in gated)
+        detail = " / ".join(f"{name} {count}" for name, count in by_source.most_common())
+        print(f"  [---]  {len(gated)} 条客户端门禁   <- {detail}：仅 Loon 客户端可下，机房出口过不了 Cloudflare 挑战")
     if failed:
         by_status = collections.Counter(str(item.get("status") or "-") for item in failed)
         detail = " / ".join(f"{status} {count} 条" for status, count in by_status.most_common())
@@ -347,9 +371,9 @@ def main() -> int:
         print(f"         来源：{' / '.join(f'{k} {v}' for k, v in by_source.most_common())}")
     print(f"generated_at   : {payload['generated_at']}")
     print(f"resource_count : {payload['resource_count']}")
-    print(f"合计校验       : {total_bytes / 1024 / 1024:.1f} MB / {len(resolved)} 个 sha256")
+    print(f"合计校验       : {total_bytes / 1024 / 1024:.1f} MB / {len(reachable)} 个 sha256")
 
-    failed_core = [item for item in resolved if item["core"] and not item["ok"]]
+    failed_core = [item for item in resolved if item["core"] and not item["ok"] and not item.get("gated")]
     if failed_core:
         print("Core upstream failures:", file=sys.stderr)
         for item in failed_core:

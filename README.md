@@ -29,15 +29,16 @@ AI 要避开港区、上游挂了要能看出来是哪一条挂的。
 
 ## 预览
 
-没有界面 —— 产物就是手机上的分流行为，和每天一份的上游体检台账。以下是 **2026-10-04** 的实际记录：
+没有界面 —— 产物就是手机上的分流行为，和每天一份的上游体检台账。以下是 **2026-10-04** 在 CI（GitHub Actions）上的实际记录：
 
 ```
 $ python3 scripts/refresh_upstreams.py
 扫描 Loon.conf -> 提取 91 个上游资源
-  [200]  91 条可达
-generated_at   : 2026-10-03T23:59:30Z
+  [200]  61 条可达
+  [---]  30 条客户端门禁   <- Kelee plugin 30：仅 Loon 客户端可下，机房出口过不了 Cloudflare 挑战
+generated_at   : 2026-10-04T00:02:31Z
 resource_count : 91
-合计校验       : 18.0 MB / 91 个 sha256
+合计校验       : 17.3 MB / 61 个 sha256
 ```
 
 近 6 次上游体检（每天定时触发，全部成功）：
@@ -46,9 +47,11 @@ resource_count : 91
 |---|---|---|---|---|---|---|
 | 结果 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 
-> 台账是**实测**，不是占位符。这份记录曾经连续多日挂着 **30 条来自 `kelee.one` 的 403**，
-> 而真凶不是上游、不是出口、更不是「站点挂了」—— 是体检脚本自己的 UA 没装成 Loon。
-> 详见 [工程笔记](#工程笔记那些踩过的坑)头两行。
+> 台账是**实测**，不是占位符 —— 而且它一度是**错的**。这份记录曾连续多日挂着
+> 30 条来自 `kelee.one` 的红色「不可达」，先后被解释成「站点挂了」与「采集机在境外、
+> 出口被 Cloudflare 挑战」。两个说法都不对：**真正卡住的是两道闸叠加**，
+> 而其中一道（Cloudflare 的机器人挑战）**在 CI 上无解**。详见
+> [工程笔记](#工程笔记那些踩过的坑)头两行。
 
 ---
 
@@ -189,15 +192,16 @@ Moli-X GeoIP、Sub-Store 解析器）。它们若某次抓取失败，**不写 `
 > 自托管图标**故意不算核心资源**：上游抽风应当被看见，而自家仓库 404 是必须修的 bug，
 > 不该被 `stale` 掩盖。
 
-最新一次体检（2026-10-04）实测：
+最新一次体检（2026-10-04，CI 侧）实测：
 
 | 指标 | 值 |
 |---|---|
 | 资源总数 | 91 |
-| 可达 | 91 |
-| 不可达 | 0 |
+| 可达 | 61 |
+| 客户端门禁（不计失败） | 30 |
+| **真·不可达** | **0** |
 | **核心资源** | **31 / 31 可达** |
-| 合计校验字节 | 18.0 MB |
+| 合计校验字节 | 17.3 MB |
 
 按来源分布：
 
@@ -205,15 +209,23 @@ Moli-X GeoIP、Sub-Store 解析器）。它们若某次抓取失败，**不写 `
 |---|---|---|
 | `abobb414/loon-config` | 24 | 自托管策略组图标 23 条 + 去广告规则 1 条 |
 | `blackmatrix7/ios_rule_script` | 30 | 远程分流规则 |
-| `Kelee plugin` | 30 | 插件与脚本 |
+| `Kelee plugin` | 30 | 插件与脚本（CI 侧全部走「客户端门禁」，见下） |
 | `fmz200/wool_scripts` | 3 | 插件与定时任务 |
 | `sub-store-org/Sub-Store` | 1 | 订阅解析器 |
 | 其他 | 3 | GeoIP / ASN / AdRules |
 
-> 全绿。这 30 条 `kelee.one` 曾经**每天都红**，被误判成「采集机在境外、出口被 Cloudflare 挑战」——
-> 实际是脚本发的 UA（`loon-config-upstream-refresh/1.0`）不是 Loon，
-> 撞上站方的客户端校验。脚本现在带 `Loon/998 CFNetwork/3896.100.1.1.1 Darwin/27.0.0`，
-> 同一台机器、同一个出口，403 直接变 200。
+> 那 30 条 `kelee.one` 不是「不可达」，是**不可由服务端验证**。站方只对 Loon 客户端放行，
+> 叠加 Cloudflare 对机房 IP 的挑战 —— 于是同一份脚本：
+>
+> | 跑在哪 | UA | 结果 |
+> |---|---|---|
+> | 本机（住宅出口） | `curl/8.7.1` | 403 · `Attention Required!` |
+> | 本机（住宅出口） | `Loon/998 CFNetwork/… Darwin/…` | **200 ✅** |
+> | GitHub Actions（Azure 机房 IP） | 同左 | 403 · **`cf-mitigated: challenge`** |
+>
+> 也就是说，把 UA 装成 Loon 只是过了第一道闸；CI runner 是机房 IP，第二道闸（挑战页需要
+> 执行 JS）永远过不去。脚本现在把这类资源标成 `gated`，**与「真失败」分开统计**，
+> 而不是继续每天贡献 30 条假警报 —— 假警报真正的危害是让真失败没人看。
 >
 > 顺带修掉另一个长期的假警报：`[Rewrite]` 段那 4 条本地正则（`^https://host\.tld/path reject-dict`）
 > 会被 URL 正则捞出来当成上游资源，抓一次失败一次，每天固定污染 4 条「不可达」。
@@ -288,7 +300,7 @@ jq 表达式里的**空格必须转义成 `\x20`**（旧语法按空格分隔参
 | `clash-advanced.yaml` | 433 | Clash 进阶配置，含策略组锚点与订阅占位 |
 | `rewrite/adblock.list` | 328 | **固化后的去广告规则**：311 条、旧版语法，由 `[Remote Rewrite]` 引用 |
 | `skills/loon-rewrite-localize/` | —— | 可复用的 skill：插件规则本地化（`scripts/localize.py` + 方法论与踩坑） |
-| `scripts/refresh_upstreams.py` | 328 | 上游资源体检脚本 |
+| `scripts/refresh_upstreams.py` | 385 | 上游资源体检脚本（客户端门禁资源单独计数） |
 | `IconSet/Color/` | 30 | 策略组图标（icons8 Pulsar Color，1600px PNG）与 `icons-all.json` |
 
 | `.upstream/upstreams.lock.json` | —— | 91 条资源的 ETag / Last-Modified / sha256 台账 |
@@ -335,19 +347,20 @@ python3 scripts/refresh_upstreams.py
 <tr><th width="34%">症状</th><th width="66%">根因与解法</th></tr>
 <tr>
 <td><b>kelee.one 的插件 / 脚本批量 403</b></td>
-<td>根因是<b>客户端身份校验</b>，不是站点挂了、也不是「出口被 Cloudflare 挑中」：
-站方给资源路径设了规则，<b>UA 必须以 <code>Loon/</code> 开头</b>（前缀锚定，前面加任何东西都不行），
-且同时带 <code>CFNetwork/</code> 与 <code>Darwin/</code> 两段，否则一律 403 加一张
-<code>Attention Required!</code> 拦截页（注意：是 block，不是 <code>cf-mitigated: challenge</code>）。<br/>
-判据是<b>同一出口、同一 URL，只换 UA 就能翻转状态码</b>。本次实测：<br/>
-<code>loon-config-upstream-refresh/1.0</code> → 403 · <code>curl/8.4.0</code> → 403 ·
-Chrome UA → 403 · <code>Loon/998</code> → 403（缺 CFNetwork/Darwin）·
-<code>X Loon/998 …</code> → 403（<code>Loon/</code> 不在开头）·
-<code>Loon/3.5.1 CFNetwork/1494.0.7 Darwin/23.4.0</code> → <b>200 ✅</b>。<br/>
-因为 Loon 本体下载插件时发的就是这个形状的 UA，所以手机上一直是好的 ——
-<b>红的只有体检脚本</b>，每天固定报 30 条假「不可达」。<br/>
-解法：脚本改用 Loon UA；配置里那条 <code>DOMAIN-SUFFIX,kelee.one,DIRECT</code> 继续保留，
-它管的是下载走直连、不绕代理内核。</td>
+<td>它是<b>两道闸叠加</b>，少说一道就会开出错的药方。<br/>
+<b>闸 1 · 站方客户端校验（看 UA）</b>：资源路径要求 UA <b>以 <code>Loon/</code> 开头</b>
+（前缀锚定，前面加任何东西都不行），且同时带 <code>CFNetwork/</code> 与 <code>Darwin/</code>
+两段；不满足就回 403 加一张 <code>Attention Required!</code>（Cloudflare block 页，<b>没有</b>
+<code>cf-mitigated</code> 头）。<br/>
+<b>闸 2 · Cloudflare 机器人挑战（看出口 IP）</b>：机房 / 数据中心 IP 会被下发
+<code>cf-mitigated: challenge</code>，需要执行 JS 才过得去 —— <b>UA 装得再像也没用</b>。<br/>
+实测矩阵（固定 URL，每次只动一个变量）：<br/>
+<code>本机 + curl UA</code> → 403 block · <code>本机 + Loon UA</code> → <b>200 ✅</b> ·
+<code>CI + 任意 UA（含 Loon）</code> → 403 challenge。<br/>
+所以手机上一直是好的，而<b>体检脚本在 CI 上无论怎么装都拿不到这 30 条</b>。<br/>
+解法分两半：脚本带 Loon UA（过闸 1）；闸 2 在 CI 上无解，于是把这 30 条标成 <code>gated</code>，
+与真失败分开统计 —— 关键在于<b>别再让它们每天贡献 30 条假警报</b>。配置里那条
+<code>DOMAIN-SUFFIX,kelee.one,DIRECT</code> 继续保留，它管的是下载走直连、不绕代理内核。</td>
 </tr>
 <tr>
 <td><b>去广告插件「下载正常、MitM 也正常，就是拦不住」</b></td>
@@ -363,9 +376,11 @@ build 不够时规则被<b>静默忽略</b>：MitM 照常解密（请求列表�
 教训：<b>403 判定必须多出口对照</b>。固定 URL + 固定 UA，同时记录出口 IP，
 做「出口 IP × 状态码」二维统计。单点采样会得出完全错的结论。<br/>
 当时实测：出口 SG-Amazon 全 403 ×6，出口 JP-GSL 全 200 ×6，6/6 稳定复现。<br/>
-⚠️ 事后的补充：这张二维表还差一个维度 —— <b>UA</b>。第一行那个坑就是同一出口下
-只换 UA 就翻转 403/200；反过来，「换出口变 200」也可能只是碰巧换了 UA。
-<b>出口、UA、URL 三个变量都钉死，才有资格下结论。</b></td>
+⚠️ 事后的补充：这张二维表还差一个维度 —— <b>UA</b>。同一出口下只换 UA 就能翻转 403/200；
+反过来，「换出口变 200」也可能只是碰巧换了 UA。更要紧的是 <b>403 不止一种</b>：
+响应体是 <code>Attention Required!</code> 的是 <b>block</b>（服务端规则，UA 可解），
+带 <code>cf-mitigated: challenge</code> 的是<b>挑战</b>（出口 IP 风控，UA 无解）。<br/>
+<b>出口、UA、URL 三个变量都钉死，并且看清 403 的成因，才有资格下结论。</b></td>
 </tr>
 <tr>
 <td><b>苹果「偶尔访问不了」</b></td>
@@ -407,8 +422,10 @@ build 不够时规则被<b>静默忽略</b>：MitM 照常解密（请求列表�
 - **不含节点订阅**：公开版只有占位符，需自备订阅与凭据。
 - **不按地区分组**：策略组里没有 `HK` / `SG` / `JP` 这类地区组，要临时走某个地区，
   直接从节点列表里选。想恢复按地区分组，把 `NameRegex` 过滤器加回来即可。
-- **体检脚本会冒充 Loon**：`kelee.one` 按客户端身份放行，脚本必须带
-  `Loon/… CFNetwork/… Darwin/…` 形状的 UA，否则 30 条资源全红。这不是「站点挂了」的判据。
+- **30 条 kelee 资源在 CI 上无法验证**：站方只对 Loon 客户端放行（闸 1，UA），
+  叠加 Cloudflare 对机房 IP 的挑战（闸 2，无解）。脚本把它们记为 `gated` 而非失败 ——
+  读台账时 `ok=false` 要先看有没有 `gated` 标记。想拿到这 30 条的 sha256，
+  只能在本机（住宅出口）跑一次 `refresh_upstreams.py`。
 - **AI 地区白名单会变**：`AI` 组排除香港是当前结论，服务端策略调整后需重新测绘。
 
 ---
