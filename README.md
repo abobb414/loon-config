@@ -9,7 +9,7 @@
 
 # Loon Config
 
-**一份自用的 Loon 分流配置。23 个策略组、91 个上游资源、每天自动体检。**
+**一份自用的 Loon 分流配置。26 个策略组、91 个上游资源、每天自动体检。**
 
 分流不是把节点全堆进一个组就完事 —— 广告要拦在 MITM 之前、苹果要抢在去广告规则之前、
 AI 要避开港区、上游挂了要能看出来是哪一条挂的。
@@ -17,7 +17,7 @@ AI 要避开港区、上游挂了要能看出来是哪一条挂的。
 [Loon.conf](./Loon.conf) &nbsp;·&nbsp; [分流设计](#分流设计) &nbsp;·&nbsp; [上游体检](#上游体检每天一次) &nbsp;·&nbsp; [工程笔记](#工程笔记那些踩过的坑)
 
 [![Loon](https://img.shields.io/badge/Loon-3.x-0EA5E9?style=flat-square)](https://apps.apple.com/app/loon/id1373567447)
-[![Policy Groups](https://img.shields.io/badge/策略组-23-8B5CF6?style=flat-square)](#分流设计)
+[![Policy Groups](https://img.shields.io/badge/策略组-26-8B5CF6?style=flat-square)](#分流设计)
 [![Upstreams](https://img.shields.io/badge/上游资源-91-0EA5E9?style=flat-square)](#上游体检每天一次)
 [![Checks](https://img.shields.io/badge/核心资源-31%2F31%20可达-22C55E?style=flat-square)](#上游体检每天一次)
 [![Secret Scan](https://img.shields.io/badge/推送前-凭据扫描-F59E0B?style=flat-square)](#不要提交真实凭据)
@@ -76,17 +76,17 @@ resource_count : 91
 
 ```mermaid
 flowchart TD
-    A["流量入口<br/>TUN / 局域网"] --> B["[Rule] 本地规则<br/>34 条 · 先匹配先赢"]
+    A["流量入口<br/>TUN / 局域网"] --> B["[Rule] 本地规则<br/>30 条 · 先匹配先赢"]
     B --> C{"LAN 段？"}
-    C -->|"是"| D["DIRECT<br/>仅 NAS 的 HA/Emby 端口进 WG"]
+    C -->|"是"| D["DIRECT<br/>NAS 端口规则留作模板"]
     C -->|"否"| E{"专用直连域？"}
-    E -->|"是"| F["DIRECT<br/>pvq.cc / kelee.one 等"]
+    E -->|"是"| F["DIRECT<br/>kelee.one 等"]
     E -->|"否"| G{"Apple OTA 域？"}
     G -->|"是"| H["REJECT<br/>10 条固化 OTA 域名"]
     G -->|"否"| I{"Apple 核心域？"}
     I -->|"是"| J["Apple 组<br/>默认 DIRECT"]
     I -->|"否"| K["[Remote Rule]<br/>34 条远程规则表"]
-    K --> L["23 个策略组"]
+    K --> L["26 个策略组"]
     L --> M{"命中？"}
     M -->|"是"| N["对应平台组<br/>Netflix / AI / Finance …"]
     M -->|"否"| O["GEOIP,CN → DIRECT"]
@@ -102,13 +102,13 @@ flowchart TD
 
 ### 规则顺序：四道闸门
 
-配置里最花心思的不是策略组，是 `[Rule]` 段那 34 条的**排列**。本地规则先于远程规则匹配，
+配置里最花心思的不是策略组，是 `[Rule]` 段那 30 条的**排列**。本地规则先于远程规则匹配，
 所以闸门顺序决定一切：
 
 | 顺位 | 闸门 | 为什么必须在这个位置 |
 |---|---|---|
-| ① | LAN 段 `DIRECT` | 在家访问 NAS 不该绕代理。但 NAS 的 8123 / 8097 两个端口例外 —— 用 `AND` 逻辑规则单独挑出来进 WG 隧道 |
-| ② | 专用直连域 | `iris.pvq.cc` / `kelee.one` 这类资源站，直连才稳（见工程笔记） |
+| ① | LAN 段 `DIRECT` | 在家访问 NAS 不该绕代理。远程访问自托管服务时，把 `AND` 逻辑规则里的 `<NAS-IP>` 换成自己的地址再取消注释，只把具体端口放进 WG 隧道 |
+| ② | 专用直连域 | `kelee.one` 这类资源站在 Cloudflare 后面，经代理出海会被 `cf-mitigated: challenge` 挡住，直连才稳（见工程笔记） |
 | ③ | Apple OTA `REJECT` | 必须**早于** Apple 白名单，否则白名单会把 OTA 域捞回 Apple 组 |
 | ④ | Apple 核心白名单 | 必须**早于**远程去广告 `REJECT`，否则 AdRules 误杀 `icloud.com` / `me.com` |
 | ⑤ | `GEOIP,CN` → `FINAL` | 兜底 |
@@ -117,7 +117,7 @@ flowchart TD
 > 先放白名单，屏蔽就失效；先放 REJECT，白名单救不回来。
 > 这是踩过「苹果偶尔打不开」之后才定下来的。
 
-### 23 个策略组的分层
+### 26 个策略组的分层
 
 不是按国家粗暴分组，而是**按「同一类服务对出口的共同诉求」分组**：
 
@@ -129,27 +129,32 @@ flowchart TD
 | 社交 | `Instagram` `Telegram` `LinkedIn` | —— |
 | 金融 | `Finance` | 覆盖支付宝、云闪付与 8 家国内银行，默认 `DIRECT` |
 | 短视频 | `TikTok` | 抖音不再单列组，域名走 `ChinaMaxNoIP`、IP 走 `GEOIP,CN`，自然直连 |
-| AI | `AI` `OpenAI` `Gemini` `Claude` | **全部不含香港节点** |
-| 其他 | `Emby` `HomeNAS` `Speedtest` | `Emby` 默认走代理，4 个地址强制直连 |
+| AI | `AI` `OpenAI` `Gemini` `Claude` | 住宅出口优先，机房只做兜底；过滤器排除香港 |
+| 其他 | `Emby` `HomeNAS` `Speedtest` | `Emby` 默认走代理；`HomeNAS` 按需填 WG 地址 |
 
 > **2026-10-04 精简掉的那一层**：原先是 36 个组，多出来的是 12 个按国家/大洲分的 `url-test` 组
 > （`HK` `TW` `SG` `JP` `KR` `US` `AU` `EU` `AS` `AM` `AF` `CF`）和 12 条配套的 `NameRegex` 过滤器。
-> 出口只有「OpenClash 网关」和「`Available` 自动测速」两条腿，这几个组本就是空的 ——
+> 出口只有「本地代理网关」和「`Available` 自动测速」两条腿，这几个组本就是空的 ——
 > 但空组照样占着 `Proxy` 的成员列表，切一次错一次，所以连过滤器一起删了。
 > 同理，`Douyin` 组被删掉后抖音回到 `GEOIP,CN` 的直连兜底，行为不变而少一个组。
+> 后来又拆出 `ChuiXue` / `BigME` 两个订阅大合集与 `Claude` 组，最终是 26 个。
 
-### AI 组为什么排除香港
+### AI 组：住宅优先，机房兜底
 
-`AI` 组是 `url-test`，过滤器带负向断言：
+`AI` 是 `fallback`，顺序是「住宅 HINET -> 台湾家宽（1x / 3x）-> 本地代理」：
 
 ```ini
-AI_NoHK_Filter = NameRegex, FilterKey = "(?i)^(?!.*(港|香港|HK|Hong)).*(美国|...|日本|...|新加坡|...)"
+AI = fallback,ChuiXue-TW_Filter,BigME-TW-All_Filter,Home-Proxy,...
 ```
 
-不是嫌香港慢 —— 是**部分 AI 服务对出口地区的白名单不含香港**。健康检查
-（`generate_204`）只测连通性和延迟，测不出地区风控：延迟最低的香港节点会被选成最优，
-然后服务端返回「地区不支持」。`OpenAI` / `Gemini` / `Claude` 三个组默认指向 `AI`，
-也可手动钉死具体地区。
+不是嫌香港快慢 —— 是**部分 AI 服务对出口地区的白名单不含香港**，机房 IP 在风控里的
+信任度也明显低于住宅。健康检查（`generate_204`）只测连通性和延迟，测不出地区风控：
+延迟最低的节点会被选成最优，然后服务端返回「地区不支持」。所以过滤器先把香港和机房段
+排除，再按住宅优先级排序。`OpenAI` / `Gemini` 默认指向 `AI`，`Claude` 单独成组、
+默认也指向 `AI`，需要时可以逐节点手动切换。
+
+UDP 交给能转 UDP 的节点；转不了时 `udp-fallback-mode = REJECT` 宁可丢包也不直连，
+避免 WebRTC 或 STUN 把本地公网 IP 暴露出去。
 
 > 这是本项目里最反直觉的一条：**能连通 ≠ 能用**。测速组解决不了风控问题。
 
@@ -294,7 +299,7 @@ jq 表达式里的**空格必须转义成 `\x20`**（旧语法按空格分隔参
 
 | 文件 | 行数 | 用途 |
 |---|---|---|
-| `Loon.conf` | 282 | 主配置。23 个策略组、34 条本地规则、34 条远程规则、28 个插件 |
+| `Loon.conf` | 285 | 主配置。26 个策略组、30 条本地规则、34 条远程规则、25 个插件 |
 | `Loon-minimal.conf` | 32 | **最小化排查配置**：只有基础分流，无插件 / 脚本 / 改写 / 远程规则 / MITM |
 | `Stash.yaml` | 143 | 由 Loon 配置转换而来的 Stash 策略配置 |
 | `clash-advanced.yaml` | 433 | Clash 进阶配置，含策略组锚点与订阅占位 |
@@ -314,7 +319,7 @@ jq 表达式里的**空格必须转义成 `\x20`**（旧语法按空格分隔参
 
 ### 最小化配置是干什么的
 
-排查「某个服务访问不了」时，最怕的是**在 282 行的主配置里逐条注释试验**。
+排查「某个服务访问不了」时，最怕的是**在 285 行的主配置里逐条注释试验**。
 `Loon-minimal.conf` 把变量砍到只剩 5 条规则 + 2 个组，用它做 A/B：
 
 - 最小化配置下正常 ⇒ 主配置的某个组件有问题，逐项加回定位
@@ -332,8 +337,8 @@ git clone https://github.com/abobb414/loon-config.git
 cd loon-config
 
 # 2. 填上自己的凭据（仓库里是占位符，勿把真实值提交回去）
-#      [Proxy]        Home-OpenClash 的地址 / 端口 / 用户名 / 口令
-#      [Proxy]        Home-NAS-WG 的私钥 / 公钥 / 端点
+#      [Proxy]        Home-Proxy 的地址 / 端口 / 用户名 / 口令
+#      [Proxy]        Home-NAS-WG 的私钥 / 公钥 / 端点（纯 IPv6 端点也可）
 #      [Remote Proxy] 自己的订阅地址
 $EDITOR Loon.conf
 
@@ -348,7 +353,7 @@ python3 scripts/refresh_upstreams.py
 
 ## 工程笔记：那些踩过的坑
 
-配置 282 行，但不少行数花在了**看起来不重要、实际会要命的地方**。
+配置 285 行，但不少行数花在了**看起来不重要、实际会要命的地方**。
 
 <table>
 <tr><th width="34%">症状</th><th width="66%">根因与解法</th></tr>
@@ -398,10 +403,11 @@ build 不够时规则被<b>静默忽略</b>：MitM 照常解密（请求列表�
 <code>mesu</code> …），并置于 Apple 白名单<b>之前</b>。</td>
 </tr>
 <tr>
-<td><b>在家时 AdGuard 拦截失效</b></td>
-<td>原配置整段 <code>192.168.1.0/24</code> 走 WG 隧道，导致网关上的 AdGuard 与 smartdns
-的 DNS 查询被吸入隧道、又被白名单丢弃。<br/>
-改为<b>只把 NAS 的 HA / Emby 两个端口</b>用 <code>AND</code> 逻辑规则挑进隧道，LAN 其余全部直连。</td>
+<td><b>内网自建 DNS 的拦截失效</b></td>
+<td>原配置整段 <code>192.168.1.0/24</code> 走 WG 隧道，导致内网 DNS 查询被吸入隧道、
+又被对端白名单丢弃。<br/>
+改为<b>只把具体服务端口</b>用 <code>AND</code> 逻辑规则挑进隧道，LAN 其余全部直连；
+公开模板里这段默认注释，填自己的内网地址后启用。</td>
 </tr>
 <tr>
 <td><b>策略组无端抖动</b></td>

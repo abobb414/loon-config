@@ -9,14 +9,14 @@
 
 # Loon Config
 
-**A personal Loon traffic routing config. 23 policy groups, 91 upstream resources, automated daily health checks.**
+**A personal Loon traffic routing config. 26 policy groups, 91 upstream resources, automated daily health checks.**
 
 Traffic routing isn't just dumping every node into one group — ads must be blocked before MITM kicks in, Apple must be matched before ad-blocking rules, AI traffic must avoid the HK region, and when an upstream goes down you should be able to tell exactly which one broke.
 
 [Loon.conf](./Loon.conf) &nbsp;·&nbsp; [Traffic Routing Design](#traffic-routing-design) &nbsp;·&nbsp; [Daily Upstream Health Check](#daily-upstream-health-check) &nbsp;·&nbsp; [Engineering Notes](#engineering-notes-pitfalls-we-hit)
 
 [![Loon](https://img.shields.io/badge/Loon-3.x-0EA5E9?style=flat-square)](https://apps.apple.com/app/loon/id1373567447)
-[![Policy Groups](https://img.shields.io/badge/Policy%20Groups-23-8B5CF6?style=flat-square)](#traffic-routing-design)
+[![Policy Groups](https://img.shields.io/badge/Policy%20Groups-26-8B5CF6?style=flat-square)](#traffic-routing-design)
 [![Upstreams](https://img.shields.io/badge/Upstreams-91-0EA5E9?style=flat-square)](#daily-upstream-health-check)
 [![Checks](https://img.shields.io/badge/Core%20Resources-31%2F31%20reachable-22C55E?style=flat-square)](#daily-upstream-health-check)
 [![Secret Scan](https://img.shields.io/badge/Pre--push-Credential%20Scan-F59E0B?style=flat-square)](#dont-commit-real-credentials)
@@ -73,17 +73,17 @@ So the effort distribution of this config is **70% ordering and boundaries, 30% 
 
 ```mermaid
 flowchart TD
-    A["Traffic entry<br/>TUN / LAN"] --> B["[Rule] Local rules<br/>34 rules · first match wins"]
+    A["Traffic entry<br/>TUN / LAN"] --> B["[Rule] Local rules<br/>30 rules · first match wins"]
     B --> C{"LAN segment?"}
-    C -->|"Yes"| D["DIRECT<br/>only NAS HA/Emby ports go to WG"]
+    C -->|"Yes"| D["DIRECT<br/>NAS port rules kept as a template"]
     C -->|"No"| E{"Dedicated DIRECT domain?"}
-    E -->|"Yes"| F["DIRECT<br/>pvq.cc / kelee.one etc."]
+    E -->|"Yes"| F["DIRECT<br/>kelee.one etc."]
     E -->|"No"| G{"Apple OTA domain?"}
     G -->|"Yes"| H["REJECT<br/>10 pinned OTA domains"]
     G -->|"No"| I{"Apple core domain?"}
     I -->|"Yes"| J["Apple group<br/>default DIRECT"]
     I -->|"No"| K["[Remote Rule]<br/>34 remote rule sets"]
-    K --> L["23 policy groups"]
+    K --> L["26 policy groups"]
     L --> M{"Match?"}
     M -->|"Yes"| N["Corresponding platform group<br/>Netflix / AI / Finance …"]
     M -->|"No"| O["GEOIP,CN → DIRECT"]
@@ -99,12 +99,12 @@ flowchart TD
 
 ### Rule Order: Four Gates
 
-The part of the config that took the most thought isn't the policy groups — it's the **arrangement** of those 34 lines in the `[Rule]` section. Local rules match before remote rules, so the gate order decides everything:
+The part of the config that took the most thought isn't the policy groups — it's the **arrangement** of those 30 lines in the `[Rule]` section. Local rules match before remote rules, so the gate order decides everything:
 
 | Order | Gate | Why it must sit at this position |
 |---|---|---|
 | ① | LAN segment `DIRECT` | Reaching the NAS at home shouldn't detour through a proxy. But ports 8123 / 8097 on the NAS are exceptions — `AND` logic rules pick them out individually into the WG tunnel |
-| ② | Dedicated DIRECT domains | Resource sites like `iris.pvq.cc` / `kelee.one` are only stable on DIRECT (see Engineering Notes) |
+| ② | Dedicated DIRECT domains | Sites like `kelee.one` sit behind Cloudflare and only stay stable on DIRECT (see Engineering Notes) |
 | ③ | Apple OTA `REJECT` | Must come **before** the Apple whitelist, otherwise the whitelist pulls OTA domains back into the Apple group |
 | ④ | Apple core whitelist | Must come **before** the remote ad-blocking `REJECT`, otherwise AdRules kills `icloud.com` / `me.com` by mistake |
 | ⑤ | `GEOIP,CN` → `FINAL` | Fallback |
@@ -113,7 +113,7 @@ The part of the config that took the most thought isn't the policy groups — it
 > whitelist first and the blocking never works; REJECT first and the whitelist can't rescue it.
 > This was settled only after we'd been bitten by "Apple sometimes won't open."
 
-### How the 23 Policy Groups Are Layered
+### How the 26 Policy Groups Are Layered
 
 Groups aren't split crudely by country — they're grouped **by the shared egress needs of a class of services**:
 
@@ -125,22 +125,22 @@ Groups aren't split crudely by country — they're grouped **by the shared egres
 | Social | `Instagram` `Telegram` `LinkedIn` | —— |
 | Finance | `Finance` | Covers Alipay, UnionPay and 8 domestic banks; defaults to `DIRECT` |
 | Short video | `TikTok` | Douyin (抖音) no longer has its own group: its domains match `ChinaMaxNoIP` and its IPs match `GEOIP,CN`, so it lands on DIRECT on its own |
-| AI | `AI` `OpenAI` `Gemini` `Claude` | **None of them contain HK nodes** |
-| Other | `Emby` `HomeNAS` `Speedtest` | `Emby` defaults to proxy, with 4 addresses forced to DIRECT |
+| AI | `AI` `OpenAI` `Gemini` `Claude` | Residential egress first, datacenter as fallback; HK filtered out |
+| Other | `Emby` `HomeNAS` `Speedtest` | `Emby` defaults to proxy; `HomeNAS` needs your WG address |
 
 > **The layer trimmed on 2026-10-04**: there used to be 36 groups. The extras were 12 per-country/per-continent
 > `url-test` groups (`HK` `TW` `SG` `JP` `KR` `US` `AU` `EU` `AS` `AM` `AF` `CF`) plus their 12 companion
-> `NameRegex` filters. Egress only ever had two legs — the OpenClash gateway and the `Available` auto test —
+> `NameRegex` filters. Egress only ever had two legs — the local gateway and the `Available` auto test —
 > so those groups were empty anyway. But an empty group still occupies a slot in `Proxy`'s member list, and every
 > pick lands on a dead entry, so the filters went with them. Same reasoning retired the `Douyin` group: Douyin
 > falls back to the `GEOIP,CN` DIRECT rule, behaviour unchanged, one group fewer.
 
 ### Why the AI Groups Exclude Hong Kong
 
-The `AI` group is a `url-test` whose filter uses negative lookaheads:
+The `AI` group is a `fallback` chain: residential HINET -> TW residential (1x / 3x) -> local proxy:
 
 ```ini
-AI_NoHK_Filter = NameRegex, FilterKey = "(?i)^(?!.*(港|香港|HK|Hong)).*(美国|...|日本|...|新加坡|...)"
+AI = fallback,ChuiXue-TW_Filter,BigME-TW-All_Filter,Home-Proxy,...
 ```
 
 It's not that HK is slow — it's that **some AI services' region whitelists simply don't include Hong Kong**. Health checks
@@ -295,7 +295,7 @@ and the source site intermittently throws `SSL: UNEXPECTED_EOF`, so **retry with
 
 | File | Lines | Purpose |
 |---|---|---|
-| `Loon.conf` | 282 | Main config. 23 policy groups, 34 local rules, 34 remote rules, 28 plugins |
+| `Loon.conf` | 285 | Main config. 26 policy groups, 30 local rules, 34 remote rules, 25 plugins |
 | `Loon-minimal.conf` | 32 | **Minimal troubleshooting config**: base routing only, no plugins / scripts / rewrites / remote rules / MITM |
 | `Stash.yaml` | 143 | Stash policy config converted from the Loon config |
 | `clash-advanced.yaml` | 433 | Advanced Clash config, with policy group anchors and subscription placeholders |
@@ -318,7 +318,7 @@ and the source site intermittently throws `SSL: UNEXPECTED_EOF`, so **retry with
 
 ### What the Minimal Config Is For
 
-When troubleshooting "some service won't load," the worst approach is **toggling rules one by one in the 282-line main config**.
+When troubleshooting "some service won't load," the worst approach is **toggling rules one by one in the 285-line main config**.
 `Loon-minimal.conf` cuts the variables down to just 5 rules + 2 groups, so you can A/B against it:
 
 - Works on the minimal config ⇒ some component in the main config is at fault; re-add items one by one to locate it
@@ -336,7 +336,7 @@ git clone https://github.com/abobb414/loon-config.git
 cd loon-config
 
 # 2. Fill in your own credentials (the repo contains placeholders; don't commit real values back)
-#      [Proxy]        Home-OpenClash's address / port / username / password
+#      [Proxy]        Home-Proxy's address / port / username / password
 #      [Proxy]        Home-NAS-WG's private key / public key / endpoint
 #      [Remote Proxy] your own subscription URL
 $EDITOR Loon.conf
@@ -352,7 +352,7 @@ python3 scripts/refresh_upstreams.py
 
 ## Engineering Notes: Pitfalls We Hit
 
-The config is 282 lines, but a good chunk of them went into places that **look unimportant yet turn out to be critical**.
+The config is 285 lines, but a good chunk of them went into places that **look unimportant yet turn out to be critical**.
 
 <table>
 <tr><th width="34%">Symptom</th><th width="66%">Root cause & fix</th></tr>
@@ -407,9 +407,9 @@ Fixed by removing that remote rule set, pinning 10 real OTA domains locally (<co
 <code>mesu</code> …), and placing them <b>before</b> the Apple whitelist.</td>
 </tr>
 <tr>
-<td><b>AdGuard blocking stopped working at home</b></td>
-<td>The original config sent the entire <code>192.168.1.0/24</code> segment through the WG tunnel, so DNS queries from AdGuard and smartdns on the gateway got sucked into the tunnel and then dropped by the whitelist.<br/>
-Fixed by picking <b>only the NAS's HA / Emby ports</b> into the tunnel via <code>AND</code> logic rules, with the rest of the LAN all on DIRECT.</td>
+<td><b>Self-hosted DNS blocking stopped working</b></td>
+<td>The original config sent the entire <code>192.168.1.0/24</code> segment through the WG tunnel, so internal DNS queries got sucked into the tunnel and then dropped by the peer whitelist.<br/>
+Fixed by picking <b>only specific service ports</b> into the tunnel via <code>AND</code> logic rules, with the rest of the LAN all on DIRECT; the public template leaves these rules commented.</td>
 </tr>
 <tr>
 <td><b>Policy groups flapping for no reason</b></td>

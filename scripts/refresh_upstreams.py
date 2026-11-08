@@ -50,6 +50,8 @@ LOON_UA = "Loon/998 CFNetwork/3896.100.1.1.1 Darwin/27.0.0"
 # 在 CI 侧拿到 403 / challenge 属于预期结果，记为 gated 而非 failed。
 CLIENT_GATED_HOSTS = ("kelee.one",)
 SKIP_HOSTS = (
+    # 公开模板里的订阅地址占位符，不是真实资源
+    "example.com",
     "dns.alidns.com",
     "223.5.5.5",
     "223.6.6.6",
