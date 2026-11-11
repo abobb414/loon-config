@@ -158,14 +158,30 @@ def conflict_reason(rule):
 # (acs|g-acs|gw)\.m\.(goofish|taobao)\.com/(gw|h5)）。kelee 的规则把主机和
 # 网关段都写死了，迁走之后正则依然合法、只是永不命中——静默失效，最难查。
 GOOFISH_PREFIX_RE = re.compile(
-    r'\^https:\\/\\/(?:acs|g-acs|gw)\\\.m\\\.goofish\\\.com\\/(?:gw|h5)\\/')
+    r'\^https:\\/\\/'
+    r'(?:\(acs\|g-acs\|gw\)|acs|g-acs|gw)'
+    r'\\\.m\\\.'
+    r'(?:\(goofish\|taobao\)|goofish|taobao)'
+    r'\\\.com\\/'
+    r'(?:\((?:gw\|h5)\)|\(gw\)|gw|h5)'
+    r'\\/')
 GOOFISH_PREFIX_NEW = r'^https:\/\/(acs|g-acs|gw)\.m\.goofish\.com\/(gw|h5)\/'
+
+# 2026-11-11 抓包确认：闲鱼的 mtop 请求已改走淘宝共享网关 acs.m.taobao.com，
+# 只匹配 goofish 的规则在真机上一次都没命中（请求记录里翻不到任何 goofish 接口）。
+# 但淘宝域是共用的，不能无条件放开 —— 只对闲鱼私有命名空间（mtop.taobao.idle* /
+# mtop.idle*）追加 taobao 网关；mtopsearch.* 之类可能被淘宝复用，保持只匹配 goofish。
+IDLE_API_RE = re.compile(r'mtop\.taobao\.idle|mtop\.idle')
+GOOFISH_PREFIX_NEW_TAOBAO = r'^https:\/\/(acs|g-acs|gw)\.m\.(goofish|taobao)\.com\/(gw|h5)\/'
 
 
 def normalize(rule):
-    if GOOFISH_PREFIX_RE.search(rule):
-        return GOOFISH_PREFIX_RE.sub(lambda _m: GOOFISH_PREFIX_NEW, rule, count=1)
-    return rule
+    if not GOOFISH_PREFIX_RE.search(rule):
+        return rule
+    # 规则里的点号是转义过的（mtop\.taobao\.idle），先还原再判命名空间
+    norm = rule.replace('\\.', '.')
+    new = GOOFISH_PREFIX_NEW_TAOBAO if IDLE_API_RE.search(norm) else GOOFISH_PREFIX_NEW
+    return GOOFISH_PREFIX_RE.sub(lambda _m, _n=new: _n, rule, count=1)
 
 
 # 新版脚本语法：  request if ${url} ~= /<正则>/i then <动作>(<参数>)
