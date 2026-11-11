@@ -65,6 +65,9 @@ jobs:
             --strict
 
       - name: 提交刷新结果
+        # 只在定时 / 手动触发时提交。push 触发的这轮只做校验和体检 ——
+        # 否则每次人工改完配置，后面都会紧跟一条 bot 的 chore 提交，历史很吵。
+        if: github.event_name != 'push'
         run: |
           files="Loon.conf Loon-routing.conf .upstream/upstreams.lock.json"
           if [[ -z "$(git status --porcelain -- $files)" ]]; then
