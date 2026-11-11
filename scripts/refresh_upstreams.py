@@ -328,6 +328,45 @@ def fetch_text_with_retries(url: str, timeout: int, retries: int) -> str:
     raise RuntimeError(f"Could not fetch {url}: {last_error}")
 
 
+def write_summary(
+    path: Path,
+    payload: dict[str, object],
+    resolved: list[dict[str, object]],
+    reachable: list[dict[str, object]],
+    gated: list[dict[str, object]],
+    failed: list[dict[str, object]],
+) -> None:
+    """把体检结果写进 GitHub Actions 的 Step Summary。
+
+    只看 workflow 的绿勾是没有信息量的 —— 30 条 kelee 资源在 CI 上注定 403，
+    真正的信号是「失败清单里有没有 core 资源」。所以把失败逐条摊开，
+    而不是让它们埋在日志第 400 行。
+    """
+    stale = [item for item in resolved if item.get("stale")]
+    failed_core = [item for item in failed if item["core"]]
+    lines: list[str] = [
+        "## 上游体检",
+        "",
+        f"- 生成时间：`{payload['generated_at']}`",
+        f"- 资源总数：**{payload['resource_count']}**",
+        f"- 可达：**{len(reachable)}**",
+        f"- 客户端门禁：**{len(gated)}**（仅 Loon 客户端可下，CI 侧 403 属预期）",
+        f"- 不可达：**{len(failed)}**（其中核心资源 **{len(failed_core)}** 条）",
+        f"- 沿用上次成功记录：**{len(stale)}**",
+    ]
+    if failed_core:
+        lines += ["", "### 核心资源失败", "", "| 状态 | 来源 | URL |", "|---|---|---|"]
+        for item in failed_core[:30]:
+            lines.append(f"| `{item.get('status') or '-'}` | {item['source']} | {item['url']} |")
+    if failed:
+        others = [item for item in failed if not item["core"]]
+        if others:
+            lines += ["", "### 非核心失败", "", "| 状态 | 来源 | URL |", "|---|---|---|"]
+            for item in others[:30]:
+                lines.append(f"| `{item.get('status') or '-'}` | {item['source']} | {item['url']} |")
+    path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--config", default="Loon.conf", type=Path)
@@ -335,6 +374,12 @@ def main() -> int:
     parser.add_argument("--timeout", default=30, type=int)
     parser.add_argument("--retries", default=2, type=int)
     parser.add_argument("--strict", action="store_true")
+    parser.add_argument(
+        "--summary",
+        type=Path,
+        default=None,
+        help="把结果写进 GitHub Step Summary（通常传 $GITHUB_STEP_SUMMARY）",
+    )
     args = parser.parse_args()
 
     update_last_updated(args.config)
@@ -376,6 +421,10 @@ def main() -> int:
     print(f"合计校验       : {total_bytes / 1024 / 1024:.1f} MB / {len(reachable)} 个 sha256")
 
     failed_core = [item for item in resolved if item["core"] and not item["ok"] and not item.get("gated")]
+    if args.summary:
+        args.summary.parent.mkdir(parents=True, exist_ok=True)
+        write_summary(args.summary, payload, resolved, reachable, gated, failed)
+
     if failed_core:
         print("Core upstream failures:", file=sys.stderr)
         for item in failed_core:
