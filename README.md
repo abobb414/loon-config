@@ -14,10 +14,12 @@
 分流不是把节点全堆进一个组就完事 —— 广告要拦在 MITM 之前、苹果要抢在去广告规则之前、
 AI 要避开港区、上游挂了要能看出来是哪一条挂的。
 
-[Loon.conf](./Loon.conf) &nbsp;·&nbsp; [分流设计](#分流设计) &nbsp;·&nbsp; [上游体检](#上游体检每天一次) &nbsp;·&nbsp; [工程笔记](#工程笔记那些踩过的坑)
+[Loon.conf](./Loon.conf) &nbsp;·&nbsp; [分流版](./Loon-routing.conf) &nbsp;·&nbsp; [分流设计](#分流设计) &nbsp;·&nbsp; [为什么 MITM 不该留在主配置](#只做分流的那一份为什么-mitm-不该留在主配置里) &nbsp;·&nbsp; [上游体检](#上游体检每天一次)
 
 [![Loon](https://img.shields.io/badge/Loon-3.x-0EA5E9?style=flat-square)](https://apps.apple.com/app/loon/id1373567447)
 [![Policy Groups](https://img.shields.io/badge/策略组-26-8B5CF6?style=flat-square)](#分流设计)
+[![Routing Only](https://img.shields.io/badge/分流版-无%20MITM%20%2F%20无插件-22C55E?style=flat-square)](./Loon-routing.conf)
+[![Plugins](https://img.shields.io/badge/去广告插件-需自行订阅-F59E0B?style=flat-square)](#插件与脚本自己订阅)
 [![Upstreams](https://img.shields.io/badge/上游资源-91-0EA5E9?style=flat-square)](#上游体检每天一次)
 [![Checks](https://img.shields.io/badge/核心资源-31%2F31%20可达-22C55E?style=flat-square)](#上游体检每天一次)
 [![Secret Scan](https://img.shields.io/badge/推送前-凭据扫描-F59E0B?style=flat-square)](#不要提交真实凭据)
@@ -258,8 +260,17 @@ Moli-X GeoIP、Sub-Store 解析器）。它们若某次抓取失败，**不写 `
 
 ## 去广告：规则为什么自己固化
 
-`[Remote Rewrite]` 引用了 `rewrite/adblock.list` —— 19 个插件、311 条去广告规则，**不是「抄一份备份」**，
-是为了绕开两件事：
+`[Plugin]` 首行引用 `rewrite/adblock.lpx` —— 19 个插件、309 条去广告规则、196 个域名，
+**规则与 `[MitM]` 由同一次生成产出**，不是「抄一份备份」。最初的做法是转成旧语法的
+`rewrite/adblock.list` 挂到 `[Remote Rewrite]`，2026-11 改成 `.lpx`，原因是后者能自持解密白名单：
+
+| | `.list` + `[Remote Rewrite]` | `.lpx`（现用） |
+|---|---|---|
+| 解密白名单 | 靠人工往主配置 `[MITM]` 里对账，实测漂移过一次 | 与规则同文件、同源生成 |
+| 新版语法 | 必须逐条降级，10 条表达不了 | 原样保留 |
+| 规则与主机段一致性 | 两边可能对不上（311 条里 244 条的解密权只来自某一个插件） | 由生成器保证 |
+
+固化的动机是绕开两件事：
 
 - **插件规则用的是新版脚本语法**，形如 `request if ${url} ~= /.../i then reject_dict(200)`。
   该语法自 Loon 3.5.1(978) 引入，而插件头部普遍要求 `#!loon_version=3.5.1(998)`。
@@ -268,9 +279,9 @@ Moli-X GeoIP、Sub-Store 解析器）。它们若某次抓取失败，**不写 `
 - **插件会随作者更新而变化**，行为不由自己掌控。
 
 官方文档《匹配顺序》写明：**本地配置的 `[Rewrite]` 优先于插件的 `[Rewrite]`**。
-所以把这些规则逐条等价转成旧版语法（Build 729+ 全兼容）搬到自己的文件里，一次解决。
+所以把这些规则搬进自己维护的文件里，一次解决。旧语法回退路径（Build 729+ 全兼容）仍然保留：
 
-| 新版 | 旧版 |
+| 新版 | 旧版（仅在 `--legacy` 回退时使用） |
 |---|---|
 | `reject_dict(200)` / `reject(404)` | `reject-dict` （HTTP 200 + `{}`） |
 | `reject_img(200)` | `reject-img` |
@@ -280,12 +291,12 @@ Moli-X GeoIP、Sub-Store 解析器）。它们若某次抓取失败，**不写 `
 | `response.header.add` | `response-header-add` |
 | `redirect(307,url)` | `307 url` |
 
-有 10 条（`response.body.mock` / `response.json.jq_file` / `response.body.replace`）旧语法没有等价动作，
-仍由插件提供，已在规则文件头部注明。
+旧语法表达不了的 10 条（`response.body.mock` / `response.json.jq_file` / `response.body.replace`）
+在 `.lpx` 里原样保留，不再降级。
 
 ```bash
-# 重新生成（插件更新后跑一次即可）
-python3 rewrite/gen.py
+python3 rewrite/gen.py            # 默认产出 rewrite/adblock.lpx（规则 + [MitM] 同源）
+python3 rewrite/gen.py --legacy   # 回退：产出 adblock.list，挂回 [Remote Rewrite]
 ```
 
 转换逻辑与踩坑记录在 `skills/loon-rewrite-localize/` —— 这条链路上有三个坑：
@@ -295,17 +306,96 @@ jq 表达式里的**空格必须转义成 `\x20`**（旧语法按空格分隔参
 
 ---
 
+## 只做分流的那一份：为什么 MITM 不该留在主配置里
+
+[`Loon-routing.conf`](./Loon-routing.conf) 是 `Loon.conf` 的派生版，只保留
+`[General]` `[Proxy]` `[Remote Proxy]` `[Proxy Group]` `[Remote Filter]` `[Rule]` `[Remote Rule]` `[Host]` 八段，
+`[MITM]` / `[Rewrite]` / `[Remote Rewrite]` / `[Script]` / `[Remote Script]` / `[Plugin]` 全部移除。
+
+它不是手维护的第二份配置 —— 每天由脚本重建，改主配置就会跟着变：
+
+```bash
+python3 scripts/build_routing.py         # 从 Loon.conf 重建
+python3 scripts/build_routing.py --check # 只比对：不同步时返回 1（CI 每天跑这个）
+```
+
+### 两种去广告，只有一种需要解密
+
+| 走什么 | 靠哪个段 | 需要 MITM？ | 分流版里的状态 |
+|---|---|---|---|
+| **规则层拦截** | `[Rule]` / `[Remote Rule]` 的 `REJECT` | 否 | ✅ 保留 |
+| **改写层** | `[Rewrite]`：改响应体、删 JSON 字段、mock 返回 | **是** | ❌ 已移除 |
+
+规则层拒的是连接本身，看域名就够了，不需要明文 —— 所以纯分流配置里照样生效
+（`AdRules` 那 34 条远程规则没动）。改写层要先把密文解开：
+域名不在 `[MITM] hostname` 里，HTTPS 就是一条隧道，**rewrite 静默不执行** ——
+Loon 不报错、日志不提示、规则命中数恒为 0，表现是「插件在、规则在、广告照播」。
+
+### 为什么「顺手保留一份 MITM 白名单」反而会毁掉去广告
+
+`hostname` 是一份**静态清单**，它不会自己长。而它失效的方式恰好是全静默的：
+
+1. **App 换接口域名，清单跟不上。** 闲鱼 2026-11 就把下单/广告接口从
+   `gw.m.goofish.com` 挪到了 `acs.m.taobao.com` —— 22 条规则 + 6 个脚本全部锚在废弃域名上，
+   症状是「只有开屏广告被拦、其他页面照播」，查了两轮才发现主机段整个错了。
+2. **插件更新新增域名，清单也跟不上。** 插件作者补了新域名，你手里的快照还是旧的，
+   于是新域名不解密、新规则不执行，而旧规则因为接口已停用也不会报错。
+3. **没有插件时，白名单纯属负债。** 解密的流量没有任何 rewrite 去处理，
+   只是把更多 TLS 会话拆开：多一次 CPU、多一份隐私暴露面，
+   证书固定的 App（银行、部分游戏、企业内网工具）还会直接连不上。
+4. **它会制造「已经配好了」的假象。** 这才是最贵的成本 —— 排查时会先去怀疑插件、
+   怀疑证书、怀疑版本，而真正的原因在清单的某一处早已过期的域名。
+
+那份清单在这台机器上从 6 条膨胀到 188 条，仍然覆盖不全。
+`.lpx` 插件把 `[Rewrite]` 和 `[MitM]` 写在**同一个文件里、随作者一次更新**，
+主配置只要不抢着维护解密权，就不会出现两边漂移。所以：
+
+> **一份配置里，解密权只让一方维护。** 分流归这个仓库，改写和 MITM 归插件作者。
+
+顺带一提，`disable-udp-ports = 443` 也一起删了 —— 它存在的唯一理由是逼 App 从 QUIC
+回落到 TCP 443 好让 MITM 解密。没有 rewrite 就没有回落的必要，留着只会白付握手代价。
+
+### 插件与脚本自己订阅
+
+本仓库**不转发、不镜像**这些插件与脚本，也不对它们的可用性负责 ——
+需要的自己去上游订，作者更新你才能跟着更新：
+
+| 类型 | 订阅地址 | 说明 |
+|---|---|---|
+| **去广告插件** `.lpx` | <https://kelee.one/Tool/Loon/Lpx/> | 目录页，按需逐个添加；插件自带 `[MitM]` |
+| ├ 闲鱼 | `FleaMarket_remove_ads.lpx` | 改响应体清 `cacheAd`，必须 MITM |
+| ├ 通用拦截 | `BlockAdvertisers.lpx` / `Remove_ads_by_keli.lpx` | 规则型为主 |
+| ├ 微信 / 小程序 | `WeixinMiniPrograms_Remove_ads.lpx`、`Weixin_Official_Accounts_remove_ads.lpx` | |
+| └ 单 App | `JD` / `Bilibili` / `QuarkBrowser` / `Amap` / `Cainiao` / `12306` / `BaiduNetDisk` / `TXDocs` … | 用哪个订哪个 |
+| **脚本** `.scripts` | <https://github.com/fmz200/wool_scripts/tree/main/Loon/script> | `tools.scripts`（工具合集）/ `tasks.scripts`（定时任务） |
+| **脚本面板** `BoxJs` | <https://kelee.one/Tool/Loon/Lpx/BoxJs.lpx> | 通知、Cookie、面板类脚本的宿主 |
+| **规则清单** `.list` | [Cats-Team/AdRules](https://github.com/Cats-Team/AdRules)、[blackmatrix7/ios_rule_script](https://github.com/blackmatrix7/ios_rule_script) | `[Remote Rule]` 已直接引用，无需另订 |
+
+两个必须知道的坑：
+
+- **kelee.one 只对 Loon 客户端放行。** 站方校验 UA（必须 `Loon/` 开头 + `CFNetwork/` + `Darwin/`），
+  且在 Cloudflare 后面还有一道机房出口风控 —— 所以这些链接**在浏览器里点大概率 403**，
+  要复制到 Loon → 插件 → 添加 里订阅。同理，GitHub Actions 上也永远拿不到，脚本里记为 `gated` 而非失败。
+- **插件越多，解密面越大。** 每加一个插件就是把它的 hostname 并进 MITM 范围。
+  只订你真正在用的 App，比一次订 26 个更稳定。
+
+---
+
 ## 文件说明
 
 | 文件 | 行数 | 用途 |
 |---|---|---|
-| `Loon.conf` | 285 | 主配置。26 个策略组、30 条本地规则、34 条远程规则、25 个插件 |
+| `Loon.conf` | 294 | 主配置。26 个策略组、30 条本地规则、34 条远程规则、26 个插件（含 MITM） |
+| `Loon-routing.conf` | 268 | **纯分流版**：由 `Loon.conf` 自动派生，无 MITM / 改写 / 脚本 / 插件，插件需自行订阅 |
 | `Loon-minimal.conf` | 32 | **最小化排查配置**：只有基础分流，无插件 / 脚本 / 改写 / 远程规则 / MITM |
 | `Stash.yaml` | 143 | 由 Loon 配置转换而来的 Stash 策略配置 |
 | `clash-advanced.yaml` | 433 | Clash 进阶配置，含策略组锚点与订阅占位 |
-| `rewrite/adblock.list` | 328 | **固化后的去广告规则**：311 条、旧版语法，由 `[Remote Rewrite]` 引用 |
+| `rewrite/adblock.lpx` | —— | **固化的去广告插件**：规则与 `[MitM]` 同源生成，由 `[Plugin]` 引用；`rewrite/adblock.list` 为旧版语法回退 |
 | `skills/loon-rewrite-localize/` | —— | 可复用的 skill：插件规则本地化（`scripts/localize.py` + 方法论与踩坑） |
-| `scripts/refresh_upstreams.py` | 385 | 上游资源体检脚本（客户端门禁资源单独计数） |
+| `scripts/refresh_upstreams.py` | 400+ | 上游资源体检脚本（客户端门禁资源单独计数，可写 Step Summary） |
+| `scripts/build_routing.py` | —— | 从主配置派生 `Loon-routing.conf`；`--check` 校验两份是否同步 |
+| `scripts/validate_config.py` | —— | 静态校验：段名拼写、策略组引用、`policy` 是否存在、`FINAL` 收尾 |
+| `scripts/summarize.py` | —— | 生成每日任务里的配置概览表 |
 | `IconSet/Color/` | 45 (+3) | 策略组与订阅图标（icons8 Pulsar Color，1600px PNG）与 `icons-all.json`；另含 3 个 `*-v2` 的旧名兼容别名（见下） |
 
 | `.upstream/upstreams.lock.json` | —— | 91 条资源的 ETag / Last-Modified / sha256 台账 |
@@ -319,7 +409,7 @@ jq 表达式里的**空格必须转义成 `\x20`**（旧语法按空格分隔参
 
 ### 最小化配置是干什么的
 
-排查「某个服务访问不了」时，最怕的是**在 285 行的主配置里逐条注释试验**。
+排查「某个服务访问不了」时，最怕的是**在 294 行的主配置里逐条注释试验**。
 `Loon-minimal.conf` 把变量砍到只剩 5 条规则 + 2 个组，用它做 A/B：
 
 - 最小化配置下正常 ⇒ 主配置的某个组件有问题，逐项加回定位
@@ -342,18 +432,48 @@ cd loon-config
 #      [Remote Proxy] 自己的订阅地址
 $EDITOR Loon.conf
 
-# 3. 本地跑一次上游体检（可选）
+# 3. 想用哪一份
+python3 scripts/build_routing.py     # 生成纯分流版（无 MITM / 插件），再自行订阅去广告插件
+# 或者直接用 Loon.conf（自带 26 个插件、脚本与 MITM）
+
+# 4. 本地跑一次上游体检 + 静态校验（可选）
+python3 scripts/validate_config.py Loon.conf Loon-routing.conf
 python3 scripts/refresh_upstreams.py
 
-# 4. 在 Loon 里导入
-#    配置 -> 新建配置 -> 填 Loon.conf 的 raw 地址 -> 切换过去
+# 5. 在 Loon 里导入
+#    配置 -> 新建配置 -> 填 raw 地址 -> 切换过去
+#    https://raw.githubusercontent.com/abobb414/loon-config/main/Loon-routing.conf
+#    https://raw.githubusercontent.com/abobb414/loon-config/main/Loon.conf
+```
+
+> 两份配置选哪份：**只要分流、去广告靠插件订阅** → `Loon-routing.conf`；
+> **想连插件、脚本、MITM 一次性带走** → `Loon.conf`。两者共用同一套策略组与规则，
+> 主配置改了分流版会自动跟着重建。
+
+### 每天自动做什么
+
+`.github/workflows/refresh-upstreams.yml` 每天 09:17（Asia/Shanghai）跑一遍：
+
+1. `validate_config.py` 静默错误体检 —— 策略组写错名字、`[Rule]` 指向已删的组、
+   `[Remote Rule]` 的 `policy=` 不存在，这些 Loon 都不报错，只会静默落到 `FINAL`
+2. 从 `Loon.conf` 重建 `Loon-routing.conf`，并校验两份同步
+3. 体检 91 条上游资源的 ETag / Last-Modified / sha256；kelee 的 30 条记为 `gated`（机房出口注定过不了）
+4. 有变化才提交；核心资源不可达时**台账照记、任务置红**，失败清单写进 Step Summary
+
+结果在 Actions 页的 Summary 里是一张表，不用翻日志：
+
+```
+### 配置概览
+| 文件 | 行数 | 策略组 | 本地规则 | 远程规则 | 插件 | MITM 域名 |
+| Loon.conf        | 294 | 26 | 30 | 34 | 26 | 6 |
+| Loon-routing.conf| 268 | 26 | 30 | 34 |  0 | 0 |
 ```
 
 ---
 
 ## 工程笔记：那些踩过的坑
 
-配置 285 行，但不少行数花在了**看起来不重要、实际会要命的地方**。
+配置 294 行，但不少行数花在了**看起来不重要、实际会要命的地方**。
 
 <table>
 <tr><th width="34%">症状</th><th width="66%">根因与解法</th></tr>
@@ -380,7 +500,7 @@ python3 scripts/refresh_upstreams.py
 build 不够时规则被<b>静默忽略</b>：MitM 照常解密（请求列表有紫锁、看得见完整 URL），rewrite 却一条不执行
 —— 于是「Reject 页无记录」与「广告照样弹」同时出现。<br/>
 ⚠️ 「Reject 页无记录」<b>不能单独作为失效判据</b>：只清字段（<code>response.json.jq</code>）不拦请求的规则本来就不进 Reject 页。<br/>
-解法：依官方「本地 Rewrite 优先于插件」，把 311 条规则转成旧版语法固化到 <code>rewrite/adblock.list</code>。</td>
+解法：依官方「本地 Rewrite 优先于插件」，把 309 条规则固化到自持的 <code>rewrite/adblock.lpx</code>（规则与 <code>[MitM]</code> 同源生成）。</td>
 </tr>
 <tr>
 <td><b>被 403 误导，差点得出完全错的结论</b></td>
