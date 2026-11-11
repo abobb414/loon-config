@@ -1,13 +1,16 @@
 #!/usr/bin/env python3
-"""静态校验 Loon 配置：段结构、策略引用、规则收尾。
+"""静态校验 Loon 分流配置：段结构、策略引用、规则收尾、图标文件。
 
 改配置最常见的翻车不是语法错（Loon 会报），而是**引用了不存在的东西**：
 策略组写了个拼错的名字、`[Rule]` 指向已删掉的组、`[Remote Rule]` 的 policy
-指向一个不存在的组。这些 Loon 不报错，只会静默落到 FINAL，表现为「某些流量
-莫名其妙走了直连 / 走了代理」，事后极难定位。
+指向一个不存在的组、图标 URL 指向仓库里已经删掉的文件。这些 Loon 不报错，
+只会静默落到 FINAL 或显示空白图标，事后极难定位。
+
+仓库只维护纯分流配置，所以 [MITM] / [Rewrite] / [Script] / [Plugin] 一律视为错误：
+解密权归插件，不归这里。
 
 用法：
-    python3 scripts/validate_config.py Loon.conf Loon-routing.conf
+    python3 scripts/validate_config.py Loon-routing.conf
 """
 
 from __future__ import annotations
@@ -34,13 +37,13 @@ KNOWN_SECTIONS = {
     "script",
     "remote script",
     "plugin",
-    "proxy chain",  # 旧版别名
+    "proxy chain",
 }
 
-POLICY_ONLY_SECTIONS = {"mitm", "rewrite", "remote rewrite", "script", "remote script", "plugin"}
-
-# 分流版必须不含这些段，且不能出现 MITM 白名单（出现即说明有人在手维护快照）
+# 分流配置必须不含这些段，且不能出现 MITM 白名单（出现即说明有人在手维护快照）
 ROUTING_FORBIDDEN = {"mitm", "rewrite", "remote rewrite", "script", "remote script", "plugin"}
+
+ICON_PATH_RE = re.compile(r"IconSet/Color/([A-Za-z0-9._-]+\.png)")
 
 BUILTIN_POLICIES = {"DIRECT", "REJECT", "REJECT-DROP", "PROXY", "REJECT-TINYGIF"}
 
@@ -98,7 +101,6 @@ def check(path: Path) -> list[str]:
         return [f"{path}: 文件不存在"]
 
     cfg = Config(path)
-    is_routing = path.name == "Loon-routing.conf"
 
     # 1. 段名拼写
     for name in cfg.sections:
@@ -110,15 +112,14 @@ def check(path: Path) -> list[str]:
         if required not in cfg.sections:
             errors.append(f"[段] 缺少必需的 [{required}]")
 
-    # 3. 分流版不得带解密 / 改写 / 插件
-    if is_routing:
-        for name in ROUTING_FORBIDDEN & set(cfg.sections):
-            if cfg.body(name):
-                errors.append(f"[段] 分流版不应包含有内容的 [{name}]")
-        for name, lines in cfg.sections.items():
-            for line in lines:
-                if re.match(r"^\s*hostname\s*=", line):
-                    errors.append(f"[MITM] 分流版不应出现 hostname 白名单：{line.strip()[:60]}…")
+    # 3. 不得带解密 / 改写 / 插件
+    for name in ROUTING_FORBIDDEN & set(cfg.sections):
+        if cfg.body(name):
+            errors.append(f"[段] 分流配置不应包含有内容的 [{name}]")
+    for name, lines in cfg.sections.items():
+        for line in lines:
+            if re.match(r"^\s*hostname\s*=", line):
+                errors.append(f"[MITM] 分流配置不应出现 hostname 白名单：{line.strip()[:60]}…")
 
     # 4. 策略命名空间
     groups = set(cfg.keys("proxy group"))
@@ -188,6 +189,13 @@ def check(path: Path) -> list[str]:
         if "=" not in line:
             errors.append(f"[Host] 缺少等号：{line[:60]}")
 
+    # 9. 自托管图标必须真实存在（Loon 不会报 404，只会显示空白）
+    root = path.resolve().parent
+    icons = sorted(set(ICON_PATH_RE.findall(path.read_text(encoding="utf-8"))))
+    for icon in icons:
+        if not (root / "IconSet" / "Color" / icon).is_file():
+            errors.append(f"[Icon] 引用了不存在的图标：IconSet/Color/{icon}")
+
     return errors
 
 
@@ -209,8 +217,8 @@ def main() -> int:
             groups = len(cfg.keys("proxy group"))
             rules = len(cfg.body("rule"))
             remote = len(cfg.body("remote rule"))
-            plugins = len(cfg.body("plugin"))
-            print(f"✓ {path}  {groups} 组 / {rules} 条本地规则 / {remote} 条远程规则 / {plugins} 个插件")
+            icons = len(set(ICON_PATH_RE.findall(path.read_text(encoding="utf-8"))))
+            print(f"✓ {path}  {groups} 组 / {rules} 条本地规则 / {remote} 条远程规则 / {icons} 个图标")
     return 1 if failed else 0
 
 

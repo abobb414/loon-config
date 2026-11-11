@@ -1,5 +1,3 @@
-<p align="center"><b>简体中文</b> | <a href="./README.en.md">English</a></p>
-
 <div align="center">
 
 <picture>
@@ -9,428 +7,26 @@
 
 # Loon Config
 
-**一份自用的 Loon 分流配置。26 个策略组、90 个上游资源、每天自动体检。**
+**一份自用的 Loon 纯分流配置：只决定流量走哪个策略组，不做 MITM、不跑脚本、不带插件。**
 
-分流不是把节点全堆进一个组就完事 —— 广告要拦在 MITM 之前、苹果要抢在去广告规则之前、
-AI 要避开港区、上游挂了要能看出来是哪一条挂的。
+26 个策略组 · 29 条本地规则 · 34 条远程规则 · 每天一次上游体检
 
-[Loon.conf](./Loon.conf) &nbsp;·&nbsp; [分流版](./Loon-routing.conf) &nbsp;·&nbsp; [分流设计](#分流设计) &nbsp;·&nbsp; [为什么 MITM 不该留在主配置](#只做分流的那一份为什么-mitm-不该留在主配置里) &nbsp;·&nbsp; [上游体检](#上游体检每天一次)
-
-[![Loon](https://img.shields.io/badge/Loon-3.x-0EA5E9?style=flat-square)](https://apps.apple.com/app/loon/id1373567447)
-[![Policy Groups](https://img.shields.io/badge/策略组-26-8B5CF6?style=flat-square)](#分流设计)
-[![Routing Only](https://img.shields.io/badge/分流版-无%20MITM%20%2F%20无插件-22C55E?style=flat-square)](./Loon-routing.conf)
-[![Plugins](https://img.shields.io/badge/去广告插件-需自行订阅-F59E0B?style=flat-square)](#插件与脚本自己订阅)
-[![Upstreams](https://img.shields.io/badge/上游资源-90-0EA5E9?style=flat-square)](#上游体检每天一次)
-[![Checks](https://img.shields.io/badge/核心资源-31%2F31%20可达-22C55E?style=flat-square)](#上游体检每天一次)
-[![Secret Scan](https://img.shields.io/badge/推送前-凭据扫描-F59E0B?style=flat-square)](#不要提交真实凭据)
-[![Usage](https://img.shields.io/badge/用途-个人备份-64748B?style=flat-square)](#说明)
+[配置](./Loon-routing.conf) · [快速开始](#快速开始) · [分流设计](#分流设计) · [插件与脚本](#插件与脚本为什么必须自己订阅) · [每日上游同步](#每日上游同步)
 
 </div>
 
 ---
 
-## 预览
+## 这是什么
 
-没有界面 —— 产物就是手机上的分流行为，和每天一份的上游体检台账。以下是 **2026-10-04** 在 CI（GitHub Actions）上的实际记录：
+仓库只维护一个文件：[`Loon-routing.conf`](./Loon-routing.conf)。
 
-```
-$ python3 scripts/refresh_upstreams.py
-扫描 Loon.conf -> 提取 90 个上游资源
-  [200]  61 条可达
-  [---]  30 条客户端门禁   <- Kelee plugin 30：仅 Loon 客户端可下，机房出口过不了 Cloudflare 挑战
-generated_at   : 2026-10-04T00:02:31Z
-resource_count : 90
-合计校验       : 17.3 MB / 61 个 sha256
-```
+它回答的问题只有「哪条流量走哪个策略组」。文件里没有 `[MITM]`、`[Rewrite]`、
+`[Script]`、`[Plugin]` —— 需要解密的去广告不在这里做，交给你自己订阅的 `.lpx` 插件。
 
-近 6 次上游体检（每天定时触发，全部成功）：
-
-| 日期 | 10-03 | 10-02 | 10-01 | 09-30 | 09-29 | 09-28 |
-|---|---|---|---|---|---|---|
-| 结果 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-
-> 台账是**实测**，不是占位符 —— 而且它一度是**错的**。这份记录曾连续多日挂着
-> 30 条来自 `kelee.one` 的红色「不可达」，先后被解释成「站点挂了」与「采集机在境外、
-> 出口被 Cloudflare 挑战」。两个说法都不对：**真正卡住的是两道闸叠加**，
-> 而其中一道（Cloudflare 的机器人挑战）**在 CI 上无解**。详见
-> [工程笔记](#工程笔记那些踩过的坑)头两行。
-
----
-
-## 它到底在解决什么
-
-把「哪些流量走哪条线」这件事，从「凭感觉切」变成「有规则、有顺序、有兜底、有体检」。
-
-难点从来不在堆节点，而在**顺序和边界**：
-
-- 去广告规则是 `REJECT`，苹果服务域混在 `icloud.com` 这种通用后缀里 —— 谁先匹配谁说了算，
-  规则顺序错了就是「苹果偶尔打不开」。
-- AI 服务对出口地区敏感，港区线路时好时坏，混进 `url-test` 里会被测速选成最优。
-- 上游资源有 90 个，跨 6 个来源。某天 `raw.githubusercontent.com` 抽风，
-  你不知道是它挂了还是自己网络的问题。
-- 配置里还有一堆**真实凭据**（私钥、代理口令），而仓库是公开的。
-
-所以这份配置的工作量分布是 **七成在顺序与边界、三成在节点**。
-
----
-
-## 分流设计
-
-```mermaid
-flowchart TD
-    A["流量入口<br/>TUN / 局域网"] --> B["[Rule] 本地规则<br/>29 条 · 先匹配先赢"]
-    B --> C{"LAN 段？"}
-    C -->|"是"| D["DIRECT<br/>NAS 端口规则留作模板"]
-    C -->|"否"| E{"专用直连域？"}
-    E -->|"是"| F["DIRECT<br/>kelee.one 等"]
-    E -->|"否"| G{"Apple OTA 域？"}
-    G -->|"是"| H["REJECT<br/>10 条固化 OTA 域名"]
-    G -->|"否"| I{"Apple 核心域？"}
-    I -->|"是"| J["Apple 组<br/>默认 DIRECT"]
-    I -->|"否"| K["[Remote Rule]<br/>34 条远程规则表"]
-    K --> L["26 个策略组"]
-    L --> M{"命中？"}
-    M -->|"是"| N["对应平台组<br/>Netflix / AI / Finance …"]
-    M -->|"否"| O["GEOIP,CN → DIRECT"]
-    O --> P["FINAL → Final 组<br/>兜底"]
-
-    style A fill:#0ea5e9,color:#fff
-    style B fill:#8b5cf6,color:#fff
-    style H fill:#ef4444,color:#fff
-    style J fill:#64748b,color:#fff
-    style N fill:#22c55e,color:#fff
-    style P fill:#64748b,color:#fff
-```
-
-### 规则顺序：四道闸门
-
-配置里最花心思的不是策略组，是 `[Rule]` 段那 29 条的**排列**。本地规则先于远程规则匹配，
-所以闸门顺序决定一切：
-
-| 顺位 | 闸门 | 为什么必须在这个位置 |
-|---|---|---|
-| ① | LAN 段 `DIRECT` | 在家访问 NAS 不该绕代理。远程访问自托管服务时，把 `AND` 逻辑规则里的 `<NAS-IP>` 换成自己的地址再取消注释，只把具体端口放进 WG 隧道 |
-| ② | 专用直连域 | `kelee.one` 这类资源站在 Cloudflare 后面，经代理出海会被 `cf-mitigated: challenge` 挡住，直连才稳（见工程笔记） |
-| ③ | Apple OTA `REJECT` | 必须**早于** Apple 白名单，否则白名单会把 OTA 域捞回 Apple 组 |
-| ④ | Apple 核心白名单 | 必须**早于**远程去广告 `REJECT`，否则 AdRules 误杀 `icloud.com` / `me.com` |
-| ⑤ | `GEOIP,CN` → `FINAL` | 兜底 |
-
-> ③ 和 ④ 的相对顺序是唯一不能颠倒的一对：OTA 域 `swcdn.apple.com` 也匹配 `apple.com` 后缀 ——
-> 先放白名单，屏蔽就失效；先放 REJECT，白名单救不回来。
-> 这是踩过「苹果偶尔打不开」之后才定下来的。
-
-### 26 个策略组的分层
-
-不是按国家粗暴分组，而是**按「同一类服务对出口的共同诉求」分组**：
-
-| 层级 | 组 | 设计取向 |
-|---|---|---|
-| 基础 | `Available` `Proxy` `Final` | `Available` 自动测速，`Proxy` 是总代理，`Final` 兜底 |
-| 平台 | `Google` `Apple` `Microsoft` | `Apple` 默认 `DIRECT`（国内苹果服务直连最稳），需要外区服务时手动切 |
-| 流媒体 | `Netflix` `Disney` `HBO` `Spotify` `YouTube` `Bilibili` | `Bilibili` 默认 `DIRECT` |
-| 社交 | `Instagram` `Telegram` `LinkedIn` | —— |
-| 金融 | `Finance` | 覆盖支付宝、云闪付与 8 家国内银行，默认 `DIRECT` |
-| 短视频 | `TikTok` | 抖音不再单列组，域名走 `ChinaMaxNoIP`、IP 走 `GEOIP,CN`，自然直连 |
-| AI | `AI` `OpenAI` `Gemini` `Claude` | 住宅出口优先，机房只做兜底；过滤器排除香港 |
-| 其他 | `Emby` `HomeNAS` `Speedtest` | `Emby` 默认走代理；`HomeNAS` 按需填 WG 地址 |
-
-> **2026-10-04 精简掉的那一层**：原先是 36 个组，多出来的是 12 个按国家/大洲分的 `url-test` 组
-> （`HK` `TW` `SG` `JP` `KR` `US` `AU` `EU` `AS` `AM` `AF` `CF`）和 12 条配套的 `NameRegex` 过滤器。
-> 出口只有「本地代理网关」和「`Available` 自动测速」两条腿，这几个组本就是空的 ——
-> 但空组照样占着 `Proxy` 的成员列表，切一次错一次，所以连过滤器一起删了。
-> 同理，`Douyin` 组被删掉后抖音回到 `GEOIP,CN` 的直连兜底，行为不变而少一个组。
-> 后来又拆出 `SubA` / `SubB` 两个订阅大合集与 `Claude` 组，最终是 26 个。
-
-### AI 组：住宅优先，机房兜底
-
-`AI` 是 `fallback`，顺序是「住宅 HINET -> 台湾家宽（1x / 3x）-> 本地代理」：
-
-```ini
-AI = fallback,SubA-TW_Filter,SubB-TW-All_Filter,Home-Proxy,...
-```
-
-不是嫌香港快慢 —— 是**部分 AI 服务对出口地区的白名单不含香港**，机房 IP 在风控里的
-信任度也明显低于住宅。健康检查（`generate_204`）只测连通性和延迟，测不出地区风控：
-延迟最低的节点会被选成最优，然后服务端返回「地区不支持」。所以过滤器先把香港和机房段
-排除，再按住宅优先级排序。`OpenAI` / `Gemini` 默认指向 `AI`，`Claude` 单独成组、
-默认也指向 `AI`，需要时可以逐节点手动切换。
-
-UDP 交给能转 UDP 的节点；转不了时 `udp-fallback-mode = REJECT` 宁可丢包也不直连，
-避免 WebRTC 或 STUN 把本地公网 IP 暴露出去。
-
-> 这是本项目里最反直觉的一条：**能连通 ≠ 能用**。测速组解决不了风控问题。
-
----
-
-## 上游体检（每天一次）
-
-90 个上游资源跨 6 个来源，靠 GitHub Actions 每天跑一次 `refresh_upstreams.py`
-（321 行 / 14 个函数）。
-
-```mermaid
-flowchart LR
-    A["Loon.conf<br/>提取 90 个 URL"] --> B["并发抓取<br/>带重试 + TLS 校验"]
-    B --> C{"HTTP 2xx/3xx？"}
-    C -->|"是"| D["记录 sha256<br/>etag / last-modified"]
-    C -->|"否"| E{"是核心资源？"}
-    E -->|"否"| F["记 ok=false<br/>保留失败现场"]
-    E -->|"是"| G["回退上次成功记录<br/>标记 stale=true"]
-    D --> H["写 upstreams.lock.json"]
-    F --> H
-    G --> H
-    H --> I["有变化则自动提交"]
-
-    style A fill:#0ea5e9,color:#fff
-    style B fill:#8b5cf6,color:#fff
-    style C fill:#f59e0b,color:#fff
-    style G fill:#64748b,color:#fff
-    style I fill:#22c55e,color:#fff
-```
-
-### 核心资源保留上次成功记录
-
-`CORE_MARKERS` 圈定 5 类不能断的资源（blackmatrix7 规则、Qure 图标、fmz200 脚本、
-Moli-X GeoIP、Sub-Store 解析器）。它们若某次抓取失败，**不写 `ok=false`，
-而是回退上次成功值并打 `stale: true`** —— 避免偶发网络抖动让每日任务产生假警报，
-也避免把「上游真的挂了」淹没在噪声里。
-
-> 改成自托管图标后，本配置已不再外链 `Koolson/Qure`，`CORE_MARKERS` 里那一条随之落空 ——
-> 实际命中的只有 blackmatrix7 规则 30 条与 Sub-Store 解析器 1 条，共 **31 条**。
-> 自托管图标**故意不算核心资源**：上游抽风应当被看见，而自家仓库 404 是必须修的 bug，
-> 不该被 `stale` 掩盖。
-
-最新一次体检（2026-10-04，CI 侧）实测：
-
-| 指标 | 值 |
-|---|---|
-| 资源总数 | 90 |
-| 可达 | 61 |
-| 客户端门禁（不计失败） | 30 |
-| **真·不可达** | **0** |
-| **核心资源** | **31 / 31 可达** |
-| 合计校验字节 | 17.3 MB |
-
-按来源分布：
-
-| 来源 | 条数 | 说明 |
-|---|---|---|
-| `abobb414/loon-config` | 24 | 自托管策略组图标 23 条 + 去广告规则 1 条 |
-| `blackmatrix7/ios_rule_script` | 30 | 远程分流规则 |
-| `Kelee plugin` | 30 | 插件与脚本（CI 侧全部走「客户端门禁」，见下） |
-| `fmz200/wool_scripts` | 3 | 插件与定时任务 |
-| `sub-store-org/Sub-Store` | 1 | 订阅解析器 |
-| 其他 | 3 | GeoIP / ASN / AdRules |
-
-> 那 30 条 `kelee.one` 不是「不可达」，是**不可由服务端验证**。站方只对 Loon 客户端放行，
-> 叠加 Cloudflare 对机房 IP 的挑战 —— 于是同一份脚本：
->
-> | 跑在哪 | UA | 结果 |
-> |---|---|---|
-> | 本机（住宅出口） | `curl/8.7.1` | 403 · `Attention Required!` |
-> | 本机（住宅出口） | `Loon/998 CFNetwork/… Darwin/…` | **200 ✅** |
-> | GitHub Actions（Azure 机房 IP） | 同左 | 403 · **`cf-mitigated: challenge`** |
->
-> 也就是说，把 UA 装成 Loon 只是过了第一道闸；CI runner 是机房 IP，第二道闸（挑战页需要
-> 执行 JS）永远过不去。脚本现在把这类资源标成 `gated`，**与「真失败」分开统计**，
-> 而不是继续每天贡献 30 条假警报 —— 假警报真正的危害是让真失败没人看。
->
-> 顺带修掉另一个长期的假警报：`[Rewrite]` 段那 4 条本地正则（`^https://host\.tld/path reject-dict`）
-> 会被 URL 正则捞出来当成上游资源，抓一次失败一次，每天固定污染 4 条「不可达」。
-> 现在按「含反斜杠转义即本地正则」跳过 —— 于是资源数从 95 收敛到 90 上下。
-
----
-
-## 不要提交真实凭据
-
-仓库是公开的，而配置文件天然含三类敏感值：WireGuard 私钥、代理认证口令、订阅地址。
-
-做法是把真实值全部换成占位符 —— `<client-private-key>`、`username`、`password` ——
-**再加一道 CI 扫描**（`.github/workflows/secret-scan.yml`），命中即拦截：
-
-| 检查项 | 匹配目标 |
-|---|---|
-| 私钥 | `private-key = "<base64 ≥ 40 字符>"` |
-| 空口令 | 非空的 `secret` / `password` / `passwd` 字段（占位符除外） |
-| 代理凭据 | `http, <ip>, <port>, <user>, <pass>` 形式 |
-
-> 只靠「记得别提交」是不够的 —— 占位符容易被某次「先本地测一下」的临时代码绕过。
-> 所以扫描放在 CI 上，`push` 与 `pull_request` 双触发。
-
----
-
-## 去广告：规则为什么自己固化
-
-`[Plugin]` 首行引用 `rewrite/adblock.lpx` —— 19 个插件、309 条去广告规则、196 个域名，
-**规则与 `[MitM]` 由同一次生成产出**，不是「抄一份备份」。最初的做法是转成旧语法的
-`rewrite/adblock.list` 挂到 `[Remote Rewrite]`，2026-11 改成 `.lpx`，原因是后者能自持解密白名单：
-
-| | `.list` + `[Remote Rewrite]` | `.lpx`（现用） |
-|---|---|---|
-| 解密白名单 | 靠人工往主配置 `[MITM]` 里对账，实测漂移过一次 | 与规则同文件、同源生成 |
-| 新版语法 | 必须逐条降级，10 条表达不了 | 原样保留 |
-| 规则与主机段一致性 | 两边可能对不上（311 条里 244 条的解密权只来自某一个插件） | 由生成器保证 |
-
-固化的动机是绕开两件事：
-
-- **插件规则用的是新版脚本语法**，形如 `request if ${url} ~= /.../i then reject_dict(200)`。
-  该语法自 Loon 3.5.1(978) 引入，而插件头部普遍要求 `#!loon_version=3.5.1(998)`。
-  **build 不够时规则被静默忽略** —— MitM 照常解密（请求列表里有紫锁、能看到完整 URL），
-  rewrite 一条都不执行。表现就是「广告拦不住、Reject 页又空空如也」。
-- **插件会随作者更新而变化**，行为不由自己掌控。
-
-官方文档《匹配顺序》写明：**本地配置的 `[Rewrite]` 优先于插件的 `[Rewrite]`**。
-所以把这些规则搬进自己维护的文件里，一次解决。旧语法回退路径（Build 729+ 全兼容）仍然保留：
-
-| 新版 | 旧版（仅在 `--legacy` 回退时使用） |
-|---|---|
-| `reject_dict(200)` / `reject(404)` | `reject-dict` （HTTP 200 + `{}`） |
-| `reject_img(200)` | `reject-img` |
-| `response.json.jq(x)` | `response-body-json-jq 'x'` |
-| `response.json.delete` | `response-body-json-del` |
-| `response.json.replace` | `response-body-json-replace` |
-| `response.header.add` | `response-header-add` |
-| `redirect(307,url)` | `307 url` |
-
-旧语法表达不了的 10 条（`response.body.mock` / `response.json.jq_file` / `response.body.replace`）
-在 `.lpx` 里原样保留，不再降级。
-
-### 两张远程去广告表的分工
-
-`[Remote Rule]` 里同时挂着 AdRules 与 Advertising，都是 `policy=REJECT`：
-
-| 列表 | 体积 | 特点 |
-|---|---|---|
-| [AdRules](https://github.com/Cats-Team/AdRules) `adrules.list` | 208,515 条 / **7.1 MB** | 全量域名黑名单，广度大；每次更新配置要整份拉取建索引 |
-| [Advertising](https://github.com/blackmatrix7/ios_rule_script) `Advertising.list` | 约 26 KB | 精准但覆盖窄，误杀风险低 |
-
-两张叠加是先要命中的取舍。嫌 Loon 启动慢 / 常驻内存高 → 先把 AdRules 关掉；
-某页面白屏或图片加载不出来（误杀）→ 先把 Advertising 关掉。
-两行都保留，只改 `enabled`，别删行 —— 删了下次就没法一键开关。
-
-```bash
-python3 rewrite/gen.py            # 默认产出 rewrite/adblock.lpx（规则 + [MitM] 同源）
-python3 rewrite/gen.py --legacy   # 回退：产出 adblock.list，挂回 [Remote Rewrite]
-```
-
-转换逻辑与踩坑记录在 `skills/loon-rewrite-localize/` —— 这条链路上有三个坑：
-插件正则**自带 `^`** 导致重复锚点（生成出 `^^https://…`，整条失效）、
-jq 表达式里的**空格必须转义成 `\x20`**（旧语法按空格分隔参数，不转义会被截断）、
-源站偶发 `SSL: UNEXPECTED_EOF` **必须退避重试**（不加时 30 个插件稳定掉 5 个，规则从 311 掉到 192 且不报错）。
-
----
-
-## 只做分流的那一份：为什么 MITM 不该留在主配置里
-
-[`Loon-routing.conf`](./Loon-routing.conf) 是 `Loon.conf` 的派生版，只保留
-`[General]` `[Proxy]` `[Remote Proxy]` `[Proxy Group]` `[Remote Filter]` `[Rule]` `[Remote Rule]` `[Host]` 八段，
-`[MITM]` / `[Rewrite]` / `[Remote Rewrite]` / `[Script]` / `[Remote Script]` / `[Plugin]` 全部移除。
-
-它不是手维护的第二份配置 —— 每天由脚本重建，改主配置就会跟着变：
-
-```bash
-python3 scripts/build_routing.py         # 从 Loon.conf 重建
-python3 scripts/build_routing.py --check # 只比对：不同步时返回 1（CI 每天跑这个）
-```
-
-### 两种去广告，只有一种需要解密
-
-| 走什么 | 靠哪个段 | 需要 MITM？ | 分流版里的状态 |
-|---|---|---|---|
-| **规则层拦截** | `[Rule]` / `[Remote Rule]` 的 `REJECT` | 否 | ✅ 保留 |
-| **改写层** | `[Rewrite]`：改响应体、删 JSON 字段、mock 返回 | **是** | ❌ 已移除 |
-
-规则层拒的是连接本身，看域名就够了，不需要明文 —— 所以纯分流配置里照样生效
-（`AdRules` 那 34 条远程规则没动）。改写层要先把密文解开：
-域名不在 `[MITM] hostname` 里，HTTPS 就是一条隧道，**rewrite 静默不执行** ——
-Loon 不报错、日志不提示、规则命中数恒为 0，表现是「插件在、规则在、广告照播」。
-
-### 为什么「顺手保留一份 MITM 白名单」反而会毁掉去广告
-
-`hostname` 是一份**静态清单**，它不会自己长。而它失效的方式恰好是全静默的：
-
-1. **App 换接口域名，清单跟不上。** 闲鱼 2026-11 就把下单/广告接口从
-   `gw.m.goofish.com` 挪到了 `acs.m.taobao.com` —— 22 条规则 + 6 个脚本全部锚在废弃域名上，
-   症状是「只有开屏广告被拦、其他页面照播」，查了两轮才发现主机段整个错了。
-2. **插件更新新增域名，清单也跟不上。** 插件作者补了新域名，你手里的快照还是旧的，
-   于是新域名不解密、新规则不执行，而旧规则因为接口已停用也不会报错。
-3. **没有插件时，白名单纯属负债。** 解密的流量没有任何 rewrite 去处理，
-   只是把更多 TLS 会话拆开：多一次 CPU、多一份隐私暴露面，
-   证书固定的 App（银行、部分游戏、企业内网工具）还会直接连不上。
-4. **它会制造「已经配好了」的假象。** 这才是最贵的成本 —— 排查时会先去怀疑插件、
-   怀疑证书、怀疑版本，而真正的原因在清单的某一处早已过期的域名。
-
-那份清单在这台机器上从 6 条膨胀到 188 条，仍然覆盖不全。
-`.lpx` 插件把 `[Rewrite]` 和 `[MitM]` 写在**同一个文件里、随作者一次更新**，
-主配置只要不抢着维护解密权，就不会出现两边漂移。所以：
-
-> **一份配置里，解密权只让一方维护。** 分流归这个仓库，改写和 MITM 归插件作者。
-
-顺带一提，`disable-udp-ports = 443` 也一起删了 —— 它存在的唯一理由是逼 App 从 QUIC
-回落到 TCP 443 好让 MITM 解密。没有 rewrite 就没有回落的必要，留着只会白付握手代价。
-
-### 插件与脚本自己订阅
-
-本仓库**不转发、不镜像**这些插件与脚本，也不对它们的可用性负责 ——
-需要的自己去上游订，作者更新你才能跟着更新：
-
-| 类型 | 订阅地址 | 说明 |
-|---|---|---|
-| **去广告插件** `.lpx` | <https://kelee.one/Tool/Loon/Lpx/> | 目录页，按需逐个添加；插件自带 `[MitM]` |
-| ├ 闲鱼 | `FleaMarket_remove_ads.lpx` | 改响应体清 `cacheAd`，必须 MITM |
-| ├ 通用拦截 | `BlockAdvertisers.lpx` / `Remove_ads_by_keli.lpx` | 规则型为主 |
-| ├ 微信 / 小程序 | `WeixinMiniPrograms_Remove_ads.lpx`、`Weixin_Official_Accounts_remove_ads.lpx` | |
-| └ 单 App | `JD` / `Bilibili` / `QuarkBrowser` / `Amap` / `Cainiao` / `12306` / `BaiduNetDisk` / `TXDocs` … | 用哪个订哪个 |
-| **脚本** `.scripts` | <https://github.com/fmz200/wool_scripts/tree/main/Loon/script> | `tools.scripts`（工具合集）/ `tasks.scripts`（定时任务） |
-| **脚本面板** `BoxJs` | <https://kelee.one/Tool/Loon/Lpx/BoxJs.lpx> | 通知、Cookie、面板类脚本的宿主 |
-| **规则清单** `.list` | [Cats-Team/AdRules](https://github.com/Cats-Team/AdRules)、[blackmatrix7/ios_rule_script](https://github.com/blackmatrix7/ios_rule_script) | `[Remote Rule]` 已直接引用，无需另订 |
-
-两个必须知道的坑：
-
-- **kelee.one 只对 Loon 客户端放行。** 站方校验 UA（必须 `Loon/` 开头 + `CFNetwork/` + `Darwin/`），
-  且在 Cloudflare 后面还有一道机房出口风控 —— 所以这些链接**在浏览器里点大概率 403**，
-  要复制到 Loon → 插件 → 添加 里订阅。同理，GitHub Actions 上也永远拿不到，脚本里记为 `gated` 而非失败。
-- **插件越多，解密面越大。** 每加一个插件就是把它的 hostname 并进 MITM 范围。
-  只订你真正在用的 App，比一次订 26 个更稳定。
-
----
-
-## 文件说明
-
-| 文件 | 行数 | 用途 |
-|---|---|---|
-| `Loon.conf` | 299 | 主配置。26 个策略组、29 条本地规则、34 条远程规则、26 个插件（含 MITM） |
-| `Loon-routing.conf` | 273 | **纯分流版**：由 `Loon.conf` 自动派生，无 MITM / 改写 / 脚本 / 插件，插件需自行订阅 |
-| `Loon-minimal.conf` | 32 | **最小化排查配置**：只有基础分流，无插件 / 脚本 / 改写 / 远程规则 / MITM |
-| `Stash.yaml` | 143 | 由 Loon 配置转换而来的 Stash 策略配置 |
-| `clash-advanced.yaml` | 433 | Clash 进阶配置，含策略组锚点与订阅占位 |
-| `rewrite/adblock.lpx` | —— | **固化的去广告插件**：规则与 `[MitM]` 同源生成，由 `[Plugin]` 引用；`rewrite/adblock.list` 为旧版语法回退 |
-| `skills/loon-rewrite-localize/` | —— | 可复用的 skill：插件规则本地化（`scripts/localize.py` + 方法论与踩坑） |
-| `scripts/refresh_upstreams.py` | 400+ | 上游资源体检脚本（客户端门禁资源单独计数，可写 Step Summary） |
-| `scripts/build_routing.py` | —— | 从主配置派生 `Loon-routing.conf`；`--check` 校验两份是否同步 |
-| `scripts/validate_config.py` | —— | 静态校验：段名拼写、策略组引用、`policy` 是否存在、`FINAL` 收尾 |
-| `scripts/summarize.py` | —— | 生成每日任务里的配置概览表 |
-| `IconSet/Color/` | 45 (+3) | 策略组与订阅图标（icons8 Pulsar Color，1600px PNG）与 `icons-all.json`；另含 3 个 `*-v2` 的旧名兼容别名（见下） |
-
-| `.upstream/upstreams.lock.json` | —— | 90 条资源的 ETag / Last-Modified / sha256 台账 |
-
-> **关于 `AI-v2` / `NiceDuck-v2` / `SubA-v2`**
->
-> 客户端图标缓存**按 URL 命中**：同名覆盖字节后，Loon 仍返回缓存里的旧图。
-> 所以换图必须**换文件名**。这三个改成 `*-v2` 后，`icons-all.json` 里**显示名保持原样**、
-> 只把 `url` 指向 `-v2`；同时把新内容复制回旧名，**旧 URL 不会 404**（其它设备 / 旧备份仍可用）。
-> 详见 [`skills/loon-rewrite-localize/SKILL.md`](skills/loon-rewrite-localize/SKILL.md) 坑 4。
-
-### 最小化配置是干什么的
-
-排查「某个服务访问不了」时，最怕的是**在 299 行的主配置里逐条注释试验**。
-`Loon-minimal.conf` 把变量砍到只剩 5 条规则 + 2 个组，用它做 A/B：
-
-- 最小化配置下正常 ⇒ 主配置的某个组件有问题，逐项加回定位
-- 最小化配置下仍异常 ⇒ 与规则无关，问题在 Loon 本身 / TUN / 网络状态
-
-这道二分能把排查范围一次砍掉一大半。
-
----
+- 规则层去广告（`REJECT`）仍然有效：按域名/连接直接拒掉，不需要解密。
+- 远程规则与 GeoIP 由 Loon 在运行时向上游拉取；仓库只记录它们的指纹。
+- 代理地址、订阅 token、WireGuard 密钥全部是占位符，公开仓库里没有真实凭据。
 
 ## 快速开始
 
@@ -439,163 +35,192 @@ Loon 不报错、日志不提示、规则命中数恒为 0，表现是「插件�
 git clone https://github.com/abobb414/loon-config.git
 cd loon-config
 
-# 2. 填上自己的凭据（仓库里是占位符，勿把真实值提交回去）
-#      [Proxy]        Home-Proxy 的地址 / 端口 / 用户名 / 口令
-#      [Proxy]        Home-NAS-WG 的私钥 / 公钥 / 端点（纯 IPv6 端点也可）
-#      [Remote Proxy] 自己的订阅地址
-$EDITOR Loon.conf
+# 2. 换成自己的节点（仓库里是占位符）
+#    [Proxy]        Home-Proxy 的地址 / 端口 / 用户名 / 口令
+#    [Proxy]        Home-NAS-WG 的私钥 / 公钥 / 端点
+#    [Remote Proxy] SubA-Sub / SubB-Sub 的订阅地址
+#    订阅名不要改：[Remote Filter] 按 SubA-Sub / SubB-Sub 取节点
 
-# 3. 想用哪一份
-python3 scripts/build_routing.py     # 生成纯分流版（无 MITM / 插件），再自行订阅去广告插件
-# 或者直接用 Loon.conf（自带 26 个插件、脚本与 MITM）
-
-# 4. 本地跑一次上游体检 + 静态校验（可选）
-python3 scripts/validate_config.py Loon.conf Loon-routing.conf
-python3 scripts/refresh_upstreams.py
-
-# 5. 在 Loon 里导入
-#    配置 -> 新建配置 -> 填 raw 地址 -> 切换过去
-#    https://raw.githubusercontent.com/abobb414/loon-config/main/Loon-routing.conf
-#    https://raw.githubusercontent.com/abobb414/loon-config/main/Loon.conf
+# 3. 本地校验（可选）
+python3 scripts/validate_config.py Loon-routing.conf
 ```
 
-> 两份配置选哪份：**只要分流、去广告靠插件订阅** → `Loon-routing.conf`；
-> **想连插件、脚本、MITM 一次性带走** → `Loon.conf`。两者共用同一套策略组与规则，
-> 主配置改了分流版会自动跟着重建。
+然后在 Loon 里：**配置 → 新建配置 → 填 raw 地址 → 切换过去**。
 
-### 每天自动做什么
-
-`.github/workflows/refresh-upstreams.yml` 每天 09:17（Asia/Shanghai）跑一遍：
-
-1. `validate_config.py` 静默错误体检 —— 策略组写错名字、`[Rule]` 指向已删的组、
-   `[Remote Rule]` 的 `policy=` 不存在，这些 Loon 都不报错，只会静默落到 `FINAL`
-2. 从 `Loon.conf` 重建 `Loon-routing.conf`，并校验两份同步
-3. 体检 90 条上游资源的 ETag / Last-Modified / sha256；kelee 的 30 条记为 `gated`（机房出口注定过不了）
-4. 有变化才提交；核心资源不可达时**台账照记、任务置红**，失败清单写进 Step Summary
-
-结果在 Actions 页的 Summary 里是一张表，不用翻日志：
-
-```
-### 配置概览
-| 文件 | 行数 | 策略组 | 本地规则 | 远程规则 | 插件 | MITM 域名 |
-| Loon.conf         | 299 | 26 | 29 | 34 | 26 | 6 |
-| Loon-routing.conf | 273 | 26 | 29 | 34 |  0 | 0 |
+```text
+https://raw.githubusercontent.com/abobb414/loon-config/main/Loon-routing.conf
 ```
 
----
+去广告插件和脚本不在这份配置里，按下一节的地址自行订阅。
 
-## 工程笔记：那些踩过的坑
+## 插件与脚本：为什么必须自己订阅
 
-配置 299 行，但不少行数花在了**看起来不重要、实际会要命的地方**。
+这份配置只负责分流，但去广告有两套机制，其中一套必须解密：
 
-<table>
-<tr><th width="34%">症状</th><th width="66%">根因与解法</th></tr>
-<tr>
-<td><b>kelee.one 的插件 / 脚本批量 403</b></td>
-<td>它是<b>两道闸叠加</b>，少说一道就会开出错的药方。<br/>
-<b>闸 1 · 站方客户端校验（看 UA）</b>：资源路径要求 UA <b>以 <code>Loon/</code> 开头</b>
-（前缀锚定，前面加任何东西都不行），且同时带 <code>CFNetwork/</code> 与 <code>Darwin/</code>
-两段；不满足就回 403 加一张 <code>Attention Required!</code>（Cloudflare block 页，<b>没有</b>
-<code>cf-mitigated</code> 头）。<br/>
-<b>闸 2 · Cloudflare 机器人挑战（看出口 IP）</b>：机房 / 数据中心 IP 会被下发
-<code>cf-mitigated: challenge</code>，需要执行 JS 才过得去 —— <b>UA 装得再像也没用</b>。<br/>
-实测矩阵（固定 URL，每次只动一个变量）：<br/>
-<code>本机 + curl UA</code> → 403 block · <code>本机 + Loon UA</code> → <b>200 ✅</b> ·
-<code>CI + 任意 UA（含 Loon）</code> → 403 challenge。<br/>
-所以手机上一直是好的，而<b>体检脚本在 CI 上无论怎么装都拿不到这 30 条</b>。<br/>
-解法分两半：脚本带 Loon UA（过闸 1）；闸 2 在 CI 上无解，于是把这 30 条标成 <code>gated</code>，
-与真失败分开统计 —— 关键在于<b>别再让它们每天贡献 30 条假警报</b>。配置里那条
-<code>DOMAIN-SUFFIX,kelee.one,DIRECT</code> 继续保留，它管的是下载走直连、不绕代理内核。</td>
-</tr>
-<tr>
-<td><b>去广告插件「下载正常、MitM 也正常，就是拦不住」</b></td>
-<td>插件规则是<b>新版脚本语法</b>（自 Loon 3.5.1(978) 引入），插件头部普遍要求 <code>#!loon_version=3.5.1(998)</code>。
-build 不够时规则被<b>静默忽略</b>：MitM 照常解密（请求列表有紫锁、看得见完整 URL），rewrite 却一条不执行
-—— 于是「Reject 页无记录」与「广告照样弹」同时出现。<br/>
-⚠️ 「Reject 页无记录」<b>不能单独作为失效判据</b>：只清字段（<code>response.json.jq</code>）不拦请求的规则本来就不进 Reject 页。<br/>
-解法：依官方「本地 Rewrite 优先于插件」，把 309 条规则固化到自持的 <code>rewrite/adblock.lpx</code>（规则与 <code>[MitM]</code> 同源生成）。</td>
-</tr>
-<tr>
-<td><b>被 403 误导，差点得出完全错的结论</b></td>
-<td>第一次排查在单一出口采样，全 403 → 写下「上游遭全站封锁」。<b>换一个出口，同一时刻全是 200。</b><br/>
-教训：<b>403 判定必须多出口对照</b>。固定 URL + 固定 UA，同时记录出口 IP，
-做「出口 IP × 状态码」二维统计。单点采样会得出完全错的结论。<br/>
-当时实测：出口 SG-Amazon 全 403 ×6，出口 JP-GSL 全 200 ×6，6/6 稳定复现。<br/>
-⚠️ 事后的补充：这张二维表还差一个维度 —— <b>UA</b>。同一出口下只换 UA 就能翻转 403/200；
-反过来，「换出口变 200」也可能只是碰巧换了 UA。更要紧的是 <b>403 不止一种</b>：
-响应体是 <code>Attention Required!</code> 的是 <b>block</b>（服务端规则，UA 可解），
-带 <code>cf-mitigated: challenge</code> 的是<b>挑战</b>（出口 IP 风控，UA 无解）。<br/>
-<b>出口、UA、URL 三个变量都钉死，并且看清 403 的成因，才有资格下结论。</b></td>
-</tr>
-<tr>
-<td><b>苹果「偶尔访问不了」</b></td>
-<td>远程 <code>AppleFirmware.list</code> 名不副实：174 条全是 <code>icloud.com</code> /
-<code>itunes.com</code> / <code>me.com</code> 等正常服务域，<b>没有任何 OTA 域名</b>，
-却配了 <code>REJECT</code> —— 等于把苹果服务成片误杀。<br/>
-改为移除该远程表，本地固化 10 条真 OTA 域（<code>swcdn</code> / <code>swscan</code> /
-<code>mesu</code> …），并置于 Apple 白名单<b>之前</b>。</td>
-</tr>
-<tr>
-<td><b>内网自建 DNS 的拦截失效</b></td>
-<td>原配置把整段 LAN 网段走 WG 隧道，导致内网 DNS 查询被吸入隧道、
-又被对端白名单丢弃。<br/>
-改为<b>只把具体服务端口</b>用 <code>AND</code> 逻辑规则挑进隧道，LAN 其余全部直连；
-公开模板里这段默认注释，填自己的内网地址后启用。</td>
-</tr>
-<tr>
-<td><b>策略组无端抖动</b></td>
-<td><code>test-timeout</code> 设为 1s 太激进，弱网节点被全部误判失败，
-<code>url-test</code> 组反复跳。放宽到 3s 后稳定。</td>
-</tr>
-<tr>
-<td><b>微信视频 / FaceTime 通话质量下降</b></td>
-<td>早先为省流量开了 <code>disable-stun = true</code>，阻断了 STUN 打洞，通话被迫走中继 ——
-与 <code>allow-udp-proxy</code> 的初衷正好矛盾。已关闭。</td>
-</tr>
-<tr>
-<td><b>微信收发消息黑洞</b></td>
-<td><code>[Host]</code> 里 <code>*.qq.com</code> 这类通配命中后指向了不可达上游，
-该域下所有服务一起黑洞。<br/>
-定位方式：<code>Loon-minimal.conf</code> 二分 —— 最小配置下仍异常就与规则无关。
-微信核心域现固定走 DNSPod 作保底。</td>
-</tr>
-</table>
+1. **规则层 REJECT**（`[Rule]` / `[Remote Rule]`）
+   按域名或连接直接拒掉，不需要 MITM，所以纯分流配置照样有效。
 
----
+2. **Rewrite 层**（改响应体、删 JSON 字段、mock 返回值）
+   必须先 MITM 解密。域名不在 `[MITM] hostname` 里，HTTPS 就是一条密文隧道，
+   rewrite 静默不执行 —— Loon 不报错、日志也不提示，看起来「规则都在」而广告照播。
+
+**为什么不在仓库里替你维护 MITM？** 因为那份 hostname 清单是静态的，不会自己长。
+App 换接口域名、插件作者新增域名，清单都跟不上，于是出现「插件已加载、规则命中数为 0」
+这种最难查的状态。历史上那份清单从 6 条膨胀到 188 条，仍然覆盖不全。
+
+所以解密权只让一方维护：`[MitM]` 和 `[Rewrite]` 写在 `.lpx` 插件里，随作者一次更新。
+本仓库不转发、不镜像，代价是插件得你自己订阅 —— 这样作者更新你才能跟着更新。
+
+**脚本同理。** `[Script]` 调用的 `.js` 也要跟上游作者更新，很多还依赖 BoxJs 和 Cookie；
+抄进仓库只会在作者改版后悄悄失效。脚本订阅与 BoxJs 都放在 Loon 里管。
+
+| 类型 | 订阅地址 | 说明 |
+|---|---|---|
+| 去广告插件 `.lpx` | <https://kelee.one/Tool/Loon/Lpx/> | 目录页，按需逐个添加；插件自带 `[MitM]` |
+| 通用拦截 | `BlockAdvertisers.lpx` / `Remove_ads_by_keli.lpx` | 规则型为主 |
+| 单 App | `FleaMarket_remove_ads.lpx`（闲鱼）、`JD`、`Bilibili`、`QuarkBrowser`、`Amap`、`Cainiao`、`12306` 等 | 用哪个订哪个 |
+| 脚本 `.scripts` / `.js` | <https://github.com/fmz200/wool_scripts/tree/main/Loon/script> | `tools.scripts`（工具合集）/ `tasks.scripts`（定时任务） |
+| 脚本宿主 BoxJs | <https://kelee.one/Tool/Loon/Lpx/BoxJs.lpx> | 面板、通知、Cookie 类脚本依赖它 |
+| 规则清单 `.list` | [Cats-Team/AdRules](https://github.com/Cats-Team/AdRules)、[blackmatrix7/ios_rule_script](https://github.com/blackmatrix7/ios_rule_script) | 本配置 `[Remote Rule]` 已直接引用，不用另订 |
+
+两个必须知道的坑：
+
+- **kelee.one 只对 Loon 客户端放行。** 站方校验 UA（必须 `Loon/` 开头），Cloudflare
+  还会按出口 IP 下发机器人挑战。浏览器里点开大概率 403，要复制到 **Loon → 插件 → 添加**
+  里订阅。GitHub Actions 上也拿不到，所以每日任务把它们记为 `gated` 而非失败。
+- **插件越多，解密面越大。** 每加一个插件就是把它的 hostname 并进 MITM 范围，
+  只订你真正在用的 App，比一次订几十个更稳定。
+
+## 分流设计
+
+### 规则顺序：本地规则先于远程规则
+
+`[Rule]` 段最花心思的不是策略组，是顺序。先匹配先赢，几道闸门不能乱：
+
+| 顺位 | 规则 | 为什么必须在这里 |
+|---|---|---|
+| 1 | `IP-CIDR,192.168.0.0/16,DIRECT,no-resolve` | 在家访问 NAS 不绕代理。远程访问自托管服务时，把注释里的 `AND` 规则换成自己的 IP/端口，只把具体端口放进 WG 隧道 |
+| 2 | `ip.net.coffee`、STUN → `AI` / `Home-Proxy` | 检测站若走本地 DNS 解析，会看到本地出口；STUN 走能转 UDP 的节点，保证 UDP 与 TCP 出口一致 |
+| 3 | `kelee.one` → `DIRECT` | 插件源在 Cloudflare 后面，经代理出海会被 `cf-mitigated: challenge` 挡住，Loon 不执行 JS，必然 403 |
+| 4 | Apple OTA 域 → `REJECT` | 必须早于 Apple 白名单，否则白名单会把 OTA 域捞回去，屏蔽失效 |
+| 5 | Apple 核心域 → `Apple` | 必须早于远程去广告 `REJECT`，否则 AdRules 误杀 `icloud.com` / `me.com` |
+| 6 | `GEOIP,CN` → `DIRECT`；`FINAL` → `Final` | 兜底。`FINAL` 必须是最后一条 |
+
+> 4 和 5 的相对顺序是唯一不能颠倒的一对：`swcdn.apple.com` 也匹配 `apple.com` 后缀。
+> 先放白名单，屏蔽失效；先放 REJECT，白名单救不回来。这是踩过「苹果偶尔打不开」之后定下来的。
+
+### 策略组
+
+| 类别 | 策略组 |
+|---|---|
+| 入口与兜底 | `Available`、`Proxy`、`Final`、`HomeNAS` |
+| 订阅总览 | `SubA`、`SubB`（select 成员是整条订阅，Loon 会展开原生节点） |
+| AI | `AI`、`OpenAI`、`Claude`、`Gemini` |
+| 平台 | `Google`、`Apple`、`Microsoft`、`Netflix`、`Disney`、`HBO`、`Spotify`、`YouTube`、`Bilibili`、`TikTok`、`Instagram`、`Telegram`、`LinkedIn`、`Emby`、`Speedtest` |
+| 金融 | `Finance` |
+
+几个关键选择：
+
+- `Proxy` 用 `fallback` 而不是 `select`：`select` 会沿用 Loon 里保存的上一次手动选择，
+  改配置不生效。
+- `AI` 优先住宅节点、机房兜底。住宅 IP 在 AI 站点上的信任度高于机房；住宅全挂才退到机房。
+  `Claude` 单独成组，默认选 `AI`，需要时可以逐节点切换。
+- `Available` 只按「台湾家宽 → 日本 → 新加坡 → Proxy」的顺序挑，香港节点全部排除。
+- `[Remote Filter]` 用 `NameRegex` 限定订阅名并按节点命名取节点。换机场后节点命名变了，
+  这些 Filter 要跟着改。
+
+### DNS 与 Fake-IP
+
+- DoH 用纯 IP（`223.5.5.5`、`120.53.53.53`），不写 `h3://` —— UDP/443 常被运营商 QoS，
+  表现为解析偶发挂起。
+- `hijack-dns` + Fake-IP：本地不再递归真实查询，连接阶段由 Loon 按域名交给策略组。
+  `198.18.0.0/15` 是 Fake-IP 池，**不能**放进 `bypass-tun`。
+- 节点/订阅的解析域名要列进 `real-ip`，否则会拿到 Fake-IP 形成拨号回环。
+- `192.168.0.0/16` 也**不能**放进 `bypass-tun`：远程经 WireGuard 访问 LAN 的流量要进隧道；
+  在家访问 LAN 由 `[Rule]` 顶部的 `DIRECT` 兜底。
+- `disable-stun` 保持关闭，否则微信视频 / FaceTime 会被迫走中继。
+
+## 每日上游同步
+
+远程规则不在仓库里，Loon 运行时直接向上游拉取。每日任务做的是「确认它们还活着、还是规则」：
+
+```text
+.github/workflows/upstream-sync.yml   每天 09:17（Asia/Shanghai）自动运行
+  ├─ 校验 Loon-routing.conf
+  ├─ scripts/sync_upstreams.py 抓取 37 条上游资源
+  └─ 更新并提交 .upstream/upstreams.lock.json（每天一条台账）
+```
+
+脚本对每条资源记录：
+
+- HTTP 状态、大小、ETag、Last-Modified、TLS 是否通过
+- sha256，与上一次对比，标出 `new` / `changed` / `unchanged`
+- 规则清单的条数与规则类型分布；如果返回 HTML 错误页或条数为 0，直接判失败
+
+**它不镜像规则正文。** lock 文件里只有指纹，规则仍然从上游拉 —— 仓库不会因为
+AdRules 有 20 万条规则就多出 7 MB。核心资源（规则清单、GeoIP、parser）不可达时 CI 亮红灯。
+上游内容变化会在 Step Summary 里逐条列出，并把 `new` / `changed` 写进台账。
+
+kelee.one 的 `.lsr` 资源在 GitHub Actions 上必然被 Cloudflare 拦下，脚本记为 `gated`，
+不计入失败，否则每天固定产生假警报，把真正的失败淹没掉。
+
+本地运行：
+
+```bash
+python3 scripts/sync_upstreams.py                  # 抓取并写 lock
+python3 scripts/sync_upstreams.py --dry-run        # 只看结果，不写文件
+python3 scripts/sync_upstreams.py --strict         # 核心资源失败时返回 1
+```
+
+## 文件说明
+
+| 文件 | 用途 |
+|---|---|
+| `Loon-routing.conf` | 唯一配置。26 个策略组、29 条本地规则、34 条远程规则 |
+| `IconSet/Color/` | 自托管策略组图标（1600px PNG）与 `icons-all.json`；配置里 26 个图标都指向这里 |
+| `scripts/sync_upstreams.py` | 每日上游同步：抓取、sha256、规则条数、变更检测、Step Summary |
+| `scripts/validate_config.py` | 静态校验：段名、策略引用、`FINAL` 收尾、图标文件是否存在 |
+| `.upstream/upstreams.lock.json` | 37 条上游资源的指纹台账 |
+| `.github/workflows/upstream-sync.yml` | 每日定时任务 |
+| `.github/workflows/secret-scan.yml` | 推送前扫描疑似私钥、口令与代理凭据 |
+| `docs/images/` | README 用的 logo |
+
+### 图标缓存
+
+Loon 缓存的图标按 **URL** 命中：同名覆盖字节后，客户端仍返回缓存里的旧图。
+所以换图必须换文件名。历史上 `AI`、`NiceDuck`、`SubA` 改成 `*-v2` 就是为了绕开缓存；
+`icons-all.json` 里显示名保持原样，只把 `url` 指向新文件。
+
+## 不要提交真实凭据
+
+公开仓库里只有占位符：
+
+```ini
+Home-Proxy  = socks5,192.0.2.10,7890,username,password   # RFC 5737 文档地址
+Home-NAS-WG = wireguard,private-key="<client-private-key>", ...
+SubA-Sub    = https://example.com/sub-a-subscribe?token=YOUR_TOKEN, ...
+```
+
+真实值放本地，不要提交回来。`secret-scan.yml` 会在 push / PR 时扫描私钥、非空
+`password`/`secret` 字段和 `scheme, ip, port, user, pass` 形式的代理凭据。
 
 ## 限制
 
-- **不含节点订阅**：公开版只有占位符，需自备订阅与凭据。
-- **不按地区分组**：策略组里没有 `HK` / `SG` / `JP` 这类地区组，要临时走某个地区，
-  直接从节点列表里选。想恢复按地区分组，把 `NameRegex` 过滤器加回来即可。
-- **30 条 kelee 资源在 CI 上无法验证**：站方只对 Loon 客户端放行（闸 1，UA），
-  叠加 Cloudflare 对机房 IP 的挑战（闸 2，无解）。脚本把它们记为 `gated` 而非失败 ——
-  读台账时 `ok=false` 要先看有没有 `gated` 标记。想拿到这 30 条的 sha256，
-  只能在本机（住宅出口）跑一次 `refresh_upstreams.py`。
-- **AI 地区白名单会变**：`AI` 组排除香港是当前结论，服务端策略调整后需重新测绘。
-
----
+- 只维护纯分流配置。需要 MITM、rewrite、脚本、插件一次性带走的，请按上面的地址自己订阅。
+- 订阅过滤依赖节点命名；换机场后 `[Remote Filter]` 的正则要重写。
+- 配置是个人自用的公开备份，不保证适配所有 Loon 版本；`[Proxy Chain]` 之类的新模块
+  不在本文件里，按需自行添加。
+- 远程规则是第三方维护的，误杀 / 漏杀与本仓库无关。
 
 ## 致谢
 
-- [blackmatrix7/ios_rule_script](https://github.com/blackmatrix7/ios_rule_script)：Loon 远程分流规则
-- [Cats-Team/AdRules](https://github.com/Cats-Team/AdRules)：广告拦截规则
-- [icons8](https://icons8.com) / [igoutu.cn](https://igoutu.cn)：策略组与订阅图标（**Pulsar Color** 风格，
-  1600px PNG 由本仓库自托管；按免费许可要求在此署名）
-- [Koolson/Qure](https://github.com/Koolson/Qure)：早期图标来源（现已改为自托管）
-- [fmz200/wool_scripts](https://github.com/fmz200/wool_scripts)：插件、广告规则与补充图标
-- [Moli-X/Tool](https://github.com/Moli-X/Tool)：配置结构参考、GeoIP / ASN 资源
-- [sub-store-org/Sub-Store](https://github.com/sub-store-org/Sub-Store)：订阅解析器与订阅管理生态
-- Kelee Loon 插件：配置中使用的插件模块来源
-- [Loon](https://apps.apple.com/app/loon/id1373567447)：客户端与配置运行环境
-
----
+规则清单来自 [blackmatrix7/ios_rule_script](https://github.com/blackmatrix7/ios_rule_script)、
+[Cats-Team/AdRules](https://github.com/Cats-Team/AdRules)、
+[fmz200/wool_scripts](https://github.com/fmz200/wool_scripts)；GeoIP 来自
+[Loyalsoldier/geoip](https://github.com/Loyalsoldier/geoip)；订阅解析来自
+[Sub-Store](https://github.com/sub-store-org/Sub-Store)；插件与脚本来自
+[kelee.one](https://kelee.one/Tool/Loon/Lpx/) 与各自的作者。
 
 ## 说明
 
-本仓库仅用于个人配置备份与学习整理。请根据自己的订阅、节点、地区需求和网络环境调整后使用。
-
-> **不要提交真实凭据。** 本仓库公开，配置中的私钥、代理口令、订阅地址一律用占位符。
-> 真实值只保留在本地配置中，CI 已配置推送前扫描，命中疑似凭据会直接拦截。
-
-以你的实际网络环境为准，本配置不构成任何保证。
+个人自用配置的公开备份，按现状提供，不附带任何担保。

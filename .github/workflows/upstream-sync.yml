@@ -1,0 +1,76 @@
+name: 每日上游同步
+
+# 每天做三件事：
+#   1. 静态校验 Loon-routing.conf（策略引用、规则收尾、图标文件）
+#   2. 抓取 [Remote Rule] 与 [General] 的全部上游资源，核对状态、sha256 与规则条数
+#   3. 有变化才提交 .upstream/upstreams.lock.json —— 规则正文仍然由 Loon 自己拉
+#
+# kelee.one 有客户端门禁，GitHub Actions 的机房出口必然被 Cloudflare 挡下。
+# 脚本把它记为 gated 而非失败，避免每天 30 条假警报。
+
+on:
+  schedule:
+    # UTC 01:17 = Asia/Shanghai 09:17
+    - cron: "17 1 * * *"
+  workflow_dispatch:
+  push:
+    paths:
+      - "Loon-routing.conf"
+      - "scripts/**"
+      - ".github/workflows/upstream-sync.yml"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: upstream-sync
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    name: 校验 / 同步 / 体检
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.x"
+
+      - name: 校验配置
+        run: python3 scripts/validate_config.py Loon-routing.conf
+
+      - name: 同步上游
+        id: sync
+        # 核心资源挂了也要先把指纹写下来，最后再统一置失败。
+        continue-on-error: true
+        run: |
+          python3 scripts/sync_upstreams.py \
+            --config Loon-routing.conf \
+            --output .upstream/upstreams.lock.json \
+            --summary "$GITHUB_STEP_SUMMARY" \
+            --strict
+
+      - name: 提交上游指纹
+        # push 触发的这轮只做校验：否则每次人工改完配置，后面都会紧跟一条 bot 提交。
+        if: github.event_name != 'push'
+        run: |
+          if [[ -z "$(git status --porcelain -- .upstream/upstreams.lock.json)" ]]; then
+            echo "无变化，跳过提交。"
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add .upstream/upstreams.lock.json
+          git commit -m "chore: 每日上游同步 [skip ci]"
+          git push
+
+      - name: 核心资源失败则置失败
+        if: steps.sync.outcome == 'failure'
+        run: |
+          echo "::error::核心上游资源不可达或内容异常（清单见 Step Summary）。"
+          exit 1
