@@ -9,7 +9,7 @@
 
 # Loon Config
 
-**一份自用的 Loon 分流配置。26 个策略组、91 个上游资源、每天自动体检。**
+**一份自用的 Loon 分流配置。26 个策略组、90 个上游资源、每天自动体检。**
 
 分流不是把节点全堆进一个组就完事 —— 广告要拦在 MITM 之前、苹果要抢在去广告规则之前、
 AI 要避开港区、上游挂了要能看出来是哪一条挂的。
@@ -20,7 +20,7 @@ AI 要避开港区、上游挂了要能看出来是哪一条挂的。
 [![Policy Groups](https://img.shields.io/badge/策略组-26-8B5CF6?style=flat-square)](#分流设计)
 [![Routing Only](https://img.shields.io/badge/分流版-无%20MITM%20%2F%20无插件-22C55E?style=flat-square)](./Loon-routing.conf)
 [![Plugins](https://img.shields.io/badge/去广告插件-需自行订阅-F59E0B?style=flat-square)](#插件与脚本自己订阅)
-[![Upstreams](https://img.shields.io/badge/上游资源-91-0EA5E9?style=flat-square)](#上游体检每天一次)
+[![Upstreams](https://img.shields.io/badge/上游资源-90-0EA5E9?style=flat-square)](#上游体检每天一次)
 [![Checks](https://img.shields.io/badge/核心资源-31%2F31%20可达-22C55E?style=flat-square)](#上游体检每天一次)
 [![Secret Scan](https://img.shields.io/badge/推送前-凭据扫描-F59E0B?style=flat-square)](#不要提交真实凭据)
 [![Usage](https://img.shields.io/badge/用途-个人备份-64748B?style=flat-square)](#说明)
@@ -35,11 +35,11 @@ AI 要避开港区、上游挂了要能看出来是哪一条挂的。
 
 ```
 $ python3 scripts/refresh_upstreams.py
-扫描 Loon.conf -> 提取 91 个上游资源
+扫描 Loon.conf -> 提取 90 个上游资源
   [200]  61 条可达
   [---]  30 条客户端门禁   <- Kelee plugin 30：仅 Loon 客户端可下，机房出口过不了 Cloudflare 挑战
 generated_at   : 2026-10-04T00:02:31Z
-resource_count : 91
+resource_count : 90
 合计校验       : 17.3 MB / 61 个 sha256
 ```
 
@@ -66,7 +66,7 @@ resource_count : 91
 - 去广告规则是 `REJECT`，苹果服务域混在 `icloud.com` 这种通用后缀里 —— 谁先匹配谁说了算，
   规则顺序错了就是「苹果偶尔打不开」。
 - AI 服务对出口地区敏感，港区线路时好时坏，混进 `url-test` 里会被测速选成最优。
-- 上游资源有 91 个，跨 6 个来源。某天 `raw.githubusercontent.com` 抽风，
+- 上游资源有 90 个，跨 6 个来源。某天 `raw.githubusercontent.com` 抽风，
   你不知道是它挂了还是自己网络的问题。
 - 配置里还有一堆**真实凭据**（私钥、代理口令），而仓库是公开的。
 
@@ -164,12 +164,12 @@ UDP 交给能转 UDP 的节点；转不了时 `udp-fallback-mode = REJECT` 宁�
 
 ## 上游体检（每天一次）
 
-91 个上游资源跨 6 个来源，靠 GitHub Actions 每天跑一次 `refresh_upstreams.py`
+90 个上游资源跨 6 个来源，靠 GitHub Actions 每天跑一次 `refresh_upstreams.py`
 （321 行 / 14 个函数）。
 
 ```mermaid
 flowchart LR
-    A["Loon.conf<br/>提取 91 个 URL"] --> B["并发抓取<br/>带重试 + TLS 校验"]
+    A["Loon.conf<br/>提取 90 个 URL"] --> B["并发抓取<br/>带重试 + TLS 校验"]
     B --> C{"HTTP 2xx/3xx？"}
     C -->|"是"| D["记录 sha256<br/>etag / last-modified"]
     C -->|"否"| E{"是核心资源？"}
@@ -203,7 +203,7 @@ Moli-X GeoIP、Sub-Store 解析器）。它们若某次抓取失败，**不写 `
 
 | 指标 | 值 |
 |---|---|
-| 资源总数 | 91 |
+| 资源总数 | 90 |
 | 可达 | 61 |
 | 客户端门禁（不计失败） | 30 |
 | **真·不可达** | **0** |
@@ -236,7 +236,7 @@ Moli-X GeoIP、Sub-Store 解析器）。它们若某次抓取失败，**不写 `
 >
 > 顺带修掉另一个长期的假警报：`[Rewrite]` 段那 4 条本地正则（`^https://host\.tld/path reject-dict`）
 > 会被 URL 正则捞出来当成上游资源，抓一次失败一次，每天固定污染 4 条「不可达」。
-> 现在按「含反斜杠转义即本地正则」跳过 —— 于是资源数从 95 收敛到 91。
+> 现在按「含反斜杠转义即本地正则」跳过 —— 于是资源数从 95 收敛到 90 上下。
 
 ---
 
@@ -411,7 +411,7 @@ Loon 不报错、日志不提示、规则命中数恒为 0，表现是「插件�
 | `scripts/summarize.py` | —— | 生成每日任务里的配置概览表 |
 | `IconSet/Color/` | 45 (+3) | 策略组与订阅图标（icons8 Pulsar Color，1600px PNG）与 `icons-all.json`；另含 3 个 `*-v2` 的旧名兼容别名（见下） |
 
-| `.upstream/upstreams.lock.json` | —— | 91 条资源的 ETag / Last-Modified / sha256 台账 |
+| `.upstream/upstreams.lock.json` | —— | 90 条资源的 ETag / Last-Modified / sha256 台账 |
 
 > **关于 `AI-v2` / `NiceDuck-v2` / `SubA-v2`**
 >
@@ -470,7 +470,7 @@ python3 scripts/refresh_upstreams.py
 1. `validate_config.py` 静默错误体检 —— 策略组写错名字、`[Rule]` 指向已删的组、
    `[Remote Rule]` 的 `policy=` 不存在，这些 Loon 都不报错，只会静默落到 `FINAL`
 2. 从 `Loon.conf` 重建 `Loon-routing.conf`，并校验两份同步
-3. 体检 91 条上游资源的 ETag / Last-Modified / sha256；kelee 的 30 条记为 `gated`（机房出口注定过不了）
+3. 体检 90 条上游资源的 ETag / Last-Modified / sha256；kelee 的 30 条记为 `gated`（机房出口注定过不了）
 4. 有变化才提交；核心资源不可达时**台账照记、任务置红**，失败清单写进 Step Summary
 
 结果在 Actions 页的 Summary 里是一张表，不用翻日志：
