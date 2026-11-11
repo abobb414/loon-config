@@ -294,6 +294,19 @@ Moli-X GeoIP、Sub-Store 解析器）。它们若某次抓取失败，**不写 `
 旧语法表达不了的 10 条（`response.body.mock` / `response.json.jq_file` / `response.body.replace`）
 在 `.lpx` 里原样保留，不再降级。
 
+### 两张远程去广告表的分工
+
+`[Remote Rule]` 里同时挂着 AdRules 与 Advertising，都是 `policy=REJECT`：
+
+| 列表 | 体积 | 特点 |
+|---|---|---|
+| [AdRules](https://github.com/Cats-Team/AdRules) `adrules.list` | 208,515 条 / **7.1 MB** | 全量域名黑名单，广度大；每次更新配置要整份拉取建索引 |
+| [Advertising](https://github.com/blackmatrix7/ios_rule_script) `Advertising.list` | 约 26 KB | 精准但覆盖窄，误杀风险低 |
+
+两张叠加是先要命中的取舍。嫌 Loon 启动慢 / 常驻内存高 → 先把 AdRules 关掉；
+某页面白屏或图片加载不出来（误杀）→ 先把 Advertising 关掉。
+两行都保留，只改 `enabled`，别删行 —— 删了下次就没法一键开关。
+
 ```bash
 python3 rewrite/gen.py            # 默认产出 rewrite/adblock.lpx（规则 + [MitM] 同源）
 python3 rewrite/gen.py --legacy   # 回退：产出 adblock.list，挂回 [Remote Rewrite]
