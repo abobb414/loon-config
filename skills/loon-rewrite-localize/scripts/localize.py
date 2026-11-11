@@ -153,6 +153,21 @@ def conflict_reason(rule):
     return None
 
 
+# 闲鱼网关迁移：2026-11 抓包确认接口不再固定走 acs.m.goofish.com/gw，
+# 出现了 g-acs / gw 两个网关，以及 /h5/ 路径前缀（上游模块的正则统一写成
+# (acs|g-acs|gw)\.m\.(goofish|taobao)\.com/(gw|h5)）。kelee 的规则把主机和
+# 网关段都写死了，迁走之后正则依然合法、只是永不命中——静默失效，最难查。
+GOOFISH_PREFIX_RE = re.compile(
+    r'\^https:\\/\\/(?:acs|g-acs|gw)\\\.m\\\.goofish\\\.com\\/(?:gw|h5)\\/')
+GOOFISH_PREFIX_NEW = r'^https:\/\/(acs|g-acs|gw)\.m\.goofish\.com\/(gw|h5)\/'
+
+
+def normalize(rule):
+    if GOOFISH_PREFIX_RE.search(rule):
+        return GOOFISH_PREFIX_RE.sub(lambda _m: GOOFISH_PREFIX_NEW, rule, count=1)
+    return rule
+
+
 # 新版脚本语法：  request if ${url} ~= /<正则>/i then <动作>(<参数>)
 NEW_SYNTAX_RE = re.compile(
     r'^(request|response)\s+if\s+\$\{url\}\s+~=\s+/(.*)/i\s+then\s+(.+)$', re.S)
@@ -400,6 +415,7 @@ def main():
     out = [HEADER.rstrip('\n')]
     stat, skipped, failed, ok_plugins = Counter(), Counter(), [], []
     conflict = Counter()   # [(插件名, 原因)] -> 条数
+    widened = 0            # 网关段被放宽的规则数
     kept = []           # lpx 模式：[{name, rules, mitm, rhost, rule}]
 
     for url in urls:
@@ -419,7 +435,10 @@ def main():
             if why:
                 conflict[(name, why)] += 1
                 continue
-            keep_rule.append(r)
+            nr = normalize(r)
+            if nr != r:
+                widened += 1
+            keep_rule.append(nr)
         rules = keep_rule
         if not rules:
             continue
@@ -494,6 +513,8 @@ def main():
         print('  让路（已由自有脚本接管，不固化）:')
         for (n, why), c in sorted(conflict.items()):
             print('    [%s] %s x%d' % (n, why, c))
+    if widened:
+        print('  网关放宽 %d 条：主机 -> (acs|g-acs|gw).m.goofish.com，路径 -> (gw|h5)' % widened)
 
     if args.dry_run:
         print('(dry-run，未写文件)')
