@@ -1,7 +1,7 @@
 {
   "config": "Loon.conf",
   "generated_at": "2026-11-11T08:22:40Z",
-  "resource_count": 91,
+  "resource_count": 90,
   "resources": [
     {
       "attempt": 1,
@@ -692,22 +692,6 @@
       "status": 200,
       "tls_verified": true,
       "url": "https://raw.githubusercontent.com/abobb414/loon-config/main/IconSet/Color/Instagram.png"
-    },
-    {
-      "attempt": 1,
-      "bytes": 63257,
-      "checked_at": "2026-11-11T08:22:35Z",
-      "content_type": "image/png",
-      "core": false,
-      "etag": "\"ca2cdbf70a24bd331fb67393e758422f85c73ef36351db13956292e788dec609\"",
-      "gated": false,
-      "last_modified": null,
-      "ok": true,
-      "sha256": "381d5dcf4f6db9b4ab345c2fe02f71862d96601fefa0c083e526451c00b07534",
-      "source": "abobb414/loon-config",
-      "status": 200,
-      "tls_verified": true,
-      "url": "https://raw.githubusercontent.com/abobb414/loon-config/main/IconSet/Color/LiangXinCloud.png"
     },
     {
       "attempt": 1,

@@ -140,7 +140,7 @@ Groups aren't split crudely by country — they're grouped **by the shared egres
 The `AI` group is a `fallback` chain: residential HINET -> TW residential (1x / 3x) -> local proxy:
 
 ```ini
-AI = fallback,ChuiXue-TW_Filter,BigME-TW-All_Filter,Home-Proxy,...
+AI = fallback,SubA-TW_Filter,SubB-TW-All_Filter,Home-Proxy,...
 ```
 
 It's not that HK is slow — it's that **some AI services' region whitelists simply don't include Hong Kong**. Health checks
@@ -306,7 +306,7 @@ and the source site intermittently throws `SSL: UNEXPECTED_EOF`, so **retry with
 
 | `.upstream/upstreams.lock.json` | —— | Ledger of ETag / Last-Modified / sha256 for all 91 resources |
 
-> **About `AI-v2` / `NiceDuck-v2` / `ChuiXueCloud-v2`**
+> **About `AI-v2` / `NiceDuck-v2` / `SubA-v2`**
 >
 > The client's icon cache is **keyed by URL**: after overwriting a file's bytes at the
 > same path, Loon keeps serving the cached old image. Changing an icon therefore requires

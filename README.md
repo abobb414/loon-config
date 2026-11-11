@@ -139,14 +139,14 @@ flowchart TD
 > 出口只有「本地代理网关」和「`Available` 自动测速」两条腿，这几个组本就是空的 ——
 > 但空组照样占着 `Proxy` 的成员列表，切一次错一次，所以连过滤器一起删了。
 > 同理，`Douyin` 组被删掉后抖音回到 `GEOIP,CN` 的直连兜底，行为不变而少一个组。
-> 后来又拆出 `ChuiXue` / `BigME` 两个订阅大合集与 `Claude` 组，最终是 26 个。
+> 后来又拆出 `SubA` / `SubB` 两个订阅大合集与 `Claude` 组，最终是 26 个。
 
 ### AI 组：住宅优先，机房兜底
 
 `AI` 是 `fallback`，顺序是「住宅 HINET -> 台湾家宽（1x / 3x）-> 本地代理」：
 
 ```ini
-AI = fallback,ChuiXue-TW_Filter,BigME-TW-All_Filter,Home-Proxy,...
+AI = fallback,SubA-TW_Filter,SubB-TW-All_Filter,Home-Proxy,...
 ```
 
 不是嫌香港快慢 —— 是**部分 AI 服务对出口地区的白名单不含香港**，机房 IP 在风控里的
@@ -413,7 +413,7 @@ Loon 不报错、日志不提示、规则命中数恒为 0，表现是「插件�
 
 | `.upstream/upstreams.lock.json` | —— | 91 条资源的 ETag / Last-Modified / sha256 台账 |
 
-> **关于 `AI-v2` / `NiceDuck-v2` / `ChuiXueCloud-v2`**
+> **关于 `AI-v2` / `NiceDuck-v2` / `SubA-v2`**
 >
 > 客户端图标缓存**按 URL 命中**：同名覆盖字节后，Loon 仍返回缓存里的旧图。
 > 所以换图必须**换文件名**。这三个改成 `*-v2` 后，`icons-all.json` 里**显示名保持原样**、
