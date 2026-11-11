@@ -42,7 +42,25 @@ localize.py —— 把 Loon 插件（.lpx）的 [Rewrite] 规则固化成「旧�
 无法用旧语法等价表达（脚本会跳过并在报告中列出）:
     response.body.mock / response.json.jq_file / response.body.replace
 
+推荐用法 —— --emit lpx（2026-11-11 起）:
+    python3 localize.py --conf Loon.conf --emit lpx --out rewrite/adblock.lpx
+
+    生成一个「自持插件」：规则用新版语法【原样保留】（一条不丢，包括旧语法
+    表达不了的 body.mock / jq_file / body.replace），同时把各个插件的 [MitM]
+    hostname 合并进同一个文件的 [MitM] 段。
+
+    为什么换成这个：旧 .list 方案里「规则在 adblock.list、MitM 白名单在
+    Loon.conf」，两边靠人工对账，实测已经漂移过一次 —— 311 条规则里 244 条
+    的解密权只来自某一个插件、22 条完全没覆盖，插件一挂那批规则就静默一起死。
+    lpx 把两者放进同一个文件、同一次生成，物理上不存在对账问题。
+
+    主配置侧只需：[Plugin] 里挂一行 lpx 的 URL，撤掉 [Remote Rewrite] 的
+    adblock.list，[MitM] hostname 回落到真正需要手写的那几条。
+
+    --emit list（默认）保留旧行为，用于回退对照。
+
 参考: Loon 官方文档《复写（旧版语法）》 https://nsloon.app/docs/Rewrite/
+      Loon 官方文档《插件》 https://nsloon.app/docs/Plugin/
 """
 
 import argparse
@@ -85,6 +103,31 @@ HEADER = """# ============================================================
 # 依据：Loon 官方文档《复写（旧版语法）》https://nsloon.app/docs/Rewrite/
 # ============================================================
 """
+
+# ---------------------------------------------------------------- lpx 模板
+# 生成一个自持插件：新版语法规则 + 合并后的 [MitM]。
+# 注意：正文里【不写普通 # 注释行】。kelee 的插件正文全是纯规则，没有先例，
+# 万一解析器不认注释会让整份规则静默失效 —— 说明性文字一律放进 #!desc。
+LPX_TPL = """#!name={name}
+#!desc={desc}
+#!author=abobb
+#!homepage=https://github.com/abobb414/loon-config
+#!loon_version={loon_version}
+#!date={date}
+#!tag=去广告
+"""
+
+LPX_LOON_VERSION = '3.5.1(978)'
+
+LPX_DESC = (
+    '由 localize.py 从 kelee 去广告插件的 [Rewrite] 逐条固化而来，规则用新版语法原样保留，'
+    '并合并各插件的 [MitM] hostname 一起发布。'
+    '\\n\\n为什么要固化：插件规则会随作者更新而变动，行为不由自己掌控；'
+    '而旧版 .list 方案把规则和解密白名单分放在两个文件里，靠人工对账，'
+    '实测已漂移过（311 条规则里 244 条的 MitM 解密权只来自某一个插件）。'
+    '本插件把两者同源生成，插件停用/更新失败都不再影响这些规则。'
+    '\\n\\n本文件由 rewrite/gen.py 自动生成，请勿手工编辑。'
+)
 
 # 新版脚本语法：  request if ${url} ~= /<正则>/i then <动作>(<参数>)
 NEW_SYNTAX_RE = re.compile(
@@ -133,16 +176,81 @@ def fetch(url, retries=6, ua=UA, timeout=30):
     raise last
 
 
-def rewrite_block(text):
-    """取出 [Rewrite] 段的有效规则行（去注释去空行）。"""
+def section_lines(text, name):
+    """取出某个 [Section] 段的有效行（去注释去空行）。
+
+    段名大小写不敏感：kelee 插件的 MitM 段写作 [MitM]，主配置里也见过 [MITM]，
+    两者都得认，否则会漏掉整段 hostname。
+    """
     out, inblk = [], False
     for s in text.splitlines():
         s = s.strip()
-        if s.startswith('['):
-            inblk = (s == '[Rewrite]')
+        if s.startswith('[') and s.endswith(']'):
+            inblk = (s[1:-1].strip().lower() == name.lower())
             continue
         if inblk and s and not s.startswith('#'):
             out.append(s)
+    return out
+
+
+def rewrite_block(text):
+    """取出 [Rewrite] 段的有效规则行（去注释去空行）。"""
+    return section_lines(text, 'Rewrite')
+
+
+def mitm_hostnames(text):
+    """取出 [MitM] 段的 hostname（支持多行，剔除 Surge 专有的 %APPEND%）。"""
+    out = []
+    for line in section_lines(text, 'MitM'):
+        m = re.match(r'^hostname\s*=\s*(.+)$', line, re.I)
+        if not m:
+            continue
+        for h in m.group(1).split(','):
+            h = h.strip()
+            if h and h != '%APPEND%':
+                out.append(h)
+    return out
+
+
+def _expand_alts(h, depth=0):
+    """展开 (a|b) / (?:a|b) 这类二选一，返回具体域名列表。"""
+    m = re.search(r'\(\??:?([^()]*\|[^()]*)\)', h)
+    if not m or depth > 5:
+        return [h]
+    out = []
+    for alt in m.group(1).split('|'):
+        out += _expand_alts(h[:m.start()] + alt + h[m.end():], depth + 1)
+    return out
+
+
+def rule_hosts(rule):
+    """从一条复写规则的正则里反推它要解密的域名。
+
+    这一步是 lpx 方案的关键：插件的 [MitM] 并不是规则域名的超集。
+    实测 311 条固化规则里有 22 条打向插件从未声明过的域名（腾讯文档 kdocs、
+    高德 oss.amap.com、淘宝 guide-acs、菜鸟 e2e-mtop 等），只合并各插件
+    [MitM] 的话这些规则还是发不出去。所以必须再用规则本身兜一遍。
+    """
+    m = re.search(r'\$\{url\}\s*~=\s*/(.*)/i', rule, re.S)
+    if not m:
+        return []
+    rx = m.group(1).lstrip('^').replace('\\/', '/')
+    mm = re.match(r'https?://([^/]*)', rx)
+    if not mm:
+        return []
+    raw = mm.group(1).replace('\\.', '.').replace('\\-', '-')
+    out = []
+    for h in _expand_alts(raw):
+        # 正则量词 -> 通配符。注意只吃【带量词】的形态：
+        # 单个 `.` 是域名分隔符，被误吞就变成 api*example*com 这种废域名。
+        h = re.sub(r'\\d\?', '*', h)
+        h = re.sub(r'\\w[+*]', '*', h)
+        h = re.sub(r'\.\+', '*', h)
+        h = re.sub(r'\.\*', '*', h)
+        h = re.sub(r'[\\^$+?{}\[\]()|]', '', h).strip('.')
+        h = re.sub(r'\*+', '*', h)
+        if h and re.fullmatch(r'[a-z0-9.*_-]+', h) and h not in out:
+            out.append(h)
     return out
 
 
@@ -230,6 +338,14 @@ def main():
     ap.add_argument('--extra', action='append', default=[],
                     help='额外插件名（走 kelee 默认地址），用于补配置文件里没有的')
     ap.add_argument('--out', default='adblock.list', help='输出文件（默认 adblock.list）')
+    ap.add_argument('--emit', choices=('list', 'lpx'), default='list',
+                    help='list=旧语法 .list（旧行为）；lpx=自持插件（规则+[MitM] 同源生成，推荐）')
+    ap.add_argument('--name', default='去广告固化（self-hosted）',
+                    help='--emit lpx 时的 #!name')
+    ap.add_argument('--desc', default=LPX_DESC, help='--emit lpx 时的 #!desc')
+    ap.add_argument('--with-rules', action='store_true',
+                    help='--emit lpx 时把插件 [Rule] 段的域名规则一并收进来'
+                         '（注意与 AdRules 大面积重叠，默认不收）')
     ap.add_argument('--ua', default=UA, help='下载用 UA，默认 Loon/998 ...')
     ap.add_argument('--dry-run', action='store_true', help='只统计，不写文件')
     args = ap.parse_args()
@@ -245,6 +361,10 @@ def main():
 
     seen, uniq = set(), []
     for u in urls:
+        # 别把自己的产物当成插件再吃回来：[Plugin] 里挂着 rewrite/adblock.lpx，
+        # 不过滤的话下一次生成会把它算作一个插件，规则翻倍并且自我循环。
+        if re.search(r'/rewrite/adblock\.(lpx|list)$', u):
+            continue
         if u not in seen:
             seen.add(u)
             uniq.append(u)
@@ -255,6 +375,7 @@ def main():
 
     out = [HEADER.rstrip('\n')]
     stat, skipped, failed, ok_plugins = Counter(), Counter(), [], []
+    kept = []           # lpx 模式：[{name, rules, mitm, rhost, rule}]
 
     for url in urls:
         name = os.path.basename(url).rsplit('.lpx', 1)[0]
@@ -266,6 +387,24 @@ def main():
         rules = rewrite_block(text)
         if not rules:
             continue
+
+        if args.emit == 'lpx':
+            # 原样保留新版语法：不转换、不跳过，转换器表达不了的那几类也照收
+            rhost = []
+            for r in rules:
+                for h in rule_hosts(r):
+                    if h not in rhost:
+                        rhost.append(h)
+            kept.append({'name': name, 'rules': rules,
+                         'mitm': mitm_hostnames(text),
+                         'rhost': rhost,
+                         'rule': section_lines(text, 'Rule') if args.with_rules else []})
+            ok_plugins.append(name)
+            for r in rules:
+                nm = CALLNAME_RE.match(r)
+                stat[nm.group(1) if nm else '?'] += 1
+            continue
+
         conv = []
         for r in rules:
             res = convert(r)
@@ -282,8 +421,29 @@ def main():
             out.append('# ===== %s（%d 条）=====' % (name, len(conv)))
             out.extend(conv)
 
-    print('插件 %d 个 -> 成功 %d 个，规则 %d 条'
-          % (len(urls), len(ok_plugins), sum(stat.values())))
+    if args.emit == 'lpx':
+        hosts = []
+        for e in kept:
+            for h in e['mitm'] + e['rhost']:
+                if h not in hosts:
+                    hosts.append(h)
+        only_rule = [h for e in kept for h in e['rhost'] if h not in e['mitm']]
+        print('插件 %d 个 -> 成功 %d 个，规则 %d 条（新版语法原样保留，无跳过）'
+              % (len(urls), len(ok_plugins), sum(stat.values())))
+        print('    MitM hostname 合并 %d 条（插件声明 + 规则反推）'
+              % len(hosts))
+        if only_rule:
+            u = []
+            for h in only_rule:
+                if h not in u:
+                    u.append(h)
+            print('    其中 %d 个域名插件从未声明、只靠规则反推才补上：%s'
+                  % (len(u), ','.join(u)))
+        if args.with_rules:
+            print('    [Rule] 段一并收集 %d 条' % sum(len(e['rule']) for e in kept))
+    else:
+        print('插件 %d 个 -> 成功 %d 个，规则 %d 条'
+              % (len(urls), len(ok_plugins), sum(stat.values())))
     for k, v in sorted(stat.items(), key=lambda x: -x[1]):
         print('    %-26s %4d' % (k, v))
     if skipped:
@@ -301,6 +461,31 @@ def main():
     if not ok_plugins:
         sys.exit('没有任何规则转换成功，不写文件')
     os.makedirs(os.path.dirname(os.path.abspath(args.out)) or '.', exist_ok=True)
+
+    if args.emit == 'lpx':
+        lines = [LPX_TPL.format(name=args.name, desc=args.desc,
+                                loon_version=LPX_LOON_VERSION,
+                                date=time.strftime('%Y-%m-%d %H:%M:%S')).rstrip('\n')]
+        lines.append('[Rewrite]')
+        for e in kept:
+            lines.extend(e['rules'])
+        if args.with_rules:
+            lines.append('[Rule]')
+            seend = set()
+            for e in kept:
+                for r in e['rule']:
+                    if r not in seend:
+                        seend.add(r)
+                        lines.append(r)
+        lines.append('[MitM]')
+        lines.append('hostname = ' + ','.join(hosts))
+        body = '\n'.join(lines) + '\n'
+        with open(args.out, 'w', encoding='utf-8') as fh:
+            fh.write(body)
+        print('已写入: %s（%d 条规则 / %d 个域名 / %.1f KB）'
+              % (args.out, sum(stat.values()), len(hosts), len(body) / 1024.0))
+        return
+
     with open(args.out, 'w', encoding='utf-8') as fh:
         fh.write('\n'.join(out) + '\n')
     print('已写入: %s（%d 行）' % (args.out, len(out)))
