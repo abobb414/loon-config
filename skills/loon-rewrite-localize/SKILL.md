@@ -325,7 +325,7 @@ python3 .../localize.py --conf Loon.conf --dry-run
 
 | | 公开仓库版 | 真机版（iCloud） |
 |---|---|---|
-| `[Proxy]` 凭据 | 占位符 `192.168.1.1 / username / password` | 真实地址 / 口令 |
+| `[Proxy]` 凭据 | 占位符 `192.0.2.10 / username / password`（RFC 5737 文档地址） | 真实地址 / 口令 |
 | WireGuard | `<client-private-key>`、`[<your-endpoint>]` | 真实私钥与端点 |
 | `[Remote Proxy]` | **空** | 真实订阅 |
 | 行数 | 285 | 309 |

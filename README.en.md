@@ -103,7 +103,7 @@ The part of the config that took the most thought isn't the policy groups — it
 
 | Order | Gate | Why it must sit at this position |
 |---|---|---|
-| ① | LAN segment `DIRECT` | Reaching the NAS at home shouldn't detour through a proxy. But ports 8123 / 8097 on the NAS are exceptions — `AND` logic rules pick them out individually into the WG tunnel |
+| ① | LAN segment `DIRECT` | Reaching the NAS at home shouldn't detour through a proxy. But a few service ports on the NAS are exceptions — `AND` logic rules pick them out individually into the WG tunnel |
 | ② | Dedicated DIRECT domains | Sites like `kelee.one` sit behind Cloudflare and only stay stable on DIRECT (see Engineering Notes) |
 | ③ | Apple OTA `REJECT` | Must come **before** the Apple whitelist, otherwise the whitelist pulls OTA domains back into the Apple group |
 | ④ | Apple core whitelist | Must come **before** the remote ad-blocking `REJECT`, otherwise AdRules kills `icloud.com` / `me.com` by mistake |
@@ -408,7 +408,7 @@ Fixed by removing that remote rule set, pinning 10 real OTA domains locally (<co
 </tr>
 <tr>
 <td><b>Self-hosted DNS blocking stopped working</b></td>
-<td>The original config sent the entire <code>192.168.1.0/24</code> segment through the WG tunnel, so internal DNS queries got sucked into the tunnel and then dropped by the peer whitelist.<br/>
+<td>The original config sent an entire LAN segment through the WG tunnel, so internal DNS queries got sucked into the tunnel and then dropped by the peer whitelist.<br/>
 Fixed by picking <b>only specific service ports</b> into the tunnel via <code>AND</code> logic rules, with the rest of the LAN all on DIRECT; the public template leaves these rules commented.</td>
 </tr>
 <tr>
