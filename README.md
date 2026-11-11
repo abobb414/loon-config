@@ -7,11 +7,11 @@
 
 # Loon Config
 
-**一份自用的 Loon 纯分流配置：只决定流量走哪个策略组，不做 MITM、不跑脚本、不带插件。**
+**三份自用的纯分流配置（Loon / Stash / Clash.Meta）：只决定流量走哪个策略组，不做 MITM、不跑脚本、不带插件。**
 
 26 个策略组 · 29 条本地规则 · 34 条远程规则 · 每天一次上游体检
 
-[配置](./Loon-routing.conf) · [快速开始](#快速开始) · [分流设计](#分流设计) · [插件与脚本](#插件与脚本为什么必须自己订阅) · [每日上游同步](#每日上游同步)
+[Loon](./Loon-routing.conf) · [Stash](./Stash.yaml) · [Clash](./Clash.yaml) · [快速开始](#快速开始) · [分流设计](#分流设计) · [插件与脚本](#插件与脚本为什么必须自己订阅) · [每日上游同步](#每日上游同步)
 
 </div>
 
@@ -19,13 +19,23 @@
 
 ## 这是什么
 
-仓库只维护一个文件：[`Loon-routing.conf`](./Loon-routing.conf)。
+仓库维护三份同源的纯分流配置：
 
-它回答的问题只有「哪条流量走哪个策略组」。文件里没有 `[MITM]`、`[Rewrite]`、
-`[Script]`、`[Plugin]` —— 需要解密的去广告不在这里做，交给你自己订阅的 `.lpx` 插件。
+| 客户端 | 文件 | 语法 |
+|---|---|---|
+| Loon | [`Loon-routing.conf`](./Loon-routing.conf) | Loon 原生（`.conf`） |
+| Stash | [`Stash.yaml`](./Stash.yaml) | 完全兼容 Clash Premium |
+| Clash.Meta / mihomo | [`Clash.yaml`](./Clash.yaml) | mihomo 1.18+（原版 Clash Premium 已停更） |
+
+三份文件回答同一个问题：「哪条流量走哪个策略组」。策略组、过滤条件、规则顺序一一对应，
+差异只来自客户端本身（见[三份配置的差异](#三份配置的差异)）。三份都是手工维护的镜像，
+改一处要同步另外两处。
+
+配置里没有 `[MITM]`、`[Rewrite]`、`[Script]`、`[Plugin]` —— 需要解密的去广告不在这里做，
+交给你自己订阅的插件。
 
 - 规则层去广告（`REJECT`）仍然有效：按域名/连接直接拒掉，不需要解密。
-- 远程规则与 GeoIP 由 Loon 在运行时向上游拉取；仓库只记录它们的指纹。
+- 远程规则与 GeoIP 由客户端在运行时向上游拉取；仓库只记录它们的指纹。
 - 代理地址、订阅 token、WireGuard 密钥全部是占位符，公开仓库里没有真实凭据。
 
 ## 快速开始
@@ -36,20 +46,28 @@ git clone https://github.com/abobb414/loon-config.git
 cd loon-config
 
 # 2. 换成自己的节点（仓库里是占位符）
-#    [Proxy]        Home-Proxy 的地址 / 端口 / 用户名 / 口令
-#    [Proxy]        Home-NAS-WG 的私钥 / 公钥 / 端点
-#    [Remote Proxy] SubA-Sub / SubB-Sub 的订阅地址
-#    订阅名不要改：[Remote Filter] 按 SubA-Sub / SubB-Sub 取节点
+#    Loon  [Proxy]        Home-Proxy 的地址 / 端口 / 用户名 / 口令
+#          [Proxy]        Home-NAS-WG 的私钥 / 公钥 / 端点
+#          [Remote Proxy] SubA-Sub / SubB-Sub 的订阅地址
+#          订阅名不要改：[Remote Filter] 按 SubA-Sub / SubB-Sub 取节点
+#    YAML  proxies:            Home-Proxy / Home-NAS-WG
+#          proxy-providers:   SubA-Sub / SubB-Sub
+#          这两个名字被策略组的 use 引用，改名要一起改
 
 # 3. 本地校验（可选）
 python3 scripts/validate_config.py Loon-routing.conf
 ```
 
-然后在 Loon 里：**配置 → 新建配置 → 填 raw 地址 → 切换过去**。
+然后在客户端里导入：
 
 ```text
-https://raw.githubusercontent.com/abobb414/loon-config/main/Loon-routing.conf
+https://raw.githubusercontent.com/abobb414/loon-config/main/Loon-routing.conf   # Loon
+https://raw.githubusercontent.com/abobb414/loon-config/main/Stash.yaml          # Stash
+https://raw.githubusercontent.com/abobb414/loon-config/main/Clash.yaml          # Clash.Meta / mihomo
 ```
+
+Stash 没有「订阅配置」入口时，下载 `Stash.yaml` 到 iCloud/本地再导入即可；
+Clash 系客户端直接把这个地址填进「配置 / Profile」。
 
 去广告插件和脚本不在这份配置里，按下一节的地址自行订阅。
 
@@ -140,6 +158,29 @@ App 换接口域名、插件作者新增域名，清单都跟不上，于是出�
   在家访问 LAN 由 `[Rule]` 顶部的 `DIRECT` 兜底。
 - `disable-stun` 保持关闭，否则微信视频 / FaceTime 会被迫走中继。
 
+### 三份配置的差异
+
+同一套策略，落到三个客户端时只有下面几处必须不同：
+
+| 项 | Loon | Stash | Clash.Meta |
+|---|---|---|---|
+| 节点过滤 | `[Remote Filter]` + `NameRegex` | 策略组 `use` + `filter` | 策略组 `use` + `filter` / `exclude-filter` |
+| 过滤正则 | 支持负向前瞻 | 支持负向前瞻（ICU） | **RE2，不支持负向前瞻**，排除项必须写 `exclude-filter` |
+| Speedtest 规则 | kelee.one 的 `.lsr` | blackmatrix7 同名规则集 | blackmatrix7 同名规则集 |
+| `[Host]`（域名 → DNS） | 原生 | `dns.nameserver-policy` | `dns.nameserver-policy` |
+| 节点域名真实解析 | `real-ip` | `proxy-server-nameserver` + `fake-ip-filter` | 同 Stash |
+| 去广告插件 / 脚本 | 自行订阅 `.lpx` / `.js` | 自行订阅 Stash rewrite/script | 不在本配置范围 |
+
+- **kelee.one 只对 Loon 的 UA 放行。** Stash / Clash 拉 `.lsr` 会 403，所以 YAML 里把两条
+  Speedtest 规则换成 blackmatrix7 的 `Speedtest.yaml`，规则条数从 34 变成 33。
+- **过滤器在 YAML 里是「策略组」。** `SubA-TW`、`SubB-JP` 这些名字等价于 Loon 的
+  `SubA-TW_Filter`：`hidden: true` 不占策略组列表，只作为 `Available` / `Proxy` / `AI`
+  的成员。区域池用 `url-test` 先挑最快节点，外层 `fallback` 只判断这个池子还能不能用。
+- **Clash 没有负向前瞻。** Loon / Stash 里 `^(?!.*(剩余流量|...)).*` 这种写法在 mihomo 里
+  会直接编译失败，所以 `Clash.yaml` 统一改成 `filter: '.*'` + `exclude-filter`。
+- **`hosts` 不能写 DNS 服务器。** Clash 系的 `hosts` 只接受 IP，把域名指到某个 DNS 服务器
+  要用 `dns.nameserver-policy`，三份配置的解析行为才一致。
+
 ## 每日上游同步
 
 远程规则不在仓库里，Loon 运行时直接向上游拉取。每日任务做的是「确认它们还活着、还是规则」：
@@ -176,11 +217,13 @@ python3 scripts/sync_upstreams.py --strict         # 核心资源失败时返回
 
 | 文件 | 用途 |
 |---|---|
-| `Loon-routing.conf` | 唯一配置。26 个策略组、29 条本地规则、34 条远程规则 |
-| `IconSet/Color/` | 自托管策略组图标（1600px PNG）与 `icons-all.json`；配置里 26 个图标都指向这里 |
+| `Loon-routing.conf` | Loon 配置。26 个策略组、29 条本地规则、34 条远程规则 |
+| `Stash.yaml` | Stash 镜像。26 个策略组 + 8 个过滤池、33 条远程规则集 |
+| `Clash.yaml` | Clash.Meta / mihomo 镜像；与 Stash 版同构，过滤用 `exclude-filter` |
+| `IconSet/Color/` | 自托管策略组图标（1600px PNG）与 `icons-all.json`；26 个图标都指向这里 |
 | `scripts/sync_upstreams.py` | 每日上游同步：抓取、sha256、规则条数、变更检测、Step Summary |
-| `scripts/validate_config.py` | 静态校验：段名、策略引用、`FINAL` 收尾、图标文件是否存在 |
-| `.upstream/upstreams.lock.json` | 37 条上游资源的指纹台账 |
+| `scripts/validate_config.py` | Loon 静态校验：段名、策略引用、`FINAL` 收尾、图标文件是否存在 |
+| `.upstream/upstreams.lock.json` | 37 条上游资源的指纹台账（Loon 版） |
 | `.github/workflows/upstream-sync.yml` | 每日定时任务 |
 | `.github/workflows/secret-scan.yml` | 推送前扫描疑似私钥、口令与代理凭据 |
 | `docs/images/` | README 用的 logo |
@@ -201,13 +244,23 @@ Home-NAS-WG = wireguard,private-key="<client-private-key>", ...
 SubA-Sub    = https://example.com/sub-a-subscribe?token=YOUR_TOKEN, ...
 ```
 
+```yaml
+# Stash.yaml / Clash.yaml
+private-key: "<client-private-key>"
+password: "<password>"
+```
+
 真实值放本地，不要提交回来。`secret-scan.yml` 会在 push / PR 时扫描私钥、非空
 `password`/`secret` 字段和 `scheme, ip, port, user, pass` 形式的代理凭据。
+YAML 里的值带引号，既是为了占位符显眼，也是为了让扫描器不会把它当成真实口令。
 
 ## 限制
 
 - 只维护纯分流配置。需要 MITM、rewrite、脚本、插件一次性带走的，请按上面的地址自己订阅。
-- 订阅过滤依赖节点命名；换机场后 `[Remote Filter]` 的正则要重写。
+- 三份配置是**手工维护的镜像**，没有自动一致性检查；改规则顺序、过滤条件、策略组时
+  三份都要改。YAML 两份只做了语法与引用校验，没有在 Stash / mihomo 真机启动验证。
+- 订阅过滤依赖节点命名；换机场后 Loon 的 `[Remote Filter]` 与 YAML 里的 `filter` /
+  `exclude-filter` 都要重写。
 - 配置是个人自用的公开备份，不保证适配所有 Loon 版本；`[Proxy Chain]` 之类的新模块
   不在本文件里，按需自行添加。
 - 远程规则是第三方维护的，误杀 / 漏杀与本仓库无关。

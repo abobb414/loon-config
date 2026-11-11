@@ -1,0 +1,720 @@
+# abobb's Clash 分流配置（Clash.Meta / mihomo，纯分流版）
+# 与 Loon-routing.conf 同源：策略组、过滤条件、规则顺序一致。
+# Created: 2026-07-12
+# Last Updated: 2026-11-11
+#
+# 目标内核：Clash.Meta / mihomo 1.18+（原版 Clash Premium 已停更，不再维护它的差异）。
+# 可直接被 mihomo 内核、Clash Verge Rev、OpenClash（Meta 内核）等读取。
+#
+# ── 为什么没有插件、没有 rewrite ─────────────────────────────────────────
+#
+# 规则层 REJECT 不需要解密：按域名/连接直接拒掉，纯分流配置里照样有效。
+# 而 Rewrite 层（改响应体、删字段）必须先 MitM 解密；mitm hostname 是静态清单，
+# App 换接口域名、插件作者新增域名，清单都跟不上，最后得到「插件已加载、命中数为 0」。
+# 需要去广告插件/脚本请用支持插件分发的客户端（Loon / Stash），自行订阅、自行维护，
+# 不要在分流配置里冻结一份快照。订阅地址见 README「插件与脚本」一节。
+#
+# ── 与 Stash / Loon 版的差异 ─────────────────────────────────────────────
+#
+# · 过滤器：Go 正则（RE2）不支持负向前瞻，所以排排除项一律用 exclude-filter，
+#   不要把它们写成 Loon 那种 `^(?!...)` —— 那种正则在 mihomo 里会直接编译失败。
+# · kelee.one 只对 Loon 的 UA 放行，这里用 blackmatrix7 的 Speedtest 规则集替代。
+# · Loon 的 [Host] 是「域名 → DNS 服务器」，Clash 的 hosts 只能写 IP，
+#   所以改写到 dns.nameserver-policy。
+# · 关闭了 allow-lan；在路由器 / NAS 上给局域网设备提供代理时再打开。
+#
+# 三份配置（Loon-routing.conf / Stash.yaml / Clash.yaml）是各自维护的镜像，
+# 改规则顺序、过滤条件、策略组时三份都要改。
+# ─────────────────────────────────────────────────────────────────────────
+
+mixed-port: 7890
+allow-lan: false
+mode: rule
+log-level: info
+ipv6: true
+
+# Loon 的 sni-sniffing：在 fake-ip 模式下按 SNI 还原域名，域名规则才能命中。
+sniffer:
+  enable: true
+  sniff:
+    TLS:
+      ports: [443, 8443]
+    QUIC:
+      ports: [443, 8443]
+
+# 与 Loon 的 geoip-url 对齐：GEOIP 用 Loyalsoldier 的 Country.mmdb。
+geodata-mode: false
+geo-auto-update: true
+geo-update-interval: 24
+geox-url:
+  mmdb: https://cdn.jsdelivr.net/gh/Loyalsoldier/geoip@release/Country.mmdb
+
+dns:
+  enable: true
+  ipv6: true
+  enhanced-mode: fake-ip
+  fake-ip-range: 198.18.0.1/16
+
+  # 纯 IP 的 DoH，不写 h3://（QUIC）形式：UDP/443 常被运营商 QoS，表现为解析偶发挂起。
+  default-nameserver:
+    - 223.5.5.5
+    - 119.29.29.29
+  nameserver:
+    - https://223.5.5.5/dns-query
+    - https://120.53.53.53/dns-query
+
+  # 订阅节点域名走独立解析链，不跟随分流规则，避免连接节点时形成递归查询。
+  proxy-server-nameserver:
+    - 223.5.5.5
+    - 119.29.29.29
+
+  # 以下域名必须返回真实地址：
+  # · 网络连通性探测（msftconnecttest / msftncsi）
+  # · 游戏主机的 NAT 探测（任天堂 / PlayStation / Xbox）
+  # · 战网登录与更新
+  # · 你自己的订阅节点域名后缀（Loon 的 real-ip 列表），按机场补在最后一行
+  fake-ip-filter:
+    - '*.msftconnecttest.com'
+    - '*.msftncsi.com'
+    - '*.srv.nintendo.net'
+    - '*.stun.playstation.net'
+    - 'xbox.*.microsoft.com'
+    - '*.xboxlive.com'
+    - '*.battlenet.com.cn'
+    - '*.battlenet.com'
+    - '*.blzstatic.cn'
+    - '*.battle.net'
+    # - '*.your-node-domain.com'
+
+  # 原 Loon [Host]：这些域名固定用国内 DNS，避免 DoH/QUIC 解析路径影响长连接。
+  nameserver-policy:
+    '+.taobao.com': 223.5.5.5
+    '+.tmall.com': 223.5.5.5
+    '+.alicdn.com': 223.5.5.5
+    '+.aliyun.com': 223.5.5.5
+    '+.testflight.apple.com': 223.5.5.5
+    '+.jd.com': 119.29.29.29
+    '+.qq.com': 119.29.29.29
+    '+.tencent.com': 119.29.29.29
+    '+.weixin.com': 119.29.29.29
+    '+.weixin.qq.com': 119.29.29.29
+    '+.wechat.com': 119.29.29.29
+    '+.qpic.cn': 119.29.29.29
+    '+.163.com': 119.29.29.29
+    '+.126.com': 119.29.29.29
+    '+.126.net': 119.29.29.29
+    '+.127.net': 119.29.29.29
+    '+.netease.com': 119.29.29.29
+    '+.mi.com': 119.29.29.29
+    '+.xiaomi.com': 119.29.29.29
+    '+.bilibili.com': 119.29.29.29
+    'dl.google.com': 119.29.29.29
+    'dl.l.google.com': 119.29.29.29
+
+proxies:
+  # 家里代理内核（mihomo mixed 端口）：用 socks5 才能转 UDP ASSOCIATE。
+  # 地址是 RFC 5737 文档保留地址（192.0.2.0/24，公网不可达），换成你自己的内网地址与口令。
+  - name: Home-Proxy
+    type: socks5
+    server: 192.0.2.10
+    port: 7890
+    username: "<username>"
+    password: "<password>"
+    udp: true
+
+  # 家里 WireGuard：接口地址用 10.0.0.2（WG 常见网段），端点用 2001:db8::（RFC 3849 文档前缀），
+  # 全是占位符。MTU 1280 兼容 IPv6 最小链路与蜂窝 PMTUD。
+  - name: Home-NAS-WG
+    type: wireguard
+    server: 2001:db8::1
+    port: 51820
+    ip: 10.0.0.2
+    private-key: "<client-private-key>"
+    public-key: "<server-public-key>"
+    allowed-ips: ['0.0.0.0/0']
+    reserved: [0, 0, 0]
+    mtu: 1280
+    udp: true
+    persistent-keepalive: 25
+
+proxy-providers:
+  # ⚠ 订阅地址含 token，本仓库不保存。换成你自己的订阅地址即可；
+  #   这两个名字（SubA-Sub / SubB-Sub）被下面的策略组引用，改名要一起改。
+  # health-check 对齐 Loon：gstatic 204，3 秒超时。
+  SubA-Sub:
+    type: http
+    url: https://example.com/sub-a-subscribe?token=YOUR_TOKEN
+    path: ./providers/SubA-Sub.yaml
+    interval: 86400
+    health-check:
+      enable: true
+      url: http://www.gstatic.com/generate_204
+      timeout: 3
+      interval: 600
+    override:
+      udp: true
+      skip-cert-verify: true
+  SubB-Sub:
+    type: http
+    url: https://example.com/sub-b-subscribe?token=YOUR_TOKEN
+    path: ./providers/SubB-Sub.yaml
+    interval: 86400
+    health-check:
+      enable: true
+      url: http://www.gstatic.com/generate_204
+      timeout: 3
+      interval: 600
+    override:
+      udp: true
+      skip-cert-verify: true
+
+proxy-groups:
+  # ── 节点池：等价 Loon [Remote Filter] ──────────────────────────────────
+  # 只作为其他策略组的成员，hidden 后不占策略组列表。
+  # 订阅头部那些「剩余流量 / 套餐到期」的占位行必须排掉，否则会被当成节点测速。
+  - name: SubA-TW
+    type: url-test
+    use: [SubA-Sub]
+    filter: '(?i)HINET'
+    url: http://www.gstatic.com/generate_204
+    interval: 600
+    hidden: true
+
+  # 机房段节点：住宅节点全挂时保证仍从目标地区出网。
+  - name: SubA-IDC
+    type: url-test
+    use: [SubA-Sub]
+    filter: '(?i)^🧋台湾0[1-4]'
+    url: http://www.gstatic.com/generate_204
+    interval: 600
+    hidden: true
+
+  # SubA 的剩余节点：排掉已经单独成池的 HINET 与订阅头部占位行。
+  - name: SubA-Rest
+    type: select
+    use: [SubA-Sub]
+    filter: '.*'
+    exclude-filter: '(剩余流量|距离下次|套餐到期|官网|过滤掉|HINET)'
+    hidden: true
+
+  # SubB 的台湾家宽（1x）：排掉 3x / 高倍与订阅头部占位行。
+  - name: SubB-TW
+    type: url-test
+    use: [SubB-Sub]
+    filter: '(?i)TW [0-9]+ ISP家宽'
+    exclude-filter: '(剩余流量|套餐到期|客服邮箱|支持AI|高倍|3x流量)'
+    url: http://www.gstatic.com/generate_204
+    interval: 600
+    hidden: true
+
+  # 台湾家宽全集（1x + 3x）：3x 的命名是 `TW高倍家宽01 3x流量`，TW 后没有空格。
+  - name: SubB-TW-All
+    type: url-test
+    use: [SubB-Sub]
+    filter: '(?i)(TW [0-9]+ ISP家宽|TW高倍家宽[0-9]+ 3x流量)'
+    exclude-filter: '(剩余流量|距离下次|套餐到期|客服邮箱|支持AI)'
+    url: http://www.gstatic.com/generate_204
+    interval: 600
+    hidden: true
+
+  - name: SubB-JP
+    type: url-test
+    use: [SubB-Sub]
+    filter: '(?i)JP [0-9]+'
+    exclude-filter: '(剩余流量|套餐到期|客服邮箱|支持AI|高倍|3x流量)'
+    url: http://www.gstatic.com/generate_204
+    interval: 600
+    hidden: true
+
+  - name: SubB-SG
+    type: url-test
+    use: [SubB-Sub]
+    filter: '(?i)SG [0-9]+'
+    exclude-filter: '(剩余流量|套餐到期|客服邮箱|支持AI|高倍|3x流量)'
+    url: http://www.gstatic.com/generate_204
+    interval: 600
+    hidden: true
+
+  # SubB 的剩余节点：排掉头部占位行与已经单独成池的 1x 台湾家宽。
+  - name: SubB-Rest
+    type: select
+    use: [SubB-Sub]
+    filter: '.*'
+    exclude-filter: '(剩余流量|距离下次|套餐到期|客服邮箱|支持AI|TW [0-9]+ ISP家宽)'
+    hidden: true
+
+  # ── 入口与兜底 ────────────────────────────────────────────────────────
+  # Available：正常倍率的台湾家宽 -> 日本 -> 新加坡 -> Proxy。香港节点全部排除（高倍且不稳）。
+  - name: Available
+    type: fallback
+    proxies: [SubB-TW, SubB-JP, SubB-SG, Proxy]
+    url: http://www.gstatic.com/generate_204
+    interval: 600
+    icon: https://raw.githubusercontent.com/abobb414/loon-config/main/IconSet/Color/Available.png
+
+  # fallback 而不是 select：select 会沿用客户端保存的上一次手动选择，改配置不生效。
+  - name: Proxy
+    type: fallback
+    proxies: [SubB-TW, SubA-IDC, Home-Proxy]
+    url: http://www.gstatic.com/generate_204
+    interval: 600
+    icon: https://raw.githubusercontent.com/abobb414/loon-config/main/IconSet/Color/Proxy.png
+
+  - name: Final
+    type: select
+    proxies: [Proxy, DIRECT]
+    icon: https://raw.githubusercontent.com/abobb414/loon-config/main/IconSet/Color/Final.png
+
+  - name: HomeNAS
+    type: select
+    proxies: [Home-NAS-WG, DIRECT]
+    icon: https://raw.githubusercontent.com/abobb414/loon-config/main/IconSet/Color/HomeNAS.png
+
+  - name: Finance
+    type: select
+    proxies: [DIRECT, Proxy]
+    icon: https://raw.githubusercontent.com/abobb414/loon-config/main/IconSet/Color/Finance.png
+
+  # 大合集：先挂地区池，让策略页默认落在可用节点上。
+  - name: SubA
+    type: select
+    proxies: [SubA-TW, SubA-Rest]
+    icon: https://raw.githubusercontent.com/abobb414/loon-config/main/IconSet/Color/SnowStorm.png
+
+  - name: SubB
+    type: select
+    proxies: [SubB-TW, SubB-Rest]
+    icon: https://raw.githubusercontent.com/abobb414/loon-config/main/IconSet/Color/SubB.png
+
+  # AI：住宅优先级最高，机房只做兜底。住宅 IP 在 AI 站点上的信任度明显高于机房。
+  - name: AI
+    type: fallback
+    proxies: [SubA-TW, SubB-TW-All, Home-Proxy]
+    url: http://www.gstatic.com/generate_204
+    interval: 120
+    icon: https://raw.githubusercontent.com/abobb414/loon-config/main/IconSet/Color/AI-v2.png
+
+  - name: OpenAI
+    type: select
+    proxies: [AI]
+    icon: https://raw.githubusercontent.com/abobb414/loon-config/main/IconSet/Color/OpenAI.png
+
+  # Claude 单独一组：Claude 规则集指向它，不再和 OpenAI/Gemini 共用 AI。
+  # 默认选中 AI；需要时可以直接在这一组里挑具体节点池。
+  - name: Claude
+    type: select
+    proxies: [AI, SubA-TW, SubB-TW-All, Home-Proxy]
+    icon: https://raw.githubusercontent.com/abobb414/loon-config/main/IconSet/Color/FlashBang.png
+
+  - name: Gemini
+    type: select
+    proxies: [AI]
+    icon: https://raw.githubusercontent.com/abobb414/loon-config/main/IconSet/Color/Gemini.png
+
+  - name: Google
+    type: select
+    proxies: [Proxy]
+    icon: https://raw.githubusercontent.com/abobb414/loon-config/main/IconSet/Color/Google.png
+
+  # Apple：默认 DIRECT 保证国内苹果服务直连；需要外区服务时手动切 Proxy。
+  - name: Apple
+    type: select
+    proxies: [DIRECT, Proxy]
+    icon: https://raw.githubusercontent.com/abobb414/loon-config/main/IconSet/Color/Apple.png
+
+  - name: Microsoft
+    type: select
+    proxies: [DIRECT, Proxy]
+    icon: https://raw.githubusercontent.com/abobb414/loon-config/main/IconSet/Color/Microsoft.png
+
+  - name: Netflix
+    type: select
+    proxies: [Proxy]
+    icon: https://raw.githubusercontent.com/abobb414/loon-config/main/IconSet/Color/Netflix.png
+
+  - name: Disney
+    type: select
+    proxies: [Proxy]
+    icon: https://raw.githubusercontent.com/abobb414/loon-config/main/IconSet/Color/Disney.png
+
+  - name: HBO
+    type: select
+    proxies: [Proxy]
+    icon: https://raw.githubusercontent.com/abobb414/loon-config/main/IconSet/Color/HBO.png
+
+  - name: Spotify
+    type: select
+    proxies: [Proxy, DIRECT]
+    icon: https://raw.githubusercontent.com/abobb414/loon-config/main/IconSet/Color/Spotify.png
+
+  - name: YouTube
+    type: select
+    proxies: [Proxy]
+    icon: https://raw.githubusercontent.com/abobb414/loon-config/main/IconSet/Color/YouTube.png
+
+  - name: Bilibili
+    type: select
+    proxies: [DIRECT, Proxy]
+    icon: https://raw.githubusercontent.com/abobb414/loon-config/main/IconSet/Color/Bilibili.png
+
+  - name: TikTok
+    type: select
+    proxies: [Proxy]
+    icon: https://raw.githubusercontent.com/abobb414/loon-config/main/IconSet/Color/TikTok.png
+
+  - name: Instagram
+    type: select
+    proxies: [Proxy]
+    icon: https://raw.githubusercontent.com/abobb414/loon-config/main/IconSet/Color/Instagram.png
+
+  - name: Telegram
+    type: select
+    proxies: [Proxy]
+    icon: https://raw.githubusercontent.com/abobb414/loon-config/main/IconSet/Color/Telegram.png
+
+  - name: LinkedIn
+    type: select
+    proxies: [Proxy, DIRECT]
+    icon: https://raw.githubusercontent.com/abobb414/loon-config/main/IconSet/Color/LinkedIn.png
+
+  - name: Emby
+    type: select
+    proxies: [Proxy]
+    icon: https://raw.githubusercontent.com/abobb414/loon-config/main/IconSet/Color/Emby.png
+
+  - name: Speedtest
+    type: select
+    proxies: [DIRECT, Proxy]
+    icon: https://raw.githubusercontent.com/abobb414/loon-config/main/IconSet/Color/Speedtest.png
+
+rule-providers:
+  # 两张去广告表都启用（2026-11-11）。体积差三个数量级，代价不同：
+  #   Advertising  约 26 KB，几千条 —— 精准但覆盖窄。
+  #   AdRules      208,515 条 DOMAIN-SUFFIX / 约 7.3 MB —— 广度换来的，classical
+  #                建索引会明显吃内存。嫌重就先把 AdRules 注释掉；
+  #                反过来如果误杀导致页面白屏，先关 Advertising。
+  Advertising:
+    type: http
+    behavior: classical
+    format: yaml
+    url: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Advertising/Advertising.yaml
+    path: ./rules/Advertising.yaml
+    interval: 86400
+  AdRules:
+    type: http
+    behavior: classical
+    format: text
+    url: https://raw.githubusercontent.com/Cats-Team/AdRules/main/adrules.list
+    path: ./rules/AdRules.list
+    interval: 86400
+
+  # Loon 版用的是 kelee.one 的 SpeedtestChina / SpeedtestInternational，
+  # 那个站只对 Loon UA 放行，这里换 blackmatrix7 的同名规则集。
+  Speedtest:
+    type: http
+    behavior: classical
+    format: yaml
+    url: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Speedtest/Speedtest.yaml
+    path: ./rules/Speedtest.yaml
+    interval: 86400
+
+  AliPay:
+    type: http
+    behavior: classical
+    format: yaml
+    url: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/AliPay/AliPay.yaml
+    path: ./rules/AliPay.yaml
+    interval: 86400
+  UnionPay:
+    type: http
+    behavior: classical
+    format: yaml
+    url: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/UnionPay/UnionPay.yaml
+    path: ./rules/UnionPay.yaml
+    interval: 86400
+  ICBC:
+    type: http
+    behavior: classical
+    format: yaml
+    url: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/ICBC/ICBC.yaml
+    path: ./rules/ICBC.yaml
+    interval: 86400
+  CCB:
+    type: http
+    behavior: classical
+    format: yaml
+    url: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/CCB/CCB.yaml
+    path: ./rules/CCB.yaml
+    interval: 86400
+  BOC:
+    type: http
+    behavior: classical
+    format: yaml
+    url: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/BOC/BOC.yaml
+    path: ./rules/BOC.yaml
+    interval: 86400
+  ABC:
+    type: http
+    behavior: classical
+    format: yaml
+    url: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/ABC/ABC.yaml
+    path: ./rules/ABC.yaml
+    interval: 86400
+  CMB:
+    type: http
+    behavior: classical
+    format: yaml
+    url: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/CMB/CMB.yaml
+    path: ./rules/CMB.yaml
+    interval: 86400
+  BOCOM:
+    type: http
+    behavior: classical
+    format: yaml
+    url: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/BOCOM/BOCOM.yaml
+    path: ./rules/BOCOM.yaml
+    interval: 86400
+  CEB:
+    type: http
+    behavior: classical
+    format: yaml
+    url: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/CEB/CEB.yaml
+    path: ./rules/CEB.yaml
+    interval: 86400
+
+  YouTube:
+    type: http
+    behavior: classical
+    format: yaml
+    url: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/YouTube/YouTube.yaml
+    path: ./rules/YouTube.yaml
+    interval: 86400
+  OpenAI:
+    type: http
+    behavior: classical
+    format: yaml
+    url: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/OpenAI/OpenAI.yaml
+    path: ./rules/OpenAI.yaml
+    interval: 86400
+  Claude:
+    type: http
+    behavior: classical
+    format: yaml
+    url: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Claude/Claude.yaml
+    path: ./rules/Claude.yaml
+    interval: 86400
+  Gemini:
+    type: http
+    behavior: classical
+    format: yaml
+    url: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Gemini/Gemini.yaml
+    path: ./rules/Gemini.yaml
+    interval: 86400
+  Google:
+    type: http
+    behavior: classical
+    format: yaml
+    url: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Google/Google.yaml
+    path: ./rules/Google.yaml
+    interval: 86400
+  Apple:
+    type: http
+    behavior: classical
+    format: yaml
+    url: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Apple/Apple.yaml
+    path: ./rules/Apple.yaml
+    interval: 86400
+  # fmz200 的 AI 合集仍是 Loon 文本格式，classical + text 直接引用。
+  AI:
+    type: http
+    behavior: classical
+    format: text
+    url: https://raw.githubusercontent.com/fmz200/wool_scripts/main/Loon/rule/AI.list
+    path: ./rules/AI.list
+    interval: 86400
+  Microsoft:
+    type: http
+    behavior: classical
+    format: yaml
+    url: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Microsoft/Microsoft.yaml
+    path: ./rules/Microsoft.yaml
+    interval: 86400
+  Netflix:
+    type: http
+    behavior: classical
+    format: yaml
+    url: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Netflix/Netflix.yaml
+    path: ./rules/Netflix.yaml
+    interval: 86400
+  Disney:
+    type: http
+    behavior: classical
+    format: yaml
+    url: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Disney/Disney.yaml
+    path: ./rules/Disney.yaml
+    interval: 86400
+  HBO:
+    type: http
+    behavior: classical
+    format: yaml
+    url: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/HBO/HBO.yaml
+    path: ./rules/HBO.yaml
+    interval: 86400
+  Spotify:
+    type: http
+    behavior: classical
+    format: yaml
+    url: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Spotify/Spotify.yaml
+    path: ./rules/Spotify.yaml
+    interval: 86400
+  Bilibili:
+    type: http
+    behavior: classical
+    format: yaml
+    url: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/BiliBili/BiliBili.yaml
+    path: ./rules/Bilibili.yaml
+    interval: 86400
+  TikTok:
+    type: http
+    behavior: classical
+    format: yaml
+    url: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/TikTok/TikTok.yaml
+    path: ./rules/TikTok.yaml
+    interval: 86400
+  Instagram:
+    type: http
+    behavior: classical
+    format: yaml
+    url: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Instagram/Instagram.yaml
+    path: ./rules/Instagram.yaml
+    interval: 86400
+  Telegram:
+    type: http
+    behavior: classical
+    format: yaml
+    url: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Telegram/Telegram.yaml
+    path: ./rules/Telegram.yaml
+    interval: 86400
+  LinkedIn:
+    type: http
+    behavior: classical
+    format: yaml
+    url: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/LinkedIn/LinkedIn.yaml
+    path: ./rules/LinkedIn.yaml
+    interval: 86400
+  Emby:
+    type: http
+    behavior: classical
+    format: yaml
+    url: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Emby/Emby.yaml
+    path: ./rules/Emby.yaml
+    interval: 86400
+  Direct:
+    type: http
+    behavior: classical
+    format: yaml
+    url: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Direct/Direct.yaml
+    path: ./rules/Direct.yaml
+    interval: 86400
+  ChinaMaxNoIP:
+    type: http
+    behavior: classical
+    format: yaml
+    url: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/ChinaMaxNoIP/ChinaMaxNoIP.yaml
+    path: ./rules/ChinaMaxNoIP.yaml
+    interval: 86400
+  Proxy:
+    type: http
+    behavior: classical
+    format: yaml
+    url: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Proxy/Proxy.yaml
+    path: ./rules/Proxy.yaml
+    interval: 86400
+
+rules:
+  # === 家里 NAS（可选，默认关闭） ===
+  # 在家访问 LAN 走直连即可。远程访问自托管服务时，改成只把具体端口放进 WG 隧道：
+  # AND,((IP-CIDR,<NAS-IP>/32,no-resolve),(DST-PORT,<PORT>)),HomeNAS
+  # 不要整段 LAN 进隧道 —— 内网 DNS 查询会被吸进去，再被对端白名单丢弃。
+  - IP-CIDR,192.168.0.0/16,DIRECT,no-resolve
+
+  # === 检测站 + STUN 固定走 AI ===
+  # 这些域名不走代理时，会用本地 DNS 解析，检测站会看到本地出口；
+  # STUN 走能转 UDP 的节点，保证 UDP 与 TCP 出口一致。
+  - DOMAIN-SUFFIX,ip.net.coffee,AI
+  - DOMAIN-SUFFIX,stun.l.google.com,Home-Proxy
+  - DOMAIN-SUFFIX,stun.cloudflare.com,Home-Proxy
+
+  # === 插件源/脚本源强制直连 ===
+  # kelee.one 在 Cloudflare 后面，经代理出海会被下发 cf-mitigated: challenge。
+  - DOMAIN-SUFFIX,kelee.one,DIRECT
+
+  # === 屏蔽 iOS 系统更新（必须排在 Apple 白名单之前） ===
+  # 这里 11 个 OTA 域也匹配 apple.com 后缀：先放白名单，屏蔽失效；
+  # 先放 REJECT，白名单救不回来。这一对的顺序不能颠倒。
+  - DOMAIN,swcdn.apple.com,REJECT
+  - DOMAIN,swdist.apple.com,REJECT
+  - DOMAIN,swdownload.apple.com,REJECT
+  - DOMAIN,swscan.apple.com,REJECT
+  - DOMAIN,swquery.apple.com,REJECT
+  - DOMAIN,swpost.apple.com,REJECT
+  - DOMAIN,mesu.apple.com,REJECT
+  - DOMAIN,gdmf.apple.com,REJECT
+  - DOMAIN,appldnld.apple.com,REJECT
+  - DOMAIN,gg.apple.com,REJECT
+  - DOMAIN,xp.apple.com,REJECT
+
+  # === Apple 核心域名白名单（抢在远程去广告 REJECT 之前） ===
+  - DOMAIN-SUFFIX,apple.com,Apple
+  - DOMAIN-SUFFIX,icloud.com,Apple
+  - DOMAIN-SUFFIX,icloud-content.com,Apple
+  - DOMAIN-SUFFIX,me.com,Apple
+  - DOMAIN-SUFFIX,mzstatic.com,Apple
+  - DOMAIN-SUFFIX,cdn-apple.com,Apple
+  - DOMAIN-SUFFIX,aaplimg.com,Apple
+  - DOMAIN-SUFFIX,apple-cloudkit.com,Apple
+  - DOMAIN-SUFFIX,apple-dns.net,Apple
+  - DOMAIN-SUFFIX,itunes.com,Apple
+  - DOMAIN-SUFFIX,itunes-apple.com,Apple
+
+  # === 远程规则（Loon 的 [Remote Rule] 先于 GEOIP 与 FINAL 匹配） ===
+  - RULE-SET,Advertising,REJECT
+  - RULE-SET,AdRules,REJECT
+  - RULE-SET,Speedtest,Speedtest
+
+  - RULE-SET,AliPay,Finance
+  - RULE-SET,UnionPay,Finance
+  - RULE-SET,ICBC,Finance
+  - RULE-SET,CCB,Finance
+  - RULE-SET,BOC,Finance
+  - RULE-SET,ABC,Finance
+  - RULE-SET,CMB,Finance
+  - RULE-SET,BOCOM,Finance
+  - RULE-SET,CEB,Finance
+
+  - RULE-SET,YouTube,YouTube
+  - RULE-SET,OpenAI,OpenAI
+  - RULE-SET,Claude,Claude
+  - RULE-SET,Gemini,Gemini
+  - RULE-SET,Google,Google
+  - RULE-SET,Apple,Apple
+  - RULE-SET,AI,AI
+  - RULE-SET,Microsoft,Microsoft
+  - RULE-SET,Netflix,Netflix
+  - RULE-SET,Disney,Disney
+  - RULE-SET,HBO,HBO
+  - RULE-SET,Spotify,Spotify
+  - RULE-SET,Bilibili,Bilibili
+  - RULE-SET,TikTok,TikTok
+  - RULE-SET,Instagram,Instagram
+  - RULE-SET,Telegram,Telegram
+  - RULE-SET,LinkedIn,LinkedIn
+  - RULE-SET,Emby,Emby
+
+  - RULE-SET,Direct,DIRECT
+  - RULE-SET,ChinaMaxNoIP,DIRECT
+  - RULE-SET,Proxy,Proxy
+
+  # 兜底：规则没命中的 CN IP 直连，其余交给 Final。FINAL/MATCH 必须最后一条。
+  - GEOIP,CN,DIRECT
+  - MATCH,Final
