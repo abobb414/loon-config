@@ -129,6 +129,30 @@ LPX_DESC = (
     '\\n\\n本文件由 rewrite/gen.py 自动生成，请勿手工编辑。'
 )
 
+# 已被自有方案接管、不能再固化进来的规则（按 URL 正则匹配）。
+#
+# 闲鱼（FleaMarket_remove_ads）：2026-11 上游把开屏接口换成 splash.ads/2.0，
+# 广告不再走 adMap，而是下发一个 cacheAd 引用、由 App 读本地缓存播放——所以
+# request 阶段 reject_dict(200)（返回空 adMap）并不会去掉广告，反而把响应掐断，
+# 让改写 body 的方案没机会执行。正确做法是放行响应、由脚本清 cacheAd/cacheAdInfo/dspList。
+# 同理悬浮与圈子两条也要让位（Response Body Rewrite 命中时 Response Script 不执行）。
+# 这三条由主配置 [Script] 里挂的 xianyu 脚本负责，固化里必须让路。
+CONFLICT_SKIP = [
+    (r'idlecommerce\.splash\.(async\.)?ads', '开屏：需放行响应后改 body'),
+    (r'mtop\.taobao\.idle\.user\.strategy\.list', '悬浮策略：由脚本按类型过滤'),
+    (r'idlehome\.home\.circle\.list', '圈子追踪：由脚本清理 trackParams'),
+]
+
+
+def conflict_reason(rule):
+    # 规则里的点被转义成 \.，先还原成普通点再匹配，免得每个 pattern 都要写 \\?\.
+    norm = rule.replace('\\.', '.').replace('\\/', '/')
+    for pat, why in CONFLICT_SKIP:
+        if re.search(pat, norm):
+            return why
+    return None
+
+
 # 新版脚本语法：  request if ${url} ~= /<正则>/i then <动作>(<参数>)
 NEW_SYNTAX_RE = re.compile(
     r'^(request|response)\s+if\s+\$\{url\}\s+~=\s+/(.*)/i\s+then\s+(.+)$', re.S)
@@ -375,6 +399,7 @@ def main():
 
     out = [HEADER.rstrip('\n')]
     stat, skipped, failed, ok_plugins = Counter(), Counter(), [], []
+    conflict = Counter()   # [(插件名, 原因)] -> 条数
     kept = []           # lpx 模式：[{name, rules, mitm, rhost, rule}]
 
     for url in urls:
@@ -385,6 +410,17 @@ def main():
             failed.append((name, '%s: %s' % (type(exc).__name__, str(exc)[:60])))
             continue
         rules = rewrite_block(text)
+        if not rules:
+            continue
+
+        keep_rule = []
+        for r in rules:
+            why = conflict_reason(r)
+            if why:
+                conflict[(name, why)] += 1
+                continue
+            keep_rule.append(r)
+        rules = keep_rule
         if not rules:
             continue
 
@@ -454,6 +490,10 @@ def main():
         print('  下载失败:')
         for n, e in failed:
             print('    [%s] %s' % (n, e))
+    if conflict:
+        print('  让路（已由自有脚本接管，不固化）:')
+        for (n, why), c in sorted(conflict.items()):
+            print('    [%s] %s x%d' % (n, why, c))
 
     if args.dry_run:
         print('(dry-run，未写文件)')
