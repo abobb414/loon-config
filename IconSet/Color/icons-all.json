@@ -43,6 +43,18 @@
       "url": "https://raw.githubusercontent.com/abobb414/loon-config/main/IconSet/Color/Bilibili.png"
     },
     {
+      "name": "EpicGames",
+      "url": "https://raw.githubusercontent.com/abobb414/loon-config/main/IconSet/Color/EpicGames.png"
+    },
+    {
+      "name": "GitHub",
+      "url": "https://raw.githubusercontent.com/abobb414/loon-config/main/IconSet/Color/GitHub.png"
+    },
+    {
+      "name": "Steam",
+      "url": "https://raw.githubusercontent.com/abobb414/loon-config/main/IconSet/Color/Steam.png"
+    },
+    {
       "name": "SubA",
       "url": "https://raw.githubusercontent.com/abobb414/loon-config/main/IconSet/Color/SubA-v2.png"
     },
@@ -181,6 +193,10 @@
     {
       "name": "TikTok",
       "url": "https://raw.githubusercontent.com/abobb414/loon-config/main/IconSet/Color/TikTok.png"
+    },
+    {
+      "name": "TwitterX",
+      "url": "https://raw.githubusercontent.com/abobb414/loon-config/main/IconSet/Color/TwitterX.png"
     },
     {
       "name": "YouTube",
