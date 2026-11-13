@@ -124,6 +124,18 @@ proxies:
     mtu: 1280
     keepalive: 25
 
+  # 住宅出口（链的队尾）：静态住宅 socks5，只有 TCP，所以 udp: false。
+  # dialer-proxy 等价 Loon 的 [Proxy Chain]：先由 AI-Entry 那一跳拨号，再从这里出网。
+  # 地址/端口/账号全是占位符；单独用慢到不可用（单连接 ~20 KB/s）。
+  - name: US-Resi
+    type: socks5
+    server: 198.51.100.7
+    port: 9004
+    username: "<username>"
+    password: "<password>"
+    udp: false
+    dialer-proxy: AI-Entry
+
 proxy-providers:
   # ⚠ 订阅地址含 token，本仓库不保存。换成你自己的订阅地址即可；
   #   这两个名字（SubA-Sub / SubB-Sub）被下面的策略组引用，改名要一起改。
@@ -212,11 +224,10 @@ proxy-groups:
     interval: 600
     icon: https://raw.githubusercontent.com/abobb414/loon-config/main/IconSet/Color/Available.png
 
-  # fallback 而不是 select：select 会沿用客户端保存的上一次手动选择，改配置不生效。
+  # select：手动挑主出口，候选是地区池 + 家里内核，不展开全量节点。
   - name: Proxy
-    type: fallback
-    proxies: [SubB-TW, SubA-IDC, Home-Proxy]
-    interval: 600
+    type: select
+    proxies: [SubB-TW, SubB-Rest, SubA-TW, SubA-Rest, Home-Proxy]
     icon: https://raw.githubusercontent.com/abobb414/loon-config/main/IconSet/Color/Proxy.png
 
   - name: Final
@@ -245,11 +256,17 @@ proxy-groups:
     proxies: [SubB-TW, SubB-Rest]
     icon: https://raw.githubusercontent.com/abobb414/loon-config/main/IconSet/Color/SubB.png
 
-  # AI：住宅优先级最高，机房只做兜底。住宅 IP 在 AI 站点上的信任度明显高于机房。
+  # AI 链的入口跳：设备先连这一跳，再由它去拨 US-Resi。只服务 AI，不碰主 Proxy 组。
+  - name: AI-Entry
+    type: select
+    proxies: [SubB-TW, SubB-JP, SubA-TW]
+    icon: https://raw.githubusercontent.com/abobb414/loon-config/main/IconSet/Color/Bard.png
+
+  # AI：选到住宅链，住宅 IP 在 AI 站点上的信任度明显高于机房；后面挂台湾家宽做手动备选。
+  # 链写在出口节点 US-Resi 的 dialer-proxy 上（Stash 没有独立的「链」对象）。
   - name: AI
-    type: fallback
-    proxies: [SubA-TW, SubB-TW-All, Home-Proxy]
-    interval: 120
+    type: select
+    proxies: [US-Resi, SubB-TW-All, SubA-TW, Home-Proxy]
     icon: https://raw.githubusercontent.com/abobb414/loon-config/main/IconSet/Color/AI-v2.png
 
   - name: OpenAI
@@ -273,6 +290,27 @@ proxy-groups:
     type: select
     proxies: [Proxy]
     icon: https://raw.githubusercontent.com/abobb414/loon-config/main/IconSet/Color/Google.png
+
+  - name: GitHub
+    type: select
+    proxies: [Proxy]
+    icon: https://raw.githubusercontent.com/abobb414/loon-config/main/IconSet/Color/GitHub.png
+
+  - name: X
+    type: select
+    proxies: [Proxy]
+    icon: https://raw.githubusercontent.com/abobb414/loon-config/main/IconSet/Color/TwitterX.png
+
+  # 游戏平台多给一个 DIRECT：下载/更新吃满家宽带宽，走机场只会白烧流量与倍率。
+  - name: Epic
+    type: select
+    proxies: [Proxy, DIRECT]
+    icon: https://raw.githubusercontent.com/abobb414/loon-config/main/IconSet/Color/EpicGames.png
+
+  - name: Steam
+    type: select
+    proxies: [Proxy, DIRECT]
+    icon: https://raw.githubusercontent.com/abobb414/loon-config/main/IconSet/Color/Steam.png
 
   # Apple：默认 DIRECT 保证国内苹果服务直连；需要外区服务时手动切 Proxy。
   - name: Apple
@@ -458,6 +496,30 @@ rule-providers:
     url: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Google/Google.yaml
     path: ./rules/Google.yaml
     interval: 86400
+  GitHub:
+    behavior: classical
+    format: yaml
+    url: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/GitHub/GitHub.yaml
+    path: ./rules/GitHub.yaml
+    interval: 86400
+  Twitter:
+    behavior: classical
+    format: yaml
+    url: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Twitter/Twitter.yaml
+    path: ./rules/Twitter.yaml
+    interval: 86400
+  Epic:
+    behavior: classical
+    format: yaml
+    url: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Epic/Epic.yaml
+    path: ./rules/Epic.yaml
+    interval: 86400
+  Steam:
+    behavior: classical
+    format: yaml
+    url: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Steam/Steam.yaml
+    path: ./rules/Steam.yaml
+    interval: 86400
   Apple:
     behavior: classical
     format: yaml
@@ -622,6 +684,10 @@ rules:
   - RULE-SET,Claude,Claude
   - RULE-SET,Gemini,Gemini
   - RULE-SET,Google,Google
+  - RULE-SET,GitHub,GitHub
+  - RULE-SET,Twitter,X
+  - RULE-SET,Epic,Epic
+  - RULE-SET,Steam,Steam
   - RULE-SET,Apple,Apple
   - RULE-SET,AI,AI
   - RULE-SET,Microsoft,Microsoft

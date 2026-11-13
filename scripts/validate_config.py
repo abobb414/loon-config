@@ -123,10 +123,12 @@ def check(path: Path) -> list[str]:
 
     # 4. 策略命名空间
     groups = set(cfg.keys("proxy group"))
+    # [Proxy Chain] 的名称本身就是一个可用策略（链名可以直接写进规则/组）。
+    chains = set(cfg.keys("proxy chain"))
     nodes = set(cfg.keys("proxy"))
     subs = set(cfg.keys("remote proxy"))
     filters = set(cfg.keys("remote filter"))
-    known = groups | nodes | subs | filters | BUILTIN_POLICIES
+    known = groups | chains | nodes | subs | filters | BUILTIN_POLICIES
 
     unknown_filters = {f for f in filters if not re.match(r"^[A-Za-z][A-Za-z0-9_-]*", f)}
     for name in sorted(unknown_filters):
@@ -170,6 +172,14 @@ def check(path: Path) -> list[str]:
             errors.append(f"[Rule] policy {policy} 未定义：{line}")
     if rules and split_top(rules[-1])[0].upper() != "FINAL":
         errors.append("[Rule] 最后一条不是 FINAL，未匹配流量会无处可去")
+
+    # 6b. [Proxy Chain] 的成员必须存在，且不能引用自身
+    for chain, definition in cfg.keys("proxy chain").items():
+        for member in split_top(definition):
+            if member == chain:
+                errors.append(f"[Proxy Chain] {chain} 引用了自身")
+            elif member not in nodes | groups:
+                errors.append(f"[Proxy Chain] {chain} 的成员 {member} 未定义")
 
     # 7. [Remote Rule] 的 policy 与 URL
     for line in cfg.body("remote rule"):

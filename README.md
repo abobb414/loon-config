@@ -9,7 +9,7 @@
 
 **三份自用的纯分流配置（Loon / Stash / Clash.Meta）：只决定流量走哪个策略组，不做 MITM、不跑脚本、不带插件。**
 
-26 个策略组 · 29 条本地规则 · 34 条远程规则 · 每天一次上游体检
+31 个策略组 · 29 条本地规则 · 38 条远程规则 · 每天一次上游体检
 
 [Loon](./Loon-routing.conf) · [Stash](./Stash.yaml) · [Clash](./Clash.yaml) · [快速开始](#快速开始) · [分流设计](#分流设计) · [插件与脚本](#插件与脚本为什么必须自己订阅) · [每日上游同步](#每日上游同步)
 
@@ -47,6 +47,7 @@ cd loon-config
 
 # 2. 换成自己的节点（仓库里是占位符）
 #    Loon  [Proxy]        Home-Proxy 的地址 / 端口 / 用户名 / 口令
+#          [Proxy]        US-Resi 住宅 socks5 的地址 / 端口 / 用户名 / 口令
 #          [Proxy]        Home-NAS-WG 的私钥 / 公钥 / 端点
 #          [Remote Proxy] SubA-Sub / SubB-Sub 的订阅地址
 #          订阅名不要改：[Remote Filter] 按 SubA-Sub / SubB-Sub 取节点
@@ -132,20 +133,40 @@ App 换接口域名、插件作者新增域名，清单都跟不上，于是出�
 | 类别 | 策略组 |
 |---|---|
 | 入口与兜底 | `Available`、`Proxy`、`Final`、`HomeNAS` |
+| 代理链 | `AI-Entry`（链的入口）、`[Proxy Chain]` 里的 `US-Resi-Chain` |
 | 订阅总览 | `SubA`、`SubB`（select 成员是整条订阅，Loon 会展开原生节点） |
 | AI | `AI`、`OpenAI`、`Claude`、`Gemini` |
-| 平台 | `Google`、`Apple`、`Microsoft`、`Netflix`、`Disney`、`HBO`、`Spotify`、`YouTube`、`Bilibili`、`TikTok`、`Instagram`、`Telegram`、`LinkedIn`、`Emby`、`Speedtest` |
+| 平台 | `Google`、`GitHub`、`X`、`Epic`、`Steam`、`Apple`、`Microsoft`、`Netflix`、`Disney`、`HBO`、`Spotify`、`YouTube`、`Bilibili`、`TikTok`、`Instagram`、`Telegram`、`LinkedIn`、`Emby`、`Speedtest` |
 | 金融 | `Finance` |
 
 几个关键选择：
 
-- `Proxy` 用 `fallback` 而不是 `select`：`select` 会沿用 Loon 里保存的上一次手动选择，
-  改配置不生效。
-- `AI` 优先住宅节点、机房兜底。住宅 IP 在 AI 站点上的信任度高于机房；住宅全挂才退到机房。
-  `Claude` 单独成组，默认选 `AI`，需要时可以逐节点切换。
+- `Proxy` 用 `select` 而不是 `fallback`：`select` 的成员是可见的整组节点，需要时能手动挑出口；
+  `fallback` 不保存选择、也不接受手动指定，排在前面的高倍节点会一直被选。
+- **AI 走「机场 → 住宅」代理链**，见下一节。
+- `Claude` 单独成组，默认选 `AI`，需要时可以逐节点切换。
 - `Available` 只按「台湾家宽 → 日本 → 新加坡 → Proxy」的顺序挑，香港节点全部排除。
+- `GitHub` / `X` 默认走 `Proxy`；`Epic` / `Steam` 默认 `DIRECT`（下载走本地带宽更快，登录遇到问题时在组里切 `Proxy`）。
 - `[Remote Filter]` 用 `NameRegex` 限定订阅名并按节点命名取节点。换机场后节点命名变了，
   这些 Filter 要跟着改。
+
+### AI 的代理链：机场入口 → 住宅出口
+
+住宅出口是拨号级上行，单连接只有 ~20 KB/s，直接连没法用。套一跳机场做前置后
+实测能到 ~250 KB/s，而网站看到的仍然是住宅 IP。
+
+```ini
+[Proxy Chain]
+US-Resi-Chain = AI-Entry,US-Resi      # 队首 = 入口，队尾 = 出口
+```
+
+- 链行只写成员名、**没有参数**，也**没有 fallback**：入口挂了整条链就断。
+- `AI-Entry` 是一个普通的 `select` 组，用来手动挑入口机场；入口不写死，机场换节点不用改链。
+- `AI` 组默认选 `US-Resi-Chain`，后面跟台湾住宅/机场节点做手动备选。
+- Loon 用独立的 `[Proxy Chain]` 段；Stash / Clash.Meta 没有这个段，靠出口节点的
+  `dialer-proxy: AI-Entry` 表达同一件事。
+- 出口节点开了 `udp=false`，配合 `udp-fallback-mode = REJECT`：QUIC / WebRTC 的 UDP 被丢掉后
+  浏览器回落 TCP，避免 UDP 走别的出口造成 IP 不一致。
 
 ### DNS 与 Fake-IP
 
@@ -166,13 +187,14 @@ App 换接口域名、插件作者新增域名，清单都跟不上，于是出�
 |---|---|---|---|
 | 节点过滤 | `[Remote Filter]` + `NameRegex` | 策略组 `use` + `filter` | 策略组 `use` + `filter` / `exclude-filter` |
 | 过滤正则 | 支持负向前瞻 | 支持负向前瞻（ICU） | **RE2，不支持负向前瞻**，排除项必须写 `exclude-filter` |
+| 代理链 | `[Proxy Chain]` 独立段 | 出口节点 `dialer-proxy` | 出口节点 `dialer-proxy` |
 | Speedtest 规则 | kelee.one 的 `.lsr` | blackmatrix7 同名规则集 | blackmatrix7 同名规则集 |
 | `[Host]`（域名 → DNS） | 原生 | `dns.nameserver-policy` | `dns.nameserver-policy` |
 | 节点域名真实解析 | `real-ip` | `proxy-server-nameserver` + `fake-ip-filter` | 同 Stash |
 | 去广告插件 / 脚本 | 自行订阅 `.lpx` / `.js` | 自行订阅 Stash rewrite/script | 不在本配置范围 |
 
 - **kelee.one 只对 Loon 的 UA 放行。** Stash / Clash 拉 `.lsr` 会 403，所以 YAML 里把两条
-  Speedtest 规则换成 blackmatrix7 的 `Speedtest.yaml`，规则条数从 34 变成 33。
+  Speedtest 规则换成 blackmatrix7 的 `Speedtest.yaml`，远程规则条数从 38 变成 37。
 - **过滤器在 YAML 里是「策略组」。** `SubA-TW`、`SubB-JP` 这些名字等价于 Loon 的
   `SubA-TW_Filter`：`hidden: true` 不占策略组列表，只作为 `Available` / `Proxy` / `AI`
   的成员。区域池用 `url-test` 先挑最快节点，外层 `fallback` 只判断这个池子还能不能用。
@@ -188,7 +210,7 @@ App 换接口域名、插件作者新增域名，清单都跟不上，于是出�
 ```text
 .github/workflows/upstream-sync.yml   每天 09:17（Asia/Shanghai）自动运行
   ├─ 校验 Loon-routing.conf
-  ├─ scripts/sync_upstreams.py 抓取 37 条上游资源
+  ├─ scripts/sync_upstreams.py 抓取 41 条上游资源
   └─ 更新并提交 .upstream/upstreams.lock.json（每天一条台账）
 ```
 
@@ -217,13 +239,13 @@ python3 scripts/sync_upstreams.py --strict         # 核心资源失败时返回
 
 | 文件 | 用途 |
 |---|---|
-| `Loon-routing.conf` | Loon 配置。26 个策略组、29 条本地规则、34 条远程规则 |
-| `Stash.yaml` | Stash 镜像。26 个策略组 + 8 个过滤池、33 条远程规则集 |
+| `Loon-routing.conf` | Loon 配置。31 个策略组、29 条本地规则、38 条远程规则、1 条代理链 |
+| `Stash.yaml` | Stash 镜像。31 个策略组 + 8 个过滤池、37 个远程规则集 |
 | `Clash.yaml` | Clash.Meta / mihomo 镜像；与 Stash 版同构，过滤用 `exclude-filter` |
-| `IconSet/Color/` | 自托管策略组图标（1600px PNG）与 `icons-all.json`；26 个图标都指向这里 |
+| `IconSet/Color/` | 自托管策略组图标（1600px PNG）与 `icons-all.json`；31 个图标都指向这里 |
 | `scripts/sync_upstreams.py` | 每日上游同步：抓取、sha256、规则条数、变更检测、Step Summary |
 | `scripts/validate_config.py` | Loon 静态校验：段名、策略引用、`FINAL` 收尾、图标文件是否存在 |
-| `.upstream/upstreams.lock.json` | 37 条上游资源的指纹台账（Loon 版） |
+| `.upstream/upstreams.lock.json` | 41 条上游资源的指纹台账（Loon 版） |
 | `.github/workflows/upstream-sync.yml` | 每日定时任务 |
 | `.github/workflows/secret-scan.yml` | 推送前扫描疑似私钥、口令与代理凭据 |
 | `docs/images/` | README 用的 logo |
@@ -261,8 +283,8 @@ YAML 里的值带引号，既是为了占位符显眼，也是为了让扫描器
   三份都要改。YAML 两份只做了语法与引用校验，没有在 Stash / mihomo 真机启动验证。
 - 订阅过滤依赖节点命名；换机场后 Loon 的 `[Remote Filter]` 与 YAML 里的 `filter` /
   `exclude-filter` 都要重写。
-- 配置是个人自用的公开备份，不保证适配所有 Loon 版本；`[Proxy Chain]` 之类的新模块
-  不在本文件里，按需自行添加。
+- 配置是个人自用的公开备份，不保证适配所有 Loon 版本；`[Proxy Chain]` 需要 Loon 3.1.0+，
+  旧版本会忽略该段（链名引用会变成未定义策略）。
 - 远程规则是第三方维护的，误杀 / 漏杀与本仓库无关。
 
 ## 致谢
