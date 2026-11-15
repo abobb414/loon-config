@@ -1,12 +1,12 @@
 {
   "config": "Loon-routing.conf",
-  "generated_at": "2026-11-14T07:37:05Z",
+  "generated_at": "2026-11-15T07:53:05Z",
   "resource_count": 41,
   "resources": [
     {
       "attempts": 1,
       "bytes": 212642,
-      "checked_at": "2026-11-14T07:37:04Z",
+      "checked_at": "2026-11-15T07:53:04Z",
       "content_type": "application/octet-stream",
       "core": true,
       "etag": "W/\"33ea2-042c002c41de5046\"",
@@ -25,7 +25,7 @@
     {
       "attempts": 1,
       "bytes": 7628821,
-      "checked_at": "2026-11-14T07:37:04Z",
+      "checked_at": "2026-11-15T07:53:04Z",
       "content_type": "application/octet-stream",
       "core": true,
       "etag": "W/\"746815-90bd1bb7f193474c\"",
@@ -43,19 +43,19 @@
     },
     {
       "attempts": 1,
-      "bytes": 1286284,
-      "checked_at": "2026-11-14T07:37:04Z",
+      "bytes": 1286724,
+      "checked_at": "2026-11-15T07:53:04Z",
       "content_type": "application/octet-stream",
       "core": true,
-      "etag": "\"0x8DF41FABDE5ADBE\"",
+      "etag": "\"0x8DF42DF8BE92F4C\"",
       "gated": false,
       "kind": "resource",
       "label": "resource-parser",
-      "last_modified": "Sat, 14 Nov 2026 02:55:29 GMT",
+      "last_modified": "Sun, 15 Nov 2026 06:13:20 GMT",
       "ok": true,
       "previous_rule_count": null,
-      "previous_sha256": "783de3638e7f83b11a066f5ed29d1022b9a21cecaf7c5e53b602a3b4c4462a8e",
-      "sha256": "41373958dc087d14b16da1ac3dae7be1828738ca88b7d30b4cb0b7efebd19b8d",
+      "previous_sha256": "41373958dc087d14b16da1ac3dae7be1828738ca88b7d30b4cb0b7efebd19b8d",
+      "sha256": "96ec5a53fe526643edc0bf02c217b23982d21383546e3460d47f060ed408e758",
       "source": "sub-store-org/Sub-Store",
       "status": 200,
       "status_vs_previous": "changed",
@@ -65,7 +65,7 @@
     {
       "attempts": 1,
       "bytes": 2724,
-      "checked_at": "2026-11-14T07:37:04Z",
+      "checked_at": "2026-11-15T07:53:04Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "enabled": true,
@@ -94,7 +94,7 @@
     {
       "attempts": 1,
       "cf_mitigated": "challenge",
-      "checked_at": "2026-11-14T07:37:04Z",
+      "checked_at": "2026-11-15T07:53:04Z",
       "core": false,
       "enabled": true,
       "error": "HTTP 403: Forbidden",
@@ -112,7 +112,7 @@
     {
       "attempts": 1,
       "cf_mitigated": "challenge",
-      "checked_at": "2026-11-14T07:37:04Z",
+      "checked_at": "2026-11-15T07:53:04Z",
       "core": false,
       "enabled": true,
       "error": "HTTP 403: Forbidden",
@@ -129,25 +129,25 @@
     },
     {
       "attempts": 1,
-      "bytes": 7386278,
-      "checked_at": "2026-11-14T07:37:04Z",
+      "bytes": 7397926,
+      "checked_at": "2026-11-15T07:53:04Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "enabled": true,
-      "etag": "\"47a93e6d5a57bdf8273f6be6b4f90d74a730540fecde9e0b93ab1243ad3cc443\"",
+      "etag": "\"65b5fc64e9cb937c97d33a9f275120a3cd754c6a37521da858b5c72503675c07\"",
       "gated": false,
       "kind": "rule",
       "label": "AdRules",
       "last_modified": null,
       "ok": true,
       "policy": "REJECT",
-      "previous_rule_count": 210597,
-      "previous_sha256": "40cf5b0548fb7b930d7cdf97dd8c82e390afb28bf766a0e6cd8679e85ff06485",
-      "rule_count": 211039,
+      "previous_rule_count": 211039,
+      "previous_sha256": "eef6d07ca2ea874bd568b403a005f5ed9ec38613a625d413d3af1f2bcd728623",
+      "rule_count": 211383,
       "rule_types": {
-        "DOMAIN-SUFFIX": 211039
+        "DOMAIN-SUFFIX": 211383
       },
-      "sha256": "eef6d07ca2ea874bd568b403a005f5ed9ec38613a625d413d3af1f2bcd728623",
+      "sha256": "ca393c6b5e4f6f858eb2be75154f72b3fbc2c19e910665642e6f3aeffc6b0cb1",
       "source": "Cats-Team/AdRules",
       "status": 200,
       "status_vs_previous": "changed",
@@ -157,7 +157,7 @@
     {
       "attempts": 1,
       "bytes": 311,
-      "checked_at": "2026-11-14T07:37:04Z",
+      "checked_at": "2026-11-15T07:53:04Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "enabled": true,
@@ -182,7 +182,7 @@
     {
       "attempts": 1,
       "bytes": 26870,
-      "checked_at": "2026-11-14T07:37:04Z",
+      "checked_at": "2026-11-15T07:53:05Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "enabled": true,
@@ -210,7 +210,7 @@
     {
       "attempts": 1,
       "bytes": 749,
-      "checked_at": "2026-11-14T07:37:04Z",
+      "checked_at": "2026-11-15T07:53:05Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "enabled": true,
@@ -235,7 +235,7 @@
     {
       "attempts": 1,
       "bytes": 1468,
-      "checked_at": "2026-11-14T07:37:04Z",
+      "checked_at": "2026-11-15T07:53:05Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "enabled": true,
@@ -263,7 +263,7 @@
     {
       "attempts": 1,
       "bytes": 766,
-      "checked_at": "2026-11-14T07:37:04Z",
+      "checked_at": "2026-11-15T07:53:05Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "enabled": true,
@@ -288,7 +288,7 @@
     {
       "attempts": 1,
       "bytes": 324,
-      "checked_at": "2026-11-14T07:37:05Z",
+      "checked_at": "2026-11-15T07:53:05Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "enabled": true,
@@ -313,7 +313,7 @@
     {
       "attempts": 1,
       "bytes": 4523,
-      "checked_at": "2026-11-14T07:37:05Z",
+      "checked_at": "2026-11-15T07:53:05Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "enabled": true,
@@ -341,7 +341,7 @@
     {
       "attempts": 1,
       "bytes": 638,
-      "checked_at": "2026-11-14T07:37:05Z",
+      "checked_at": "2026-11-15T07:53:05Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "enabled": true,
@@ -366,7 +366,7 @@
     {
       "attempts": 1,
       "bytes": 558,
-      "checked_at": "2026-11-14T07:37:05Z",
+      "checked_at": "2026-11-15T07:53:05Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "enabled": true,
@@ -391,7 +391,7 @@
     {
       "attempts": 1,
       "bytes": 1167,
-      "checked_at": "2026-11-14T07:37:05Z",
+      "checked_at": "2026-11-15T07:53:05Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "enabled": true,
@@ -416,7 +416,7 @@
     {
       "attempts": 1,
       "bytes": 3305,
-      "checked_at": "2026-11-14T07:37:05Z",
+      "checked_at": "2026-11-15T07:53:05Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "enabled": true,
@@ -443,7 +443,7 @@
     {
       "attempts": 1,
       "bytes": 244,
-      "checked_at": "2026-11-14T07:37:05Z",
+      "checked_at": "2026-11-15T07:53:05Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "enabled": true,
@@ -469,7 +469,7 @@
     {
       "attempts": 1,
       "bytes": 6490,
-      "checked_at": "2026-11-14T07:37:05Z",
+      "checked_at": "2026-11-15T07:53:05Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "enabled": true,
@@ -497,7 +497,7 @@
     {
       "attempts": 1,
       "bytes": 5565,
-      "checked_at": "2026-11-14T07:37:05Z",
+      "checked_at": "2026-11-15T07:53:05Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "enabled": true,
@@ -523,7 +523,7 @@
     {
       "attempts": 1,
       "bytes": 1629,
-      "checked_at": "2026-11-14T07:37:05Z",
+      "checked_at": "2026-11-15T07:53:05Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "enabled": true,
@@ -550,7 +550,7 @@
     {
       "attempts": 1,
       "bytes": 588,
-      "checked_at": "2026-11-14T07:37:05Z",
+      "checked_at": "2026-11-15T07:53:05Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "enabled": true,
@@ -568,14 +568,14 @@
       "sha256": "8f5fcadadd967023aa81273803de80beb2ceadd9af4e9352b565b3b00ccf464d",
       "source": "blackmatrix7/ios_rule_script",
       "status": 200,
-      "status_vs_previous": "new",
+      "status_vs_previous": "unchanged",
       "tls_verified": true,
       "url": "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Loon/Epic/Epic.list"
     },
     {
       "attempts": 1,
       "bytes": 605,
-      "checked_at": "2026-11-14T07:37:05Z",
+      "checked_at": "2026-11-15T07:53:05Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "enabled": true,
@@ -602,7 +602,7 @@
     {
       "attempts": 1,
       "bytes": 1117,
-      "checked_at": "2026-11-14T07:37:05Z",
+      "checked_at": "2026-11-15T07:53:05Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "enabled": true,
@@ -621,14 +621,14 @@
       "sha256": "ced8ab0ecda5775d04ec8ee6a57b282181108565331a6a1d85e9a26fee25d79b",
       "source": "blackmatrix7/ios_rule_script",
       "status": 200,
-      "status_vs_previous": "new",
+      "status_vs_previous": "unchanged",
       "tls_verified": true,
       "url": "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Loon/GitHub/GitHub.list"
     },
     {
       "attempts": 1,
       "bytes": 19792,
-      "checked_at": "2026-11-14T07:37:05Z",
+      "checked_at": "2026-11-15T07:53:05Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "enabled": true,
@@ -658,7 +658,7 @@
     {
       "attempts": 1,
       "bytes": 1738,
-      "checked_at": "2026-11-14T07:37:05Z",
+      "checked_at": "2026-11-15T07:53:05Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "enabled": true,
@@ -684,7 +684,7 @@
     {
       "attempts": 1,
       "bytes": 1701,
-      "checked_at": "2026-11-14T07:37:05Z",
+      "checked_at": "2026-11-15T07:53:05Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "enabled": true,
@@ -709,7 +709,7 @@
     {
       "attempts": 1,
       "bytes": 287,
-      "checked_at": "2026-11-14T07:37:05Z",
+      "checked_at": "2026-11-15T07:53:05Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "enabled": true,
@@ -735,7 +735,7 @@
     {
       "attempts": 1,
       "bytes": 509,
-      "checked_at": "2026-11-14T07:37:05Z",
+      "checked_at": "2026-11-15T07:53:05Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "enabled": true,
@@ -761,7 +761,7 @@
     {
       "attempts": 1,
       "bytes": 20536,
-      "checked_at": "2026-11-14T07:37:05Z",
+      "checked_at": "2026-11-15T07:53:05Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "enabled": true,
@@ -789,7 +789,7 @@
     {
       "attempts": 1,
       "bytes": 40369,
-      "checked_at": "2026-11-14T07:37:05Z",
+      "checked_at": "2026-11-15T07:53:05Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "enabled": true,
@@ -819,7 +819,7 @@
     {
       "attempts": 1,
       "bytes": 1353,
-      "checked_at": "2026-11-14T07:37:05Z",
+      "checked_at": "2026-11-15T07:53:05Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "enabled": true,
@@ -848,7 +848,7 @@
     {
       "attempts": 1,
       "bytes": 4494,
-      "checked_at": "2026-11-14T07:37:05Z",
+      "checked_at": "2026-11-15T07:53:05Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "enabled": true,
@@ -876,7 +876,7 @@
     {
       "attempts": 1,
       "bytes": 1197,
-      "checked_at": "2026-11-14T07:37:05Z",
+      "checked_at": "2026-11-15T07:53:05Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "enabled": true,
@@ -905,7 +905,7 @@
     {
       "attempts": 1,
       "bytes": 2571,
-      "checked_at": "2026-11-14T07:37:05Z",
+      "checked_at": "2026-11-15T07:53:05Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "enabled": true,
@@ -925,14 +925,14 @@
       "sha256": "290ebccc4be56defc7d36f85d8c9777101548a4f2147ca29fe50b794c6a8dec7",
       "source": "blackmatrix7/ios_rule_script",
       "status": 200,
-      "status_vs_previous": "new",
+      "status_vs_previous": "unchanged",
       "tls_verified": true,
       "url": "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Loon/Steam/Steam.list"
     },
     {
       "attempts": 1,
       "bytes": 1355,
-      "checked_at": "2026-11-14T07:37:05Z",
+      "checked_at": "2026-11-15T07:53:05Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "enabled": true,
@@ -962,7 +962,7 @@
     {
       "attempts": 1,
       "bytes": 1186,
-      "checked_at": "2026-11-14T07:37:05Z",
+      "checked_at": "2026-11-15T07:53:05Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "enabled": true,
@@ -990,7 +990,7 @@
     {
       "attempts": 1,
       "bytes": 1116,
-      "checked_at": "2026-11-14T07:37:05Z",
+      "checked_at": "2026-11-15T07:53:05Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "enabled": true,
@@ -1010,14 +1010,14 @@
       "sha256": "64c836f2431ca0d4728cc545bb74280ee50c886e346040012e6cdd2f3eee3f97",
       "source": "blackmatrix7/ios_rule_script",
       "status": 200,
-      "status_vs_previous": "new",
+      "status_vs_previous": "unchanged",
       "tls_verified": true,
       "url": "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Loon/Twitter/Twitter.list"
     },
     {
       "attempts": 1,
       "bytes": 616,
-      "checked_at": "2026-11-14T07:37:05Z",
+      "checked_at": "2026-11-15T07:53:05Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "enabled": true,
@@ -1042,7 +1042,7 @@
     {
       "attempts": 1,
       "bytes": 5451,
-      "checked_at": "2026-11-14T07:37:05Z",
+      "checked_at": "2026-11-15T07:53:05Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "enabled": true,
@@ -1074,7 +1074,7 @@
     "failed": 0,
     "failed_core": 0,
     "gated": 2,
-    "new": 4,
+    "new": 0,
     "reachable": 39
   }
 }
