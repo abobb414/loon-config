@@ -1,12 +1,12 @@
 {
   "config": "Loon-routing.conf",
-  "generated_at": "2026-11-15T07:53:05Z",
+  "generated_at": "2026-11-16T07:59:36Z",
   "resource_count": 41,
   "resources": [
     {
       "attempts": 1,
       "bytes": 212642,
-      "checked_at": "2026-11-15T07:53:04Z",
+      "checked_at": "2026-11-16T07:59:34Z",
       "content_type": "application/octet-stream",
       "core": true,
       "etag": "W/\"33ea2-042c002c41de5046\"",
@@ -25,7 +25,7 @@
     {
       "attempts": 1,
       "bytes": 7628821,
-      "checked_at": "2026-11-15T07:53:04Z",
+      "checked_at": "2026-11-16T07:59:34Z",
       "content_type": "application/octet-stream",
       "core": true,
       "etag": "W/\"746815-90bd1bb7f193474c\"",
@@ -43,19 +43,19 @@
     },
     {
       "attempts": 1,
-      "bytes": 1286724,
-      "checked_at": "2026-11-15T07:53:04Z",
+      "bytes": 1286877,
+      "checked_at": "2026-11-16T07:59:34Z",
       "content_type": "application/octet-stream",
       "core": true,
-      "etag": "\"0x8DF42DF8BE92F4C\"",
+      "etag": "\"0x8DF43B6542A54C8\"",
       "gated": false,
       "kind": "resource",
       "label": "resource-parser",
-      "last_modified": "Sun, 15 Nov 2026 06:13:20 GMT",
+      "last_modified": "Mon, 16 Nov 2026 07:50:48 GMT",
       "ok": true,
       "previous_rule_count": null,
-      "previous_sha256": "41373958dc087d14b16da1ac3dae7be1828738ca88b7d30b4cb0b7efebd19b8d",
-      "sha256": "96ec5a53fe526643edc0bf02c217b23982d21383546e3460d47f060ed408e758",
+      "previous_sha256": "96ec5a53fe526643edc0bf02c217b23982d21383546e3460d47f060ed408e758",
+      "sha256": "3e80ceeeebb36ac25027c2bd7cb62fe834a03dd89acf6af6d95ee76a0bc3c177",
       "source": "sub-store-org/Sub-Store",
       "status": 200,
       "status_vs_previous": "changed",
@@ -65,7 +65,7 @@
     {
       "attempts": 1,
       "bytes": 2724,
-      "checked_at": "2026-11-15T07:53:04Z",
+      "checked_at": "2026-11-16T07:59:34Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "enabled": true,
@@ -93,61 +93,81 @@
     },
     {
       "attempts": 1,
-      "cf_mitigated": "challenge",
-      "checked_at": "2026-11-15T07:53:04Z",
+      "bytes": 551,
+      "checked_at": "2026-11-16T07:59:34Z",
+      "content_type": "application/octet-stream",
       "core": false,
       "enabled": true,
-      "error": "HTTP 403: Forbidden",
+      "etag": "\"87c0373e04e4ca3e9dc289fdae0b3ecb\"",
       "gated": true,
-      "gated_reason": "仅 Loon 客户端可下：UA + 非机房出口才过 Cloudflare",
       "kind": "rule",
       "label": "SpeedtestChina",
-      "ok": false,
+      "last_modified": null,
+      "ok": true,
       "policy": "Speedtest",
+      "previous_rule_count": null,
+      "previous_sha256": null,
+      "rule_count": 11,
+      "rule_types": {
+        "DOMAIN": 11
+      },
+      "sha256": "d18b650c8981bf53a571d0f2b60d083b3697c5cb2628cca4edd9250d7363ae1b",
       "source": "kelee.one",
-      "status": 403,
-      "status_vs_previous": "failed",
+      "status": 200,
+      "status_vs_previous": "changed",
+      "tls_verified": true,
       "url": "https://kelee.one/Tool/Loon/Lsr/SpeedtestChina.lsr"
     },
     {
       "attempts": 1,
-      "cf_mitigated": "challenge",
-      "checked_at": "2026-11-15T07:53:04Z",
+      "bytes": 631927,
+      "checked_at": "2026-11-16T07:59:34Z",
+      "content_type": "application/octet-stream",
       "core": false,
       "enabled": true,
-      "error": "HTTP 403: Forbidden",
+      "etag": "\"da39878c0335653c272a429f55f7b40f\"",
       "gated": true,
-      "gated_reason": "仅 Loon 客户端可下：UA + 非机房出口才过 Cloudflare",
       "kind": "rule",
       "label": "SpeedtestInternational",
-      "ok": false,
+      "last_modified": null,
+      "ok": true,
       "policy": "Speedtest",
+      "previous_rule_count": null,
+      "previous_sha256": null,
+      "rule_count": 18500,
+      "rule_types": {
+        "DOMAIN": 18488,
+        "DOMAIN-SUFFIX": 3,
+        "IP-CIDR": 9
+      },
+      "sha256": "5a624798c0295ecdaf3b3a8339776a8433027fe6d4bccaa265da3c1f45621d1f",
       "source": "kelee.one",
-      "status": 403,
-      "status_vs_previous": "failed",
+      "status": 200,
+      "status_vs_previous": "changed",
+      "tls_verified": true,
       "url": "https://kelee.one/Tool/Loon/Lsr/SpeedtestInternational.lsr"
     },
     {
       "attempts": 1,
-      "bytes": 7397926,
-      "checked_at": "2026-11-15T07:53:04Z",
+      "bytes": 7410770,
+      "checked_at": "2026-11-16T07:59:34Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "enabled": true,
-      "etag": "\"65b5fc64e9cb937c97d33a9f275120a3cd754c6a37521da858b5c72503675c07\"",
+      "etag": "\"e095d799a58fc05cdb604d3b06508548dc2e5b7359d6f8bf0ea1fd4b33af3ab1\"",
       "gated": false,
       "kind": "rule",
       "label": "AdRules",
       "last_modified": null,
       "ok": true,
       "policy": "REJECT",
-      "previous_rule_count": 211039,
-      "previous_sha256": "eef6d07ca2ea874bd568b403a005f5ed9ec38613a625d413d3af1f2bcd728623",
-      "rule_count": 211383,
+      "previous_rule_count": 211383,
+      "previous_sha256": "ca393c6b5e4f6f858eb2be75154f72b3fbc2c19e910665642e6f3aeffc6b0cb1",
+      "rule_count": 211764,
       "rule_types": {
-        "DOMAIN-SUFFIX": 211383
+        "DOMAIN-SUFFIX": 211764
       },
-      "sha256": "ca393c6b5e4f6f858eb2be75154f72b3fbc2c19e910665642e6f3aeffc6b0cb1",
+      "sha256": "d6957d601cd45bf95bcaa3fccdd2e738af7ec5ba767f868eac9b6d6eab2753ea",
       "source": "Cats-Team/AdRules",
       "status": 200,
       "status_vs_previous": "changed",
@@ -157,7 +177,7 @@
     {
       "attempts": 1,
       "bytes": 311,
-      "checked_at": "2026-11-15T07:53:04Z",
+      "checked_at": "2026-11-16T07:59:34Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "enabled": true,
@@ -182,7 +202,7 @@
     {
       "attempts": 1,
       "bytes": 26870,
-      "checked_at": "2026-11-15T07:53:05Z",
+      "checked_at": "2026-11-16T07:59:34Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "enabled": true,
@@ -210,7 +230,7 @@
     {
       "attempts": 1,
       "bytes": 749,
-      "checked_at": "2026-11-15T07:53:05Z",
+      "checked_at": "2026-11-16T07:59:35Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "enabled": true,
@@ -235,7 +255,7 @@
     {
       "attempts": 1,
       "bytes": 1468,
-      "checked_at": "2026-11-15T07:53:05Z",
+      "checked_at": "2026-11-16T07:59:35Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "enabled": true,
@@ -263,7 +283,7 @@
     {
       "attempts": 1,
       "bytes": 766,
-      "checked_at": "2026-11-15T07:53:05Z",
+      "checked_at": "2026-11-16T07:59:35Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "enabled": true,
@@ -288,7 +308,7 @@
     {
       "attempts": 1,
       "bytes": 324,
-      "checked_at": "2026-11-15T07:53:05Z",
+      "checked_at": "2026-11-16T07:59:35Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "enabled": true,
@@ -313,7 +333,7 @@
     {
       "attempts": 1,
       "bytes": 4523,
-      "checked_at": "2026-11-15T07:53:05Z",
+      "checked_at": "2026-11-16T07:59:35Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "enabled": true,
@@ -341,7 +361,7 @@
     {
       "attempts": 1,
       "bytes": 638,
-      "checked_at": "2026-11-15T07:53:05Z",
+      "checked_at": "2026-11-16T07:59:35Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "enabled": true,
@@ -366,7 +386,7 @@
     {
       "attempts": 1,
       "bytes": 558,
-      "checked_at": "2026-11-15T07:53:05Z",
+      "checked_at": "2026-11-16T07:59:35Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "enabled": true,
@@ -391,7 +411,7 @@
     {
       "attempts": 1,
       "bytes": 1167,
-      "checked_at": "2026-11-15T07:53:05Z",
+      "checked_at": "2026-11-16T07:59:35Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "enabled": true,
@@ -416,7 +436,7 @@
     {
       "attempts": 1,
       "bytes": 3305,
-      "checked_at": "2026-11-15T07:53:05Z",
+      "checked_at": "2026-11-16T07:59:35Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "enabled": true,
@@ -443,7 +463,7 @@
     {
       "attempts": 1,
       "bytes": 244,
-      "checked_at": "2026-11-15T07:53:05Z",
+      "checked_at": "2026-11-16T07:59:35Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "enabled": true,
@@ -469,7 +489,7 @@
     {
       "attempts": 1,
       "bytes": 6490,
-      "checked_at": "2026-11-15T07:53:05Z",
+      "checked_at": "2026-11-16T07:59:35Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "enabled": true,
@@ -497,7 +517,7 @@
     {
       "attempts": 1,
       "bytes": 5565,
-      "checked_at": "2026-11-15T07:53:05Z",
+      "checked_at": "2026-11-16T07:59:35Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "enabled": true,
@@ -523,7 +543,7 @@
     {
       "attempts": 1,
       "bytes": 1629,
-      "checked_at": "2026-11-15T07:53:05Z",
+      "checked_at": "2026-11-16T07:59:35Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "enabled": true,
@@ -550,7 +570,7 @@
     {
       "attempts": 1,
       "bytes": 588,
-      "checked_at": "2026-11-15T07:53:05Z",
+      "checked_at": "2026-11-16T07:59:35Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "enabled": true,
@@ -575,7 +595,7 @@
     {
       "attempts": 1,
       "bytes": 605,
-      "checked_at": "2026-11-15T07:53:05Z",
+      "checked_at": "2026-11-16T07:59:35Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "enabled": true,
@@ -602,7 +622,7 @@
     {
       "attempts": 1,
       "bytes": 1117,
-      "checked_at": "2026-11-15T07:53:05Z",
+      "checked_at": "2026-11-16T07:59:35Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "enabled": true,
@@ -628,7 +648,7 @@
     {
       "attempts": 1,
       "bytes": 19792,
-      "checked_at": "2026-11-15T07:53:05Z",
+      "checked_at": "2026-11-16T07:59:35Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "enabled": true,
@@ -658,7 +678,7 @@
     {
       "attempts": 1,
       "bytes": 1738,
-      "checked_at": "2026-11-15T07:53:05Z",
+      "checked_at": "2026-11-16T07:59:35Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "enabled": true,
@@ -684,7 +704,7 @@
     {
       "attempts": 1,
       "bytes": 1701,
-      "checked_at": "2026-11-15T07:53:05Z",
+      "checked_at": "2026-11-16T07:59:35Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "enabled": true,
@@ -709,7 +729,7 @@
     {
       "attempts": 1,
       "bytes": 287,
-      "checked_at": "2026-11-15T07:53:05Z",
+      "checked_at": "2026-11-16T07:59:35Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "enabled": true,
@@ -735,7 +755,7 @@
     {
       "attempts": 1,
       "bytes": 509,
-      "checked_at": "2026-11-15T07:53:05Z",
+      "checked_at": "2026-11-16T07:59:35Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "enabled": true,
@@ -761,7 +781,7 @@
     {
       "attempts": 1,
       "bytes": 20536,
-      "checked_at": "2026-11-15T07:53:05Z",
+      "checked_at": "2026-11-16T07:59:35Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "enabled": true,
@@ -789,7 +809,7 @@
     {
       "attempts": 1,
       "bytes": 40369,
-      "checked_at": "2026-11-15T07:53:05Z",
+      "checked_at": "2026-11-16T07:59:35Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "enabled": true,
@@ -819,7 +839,7 @@
     {
       "attempts": 1,
       "bytes": 1353,
-      "checked_at": "2026-11-15T07:53:05Z",
+      "checked_at": "2026-11-16T07:59:35Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "enabled": true,
@@ -848,7 +868,7 @@
     {
       "attempts": 1,
       "bytes": 4494,
-      "checked_at": "2026-11-15T07:53:05Z",
+      "checked_at": "2026-11-16T07:59:35Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "enabled": true,
@@ -876,7 +896,7 @@
     {
       "attempts": 1,
       "bytes": 1197,
-      "checked_at": "2026-11-15T07:53:05Z",
+      "checked_at": "2026-11-16T07:59:35Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "enabled": true,
@@ -905,7 +925,7 @@
     {
       "attempts": 1,
       "bytes": 2571,
-      "checked_at": "2026-11-15T07:53:05Z",
+      "checked_at": "2026-11-16T07:59:35Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "enabled": true,
@@ -932,7 +952,7 @@
     {
       "attempts": 1,
       "bytes": 1355,
-      "checked_at": "2026-11-15T07:53:05Z",
+      "checked_at": "2026-11-16T07:59:35Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "enabled": true,
@@ -962,7 +982,7 @@
     {
       "attempts": 1,
       "bytes": 1186,
-      "checked_at": "2026-11-15T07:53:05Z",
+      "checked_at": "2026-11-16T07:59:35Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "enabled": true,
@@ -990,7 +1010,7 @@
     {
       "attempts": 1,
       "bytes": 1116,
-      "checked_at": "2026-11-15T07:53:05Z",
+      "checked_at": "2026-11-16T07:59:35Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "enabled": true,
@@ -1017,7 +1037,7 @@
     {
       "attempts": 1,
       "bytes": 616,
-      "checked_at": "2026-11-15T07:53:05Z",
+      "checked_at": "2026-11-16T07:59:35Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "enabled": true,
@@ -1042,7 +1062,7 @@
     {
       "attempts": 1,
       "bytes": 5451,
-      "checked_at": "2026-11-15T07:53:05Z",
+      "checked_at": "2026-11-16T07:59:35Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "enabled": true,
@@ -1070,11 +1090,11 @@
     }
   ],
   "summary": {
-    "changed": 2,
+    "changed": 4,
     "failed": 0,
     "failed_core": 0,
-    "gated": 2,
+    "gated": 0,
     "new": 0,
-    "reachable": 39
+    "reachable": 41
   }
 }
