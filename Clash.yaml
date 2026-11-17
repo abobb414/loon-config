@@ -709,6 +709,29 @@ rules:
   - DOMAIN-SUFFIX,stun.l.google.com,Home-Proxy
   - DOMAIN-SUFFIX,stun.cloudflare.com,Home-Proxy
 
+  # === Claude Code 全域名（2026-11-17 按 ip.net.coffee/claude/site.html 核对）===
+  # Claude 规则集只有 anthropic.com / claude.ai / cdn.usefathom.com；以下漏项默认落到 Proxy（台湾出口），
+  # 与 claude.ai 的美国住宅出口不一致；statsigapi.net 还会被 AdRules 直接 REJECT。
+  # 本地规则排在 AdRules 之前，能盖掉 REJECT。
+  - DOMAIN-SUFFIX,claudemcpclient.com,Claude
+  - DOMAIN-SUFFIX,claudemcpcontent.com,Claude
+  - DOMAIN,anthropic.com.cdn.cloudflare.net,Claude
+  - DOMAIN,servd-anthropic-website.b-cdn.net,Claude
+  - DOMAIN,anthropic.auth0.com,Claude
+  - DOMAIN,anthropic-com.ghost.io,Claude
+  - DOMAIN,maps.googleapis.com,Claude
+  - DOMAIN-SUFFIX,withpersona.com,Claude
+  - DOMAIN-SUFFIX,frompersona.com,Claude
+  - DOMAIN-SUFFIX,sentry.io,Claude
+  - DOMAIN-SUFFIX,statsigapi.net,Claude
+  - DOMAIN,statsig.anthropic.com,Claude
+  - DOMAIN,browser-intake-us5-datadoghq.com,Claude
+  - DOMAIN-SUFFIX,intercom.io,Claude
+  - DOMAIN-SUFFIX,intercomcdn.com,Claude
+  # Anthropic 自有 IP 段兜底（域名规则漏掉时仍走 Claude 出口）
+  - IP-CIDR,160.79.104.0/21,Claude,no-resolve
+  - IP-CIDR6,2607:6bc0::/32,Claude,no-resolve
+
   # === 插件源/脚本源强制直连 ===
   # kelee.one 在 Cloudflare 后面，经代理出海会被下发 cf-mitigated: challenge。
   - DOMAIN-SUFFIX,kelee.one,DIRECT
