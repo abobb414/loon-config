@@ -1,0 +1,63 @@
+# NAME: OpenAI / ChatGPT
+# UPDATED: 2026-11-19
+# DESC: ChatGPT Web / App / Desktop / API / Sora 全链路域名
+# 来源: help.openai.com/en/articles/9247338 + zfdang/clash-ruleset-ai-providers + 社区抓包
+# 用法: Loon [Remote Rule] -> policy=OpenAI；mihomo rule-provider behavior=classical
+# 说明: 共享 SaaS（auth0.com / stripe.com / algolia.net / segment.io / statsig / launchdarkly 等）
+#       一律不收，避免把无关服务劫持进本组
+
+# ===== 核心 =====
+DOMAIN-SUFFIX,openai.com
+DOMAIN-SUFFIX,chatgpt.com
+DOMAIN-SUFFIX,chat.com
+DOMAIN-SUFFIX,openai.org
+DOMAIN-SUFFIX,chatgpt.site
+DOMAIN-SUFFIX,sora.com
+DOMAIN,ws.chatgpt.com
+
+# ===== 静态资源 / 用户内容 CDN =====
+DOMAIN-SUFFIX,oaistatic.com
+DOMAIN-SUFFIX,oaiusercontent.com
+DOMAIN-SUFFIX,oaistatsig.com
+DOMAIN-SUFFIX,crixet.com
+DOMAIN,openaicom.imgix.net
+DOMAIN,cdn.openaimerge.com
+DOMAIN,openaiapi-site.azureedge.net
+DOMAIN,production-openaicom-storage.azureedge.net
+DOMAIN,openaiassets.blob.core.windows.net
+DOMAIN,openaicomproductionae4b.blob.core.windows.net
+DOMAIN,openaicom-api-bdcpf8c6d2e9atf6.z01.azurefd.net
+DOMAIN,openai.com.cdn.cloudflare.net
+DOMAIN,chat.openai.com.cdn.cloudflare.net
+
+# ===== 客户端（iOS / Android / 桌面）=====
+DOMAIN-SUFFIX,chat.openai.com
+
+# ===== 语音 / 实时对话 =====
+DOMAIN-SUFFIX,chatgpt.livekit.cloud
+DOMAIN,host.livekit.cloud
+DOMAIN,turn.livekit.cloud
+
+# ===== 人机验证（漏了登录会卡死）=====
+DOMAIN,challenges.cloudflare.com
+DOMAIN,client-api.arkoselabs.com
+DOMAIN,openai-api.arkoselabs.com
+
+# ===== WebSocket 异步通道 =====
+DOMAIN-KEYWORD,chatgpt-async-webps-prod
+
+# ===== 第三方依赖（仅 OpenAI 专属入口）=====
+# WorkOS 认证链：2025 年后新增，老规则集普遍缺失，登录卡住的常见原因
+DOMAIN,cdn.workos.com
+DOMAIN,forwarder.workos.com
+DOMAIN,frontend-apps-multi-region.workos.com
+DOMAIN,setup.workos.com
+DOMAIN,images.workoscdn.com
+DOMAIN,workos.imgix.net
+# Apple 凭据 / App Attest
+DOMAIN,humb.apple.com
+DOMAIN,register.appattest.apple.com
+
+# ===== 品牌兜底 =====
+DOMAIN-KEYWORD,openai
+DOMAIN-KEYWORD,openaicom-api

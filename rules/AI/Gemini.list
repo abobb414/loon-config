@@ -1,0 +1,77 @@
+# NAME: Gemini / Antigravity
+# UPDATED: 2026-11-19
+# DESC: Google Antigravity IDE/CLI、Gemini Web/App、Gemini CLI、AI Studio、NotebookLM
+# 来源: antigravity.google/docs/enterprise 网络许可清单 + zfdang/clash-ruleset-ai-providers
+# 用法: Loon [Remote Rule] -> policy=Gemini；mihomo rule-provider behavior=classical
+# 说明: 不收 apis.google.com / google.com 这类总域，避免把普通 Google 流量拉进本组；
+#       accounts.google.com + oauth2.googleapis.com 会把「所有 Google 登录」带来本组（已知副作用）
+
+# ===== Antigravity 专属 =====
+DOMAIN-SUFFIX,antigravity.google
+DOMAIN-SUFFIX,antigravity.google.com
+DOMAIN,antigravity-pa.googleapis.com
+DOMAIN,antigravity.googleapis.com
+DOMAIN-SUFFIX,antigravity-unleash.goog
+DOMAIN,antigravity-cli-auto-updater-974169037036.us-central1.run.app
+DOMAIN,antigravity-hub-auto-updater-974169037036.us-central1.run.app
+
+# ===== Cloud Code / Agent 调度后端（Antigravity + Gemini CLI 共用）=====
+DOMAIN,cloudcode-pa.googleapis.com
+DOMAIN,daily-cloudcode-pa.googleapis.com
+DOMAIN,cloudaicompanion.googleapis.com
+DOMAIN,geller-pa.googleapis.com
+DOMAIN,robinfrontend-pa.googleapis.com
+DOMAIN,aisandbox-pa.googleapis.com
+DOMAIN,aicode.googleapis.com
+DOMAIN,aida.googleapis.com
+DOMAIN,businessaicode.googleapis.com
+DOMAIN,businessaicode.us.rep.googleapis.com
+DOMAIN,businessaicode.eu.rep.googleapis.com
+DOMAIN,feedback-pa.googleapis.com
+DOMAIN,firebaselogging-pa.googleapis.com
+DOMAIN,proactivebackend-pa.googleapis.com
+
+# ===== Gemini 推理 API =====
+DOMAIN,generativelanguage.googleapis.com
+DOMAIN,aiplatform.googleapis.com
+DOMAIN,aiplatform.us.rep.googleapis.com
+DOMAIN,aiplatform.eu.rep.googleapis.com
+DOMAIN,alkalicore-pa.clients6.google.com
+DOMAIN,alkalimakersuite-pa.clients6.google.com
+DOMAIN,webchannel-alkalimakersuite-pa.clients6.google.com
+DOMAIN,geminiweb-pa.clients.google.com
+DOMAIN,geminiweb-pa.clients6.google.com
+DOMAIN-SUFFIX,generativeai.google
+
+# ===== Gemini 网页端 / App =====
+DOMAIN-SUFFIX,gemini.google
+DOMAIN-SUFFIX,gemini.google.com
+DOMAIN,gemini.gstatic.com
+DOMAIN-SUFFIX,bard.google.com
+DOMAIN-SUFFIX,deepmind.google
+DOMAIN-SUFFIX,deepmind.com
+
+# ===== AI Studio / 开发者平台 =====
+DOMAIN,aistudio.google.com
+DOMAIN,makersuite.google.com
+DOMAIN,ai.google.dev
+DOMAIN-SUFFIX,ai.studio
+DOMAIN-SUFFIX,jules.google
+
+# ===== NotebookLM =====
+DOMAIN,notebooklm-pa.googleapis.com
+DOMAIN,notebooklm.googleapis.com
+DOMAIN,notebooklm.google.com
+DOMAIN,notebook.google.com
+DOMAIN,labstailwind.pa.googleapis.com
+DOMAIN-SUFFIX,notebooklm.google
+DOMAIN-SUFFIX,notebook.google
+
+# ===== 身份认证（登录 / Token 刷新）=====
+DOMAIN,oauth2.googleapis.com
+DOMAIN,accounts.google.com
+
+# ===== 品牌兜底 =====
+DOMAIN-KEYWORD,generativelanguage
+DOMAIN-KEYWORD,developerprofiles
+DOMAIN-KEYWORD,colab

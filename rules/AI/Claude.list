@@ -1,0 +1,51 @@
+# NAME: Claude / Anthropic
+# UPDATED: 2026-11-19
+# DESC: Claude Web / Desktop / iOS / Claude Code / MCP 全链路域名
+# 来源: ip.net.coffee/claude/site.html + zfdang/clash-ruleset-ai-providers + 社区抓包
+# 用法: Loon [Remote Rule] -> policy=Claude；mihomo rule-provider behavior=classical
+
+# ===== 核心产品 =====
+DOMAIN-SUFFIX,anthropic.com
+DOMAIN-SUFFIX,claude.ai
+DOMAIN-SUFFIX,claude.com
+DOMAIN-SUFFIX,clau.de
+DOMAIN-SUFFIX,claude.app
+DOMAIN-SUFFIX,claude.dev
+DOMAIN-SUFFIX,claude.new
+DOMAIN-SUFFIX,claude.site
+# Anthropic 持有但暂未上线的域名（NS 同为 isla/randy.ns.cloudflare.com）
+DOMAIN-SUFFIX,ant.dev
+DOMAIN-SUFFIX,anthropic.team
+DOMAIN-SUFFIX,antspace.dev
+DOMAIN-SUFFIX,claudepages.dev
+DOMAIN-SUFFIX,claudeacademy.com
+DOMAIN-SUFFIX,claudestudio.com
+DOMAIN-SUFFIX,chatbotclaude.com
+
+# ===== MCP / 内容托管 =====
+DOMAIN-SUFFIX,claudemcpclient.com
+DOMAIN-SUFFIX,claudemcpcontent.com
+DOMAIN-SUFFIX,claudeusercontent.com
+
+# ===== 静态资源 CDN =====
+DOMAIN,anthropic.com.cdn.cloudflare.net
+DOMAIN,servd-anthropic-website.b-cdn.net
+DOMAIN,anthropic.imgix.net
+DOMAIN,maps.googleapis.com
+
+# ===== 登录 / 支付 / 客服 =====
+DOMAIN,anthropic.auth0.com
+DOMAIN,anthropic-com.ghost.io
+DOMAIN-SUFFIX,withpersona.com
+DOMAIN-SUFFIX,frompersona.com
+DOMAIN-SUFFIX,intercom.io
+DOMAIN-SUFFIX,intercomcdn.com
+
+# ===== 遥测 / 风控（不影响功能，但走错出口会拖慢首屏）=====
+DOMAIN-SUFFIX,sentry.io
+DOMAIN-SUFFIX,statsigapi.net
+DOMAIN,browser-intake-us5-datadoghq.com
+DOMAIN,http-intake.logs.us5.datadoghq.com
+DOMAIN,cdn.usefathom.com
+DOMAIN-KEYWORD,datadog
+DOMAIN-KEYWORD,sift

@@ -1,0 +1,49 @@
+# NAME: AI 其他厂商
+# UPDATED: 2026-11-19
+# DESC: Copilot(GitHub/Microsoft)、Perplexity、Grok/xAI、Mistral、Meta AI、JetBrains AI、Trae、Apple Intelligence
+# 来源: fmz200/wool_scripts AI.list + blackmatrix7 + 社区抓包
+# 用法: Loon [Remote Rule] -> policy=AI；mihomo rule-provider behavior=classical
+# 说明: Apple Intelligence 若本地已有 Apple 直连规则会先命中，此段只作兜底
+
+# ===== GitHub Copilot =====
+DOMAIN-SUFFIX,githubcopilot.com
+DOMAIN,copilot-proxy.githubusercontent.com
+
+# ===== Microsoft Copilot =====
+DOMAIN,copilot.microsoft.com
+DOMAIN,sydney.bing.com
+
+# ===== Perplexity =====
+DOMAIN-SUFFIX,perplexity.ai
+DOMAIN-SUFFIX,perplexity.com
+DOMAIN-SUFFIX,pplx.ai
+
+# ===== xAI / Grok =====
+DOMAIN-SUFFIX,x.ai
+DOMAIN-SUFFIX,grok.com
+
+# ===== Mistral =====
+DOMAIN-SUFFIX,mistral.ai
+
+# ===== Meta AI =====
+DOMAIN-SUFFIX,meta.ai
+DOMAIN,imagine.meta.com
+
+# ===== JetBrains AI / Junie =====
+DOMAIN-SUFFIX,jetbrains.ai
+DOMAIN-SUFFIX,grazie.ai
+DOMAIN-SUFFIX,grazie.aws.intellij.net
+
+# ===== Trae =====
+DOMAIN-SUFFIX,trae.ai
+DOMAIN,trae-api-sg.mchost.guru
+
+# ===== Apple Intelligence =====
+# 不收 gateway.icloud.com / apps.mzstatic.com / cp4.cloudflare.com：总域太宽，
+# 会把普通 iCloud 与 App Store 资源一起拽进 AI 出口
+DOMAIN-SUFFIX,guzzoni.apple.com
+DOMAIN-SUFFIX,gspe1-ssl.ls.apple.com
+DOMAIN-SUFFIX,apple-relay.apple.com
+DOMAIN-SUFFIX,apple-relay.cloudflare.com
+DOMAIN-SUFFIX,apple-relay.akamaized.net
+DOMAIN-SUFFIX,apple-relay.fastly-edge.com
