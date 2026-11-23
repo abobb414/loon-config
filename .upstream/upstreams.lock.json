@@ -1,12 +1,12 @@
 {
   "config": "Loon-routing.conf",
-  "generated_at": "2026-11-22T07:59:47Z",
+  "generated_at": "2026-11-23T09:07:23Z",
   "resource_count": 41,
   "resources": [
     {
       "attempts": 1,
       "bytes": 209252,
-      "checked_at": "2026-11-22T07:59:46Z",
+      "checked_at": "2026-11-23T09:07:22Z",
       "content_type": "application/octet-stream",
       "core": true,
       "etag": "W/\"33164-036ba50579067b45\"",
@@ -25,7 +25,7 @@
     {
       "attempts": 1,
       "bytes": 7630477,
-      "checked_at": "2026-11-22T07:59:46Z",
+      "checked_at": "2026-11-23T09:07:22Z",
       "content_type": "application/octet-stream",
       "core": true,
       "etag": "W/\"746e8d-9426ac711954fec3\"",
@@ -43,19 +43,19 @@
     },
     {
       "attempts": 1,
-      "bytes": 1301320,
-      "checked_at": "2026-11-22T07:59:46Z",
+      "bytes": 1305351,
+      "checked_at": "2026-11-23T09:07:22Z",
       "content_type": "application/octet-stream",
       "core": true,
-      "etag": "\"0x8DF47CF078308DA\"",
+      "etag": "\"0x8DF48A427A87729\"",
       "gated": false,
       "kind": "resource",
       "label": "resource-parser",
-      "last_modified": "Sat, 21 Nov 2026 12:57:41 GMT",
+      "last_modified": "Sun, 22 Nov 2026 14:23:18 GMT",
       "ok": true,
       "previous_rule_count": null,
-      "previous_sha256": "2ad4a6a1193f9daccef4bdb576125a6726db894734dd589bd12ae56eb0f75f2d",
-      "sha256": "cd516f145fc9d0a9d80ccabe69a293a962269367c7e559d7fb0058d623e65cd6",
+      "previous_sha256": "cd516f145fc9d0a9d80ccabe69a293a962269367c7e559d7fb0058d623e65cd6",
+      "sha256": "f4194df09c31af9b874aaeea22d81f9994149d47e32b77d37ac73faac79cdb32",
       "source": "sub-store-org/Sub-Store",
       "status": 200,
       "status_vs_previous": "changed",
@@ -65,7 +65,7 @@
     {
       "attempts": 1,
       "bytes": 2724,
-      "checked_at": "2026-11-22T07:59:46Z",
+      "checked_at": "2026-11-23T09:07:22Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "enabled": true,
@@ -94,7 +94,7 @@
     {
       "attempts": 1,
       "bytes": 551,
-      "checked_at": "2026-11-22T07:59:46Z",
+      "checked_at": "2026-11-23T09:07:22Z",
       "content_type": "application/octet-stream",
       "core": false,
       "enabled": true,
@@ -119,7 +119,7 @@
     {
       "attempts": 1,
       "bytes": 631927,
-      "checked_at": "2026-11-22T07:59:46Z",
+      "checked_at": "2026-11-23T09:07:22Z",
       "content_type": "application/octet-stream",
       "core": false,
       "enabled": true,
@@ -145,25 +145,25 @@
     },
     {
       "attempts": 1,
-      "bytes": 7422471,
-      "checked_at": "2026-11-22T07:59:46Z",
+      "bytes": 7374111,
+      "checked_at": "2026-11-23T09:07:22Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "enabled": true,
-      "etag": "\"cfc488ea710d6123f568bdc1d0dc3441da93ca48dac62e2c6ef2711fa67c8b3b\"",
+      "etag": "\"2acdd4849f179e1eb8229d4df877a6d51701927b33ee8b36da6256d5f472c088\"",
       "gated": false,
       "kind": "rule",
       "label": "AdRules",
       "last_modified": null,
       "ok": true,
       "policy": "REJECT",
-      "previous_rule_count": 212034,
-      "previous_sha256": "fc668945784cd8ef8c87bcb2e2fb1a51e15d055d353f0a7f7fb52fb9f3b8d765",
-      "rule_count": 212090,
+      "previous_rule_count": 212090,
+      "previous_sha256": "e971f7b2882c0d4734ef6012eb2adb8758d948815c0adf4765bd96a3238b483a",
+      "rule_count": 210708,
       "rule_types": {
-        "DOMAIN-SUFFIX": 212090
+        "DOMAIN-SUFFIX": 210708
       },
-      "sha256": "e971f7b2882c0d4734ef6012eb2adb8758d948815c0adf4765bd96a3238b483a",
+      "sha256": "c44d6e3c0648d185ce5dfd539c86c4837fe9d6001779ac6f73897d84da7de9dd",
       "source": "Cats-Team/AdRules",
       "status": 200,
       "status_vs_previous": "changed",
@@ -173,7 +173,7 @@
     {
       "attempts": 1,
       "bytes": 311,
-      "checked_at": "2026-11-22T07:59:46Z",
+      "checked_at": "2026-11-23T09:07:22Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "enabled": true,
@@ -198,7 +198,7 @@
     {
       "attempts": 1,
       "bytes": 26870,
-      "checked_at": "2026-11-22T07:59:46Z",
+      "checked_at": "2026-11-23T09:07:22Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "enabled": true,
@@ -226,7 +226,7 @@
     {
       "attempts": 1,
       "bytes": 749,
-      "checked_at": "2026-11-22T07:59:46Z",
+      "checked_at": "2026-11-23T09:07:22Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "enabled": true,
@@ -251,7 +251,7 @@
     {
       "attempts": 1,
       "bytes": 1468,
-      "checked_at": "2026-11-22T07:59:46Z",
+      "checked_at": "2026-11-23T09:07:22Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "enabled": true,
@@ -279,7 +279,7 @@
     {
       "attempts": 1,
       "bytes": 766,
-      "checked_at": "2026-11-22T07:59:46Z",
+      "checked_at": "2026-11-23T09:07:22Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "enabled": true,
@@ -304,7 +304,7 @@
     {
       "attempts": 1,
       "bytes": 324,
-      "checked_at": "2026-11-22T07:59:46Z",
+      "checked_at": "2026-11-23T09:07:22Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "enabled": true,
@@ -329,7 +329,7 @@
     {
       "attempts": 1,
       "bytes": 4523,
-      "checked_at": "2026-11-22T07:59:46Z",
+      "checked_at": "2026-11-23T09:07:22Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "enabled": true,
@@ -357,7 +357,7 @@
     {
       "attempts": 1,
       "bytes": 638,
-      "checked_at": "2026-11-22T07:59:46Z",
+      "checked_at": "2026-11-23T09:07:22Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "enabled": true,
@@ -382,7 +382,7 @@
     {
       "attempts": 1,
       "bytes": 558,
-      "checked_at": "2026-11-22T07:59:46Z",
+      "checked_at": "2026-11-23T09:07:22Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "enabled": true,
@@ -407,7 +407,7 @@
     {
       "attempts": 1,
       "bytes": 1167,
-      "checked_at": "2026-11-22T07:59:46Z",
+      "checked_at": "2026-11-23T09:07:23Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "enabled": true,
@@ -432,7 +432,7 @@
     {
       "attempts": 1,
       "bytes": 3305,
-      "checked_at": "2026-11-22T07:59:46Z",
+      "checked_at": "2026-11-23T09:07:23Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "enabled": true,
@@ -459,7 +459,7 @@
     {
       "attempts": 1,
       "bytes": 244,
-      "checked_at": "2026-11-22T07:59:46Z",
+      "checked_at": "2026-11-23T09:07:23Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "enabled": true,
@@ -485,7 +485,7 @@
     {
       "attempts": 1,
       "bytes": 6490,
-      "checked_at": "2026-11-22T07:59:46Z",
+      "checked_at": "2026-11-23T09:07:23Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "enabled": true,
@@ -513,7 +513,7 @@
     {
       "attempts": 1,
       "bytes": 5565,
-      "checked_at": "2026-11-22T07:59:46Z",
+      "checked_at": "2026-11-23T09:07:23Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "enabled": true,
@@ -539,7 +539,7 @@
     {
       "attempts": 1,
       "bytes": 1629,
-      "checked_at": "2026-11-22T07:59:46Z",
+      "checked_at": "2026-11-23T09:07:23Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "enabled": true,
@@ -566,7 +566,7 @@
     {
       "attempts": 1,
       "bytes": 588,
-      "checked_at": "2026-11-22T07:59:46Z",
+      "checked_at": "2026-11-23T09:07:23Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "enabled": true,
@@ -591,7 +591,7 @@
     {
       "attempts": 1,
       "bytes": 605,
-      "checked_at": "2026-11-22T07:59:46Z",
+      "checked_at": "2026-11-23T09:07:23Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "enabled": true,
@@ -618,7 +618,7 @@
     {
       "attempts": 1,
       "bytes": 1117,
-      "checked_at": "2026-11-22T07:59:46Z",
+      "checked_at": "2026-11-23T09:07:23Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "enabled": true,
@@ -644,7 +644,7 @@
     {
       "attempts": 1,
       "bytes": 19792,
-      "checked_at": "2026-11-22T07:59:46Z",
+      "checked_at": "2026-11-23T09:07:23Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "enabled": true,
@@ -674,7 +674,7 @@
     {
       "attempts": 1,
       "bytes": 1738,
-      "checked_at": "2026-11-22T07:59:46Z",
+      "checked_at": "2026-11-23T09:07:23Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "enabled": true,
@@ -700,7 +700,7 @@
     {
       "attempts": 1,
       "bytes": 1701,
-      "checked_at": "2026-11-22T07:59:46Z",
+      "checked_at": "2026-11-23T09:07:23Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "enabled": true,
@@ -725,7 +725,7 @@
     {
       "attempts": 1,
       "bytes": 287,
-      "checked_at": "2026-11-22T07:59:46Z",
+      "checked_at": "2026-11-23T09:07:23Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "enabled": true,
@@ -751,7 +751,7 @@
     {
       "attempts": 1,
       "bytes": 509,
-      "checked_at": "2026-11-22T07:59:46Z",
+      "checked_at": "2026-11-23T09:07:23Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "enabled": true,
@@ -777,7 +777,7 @@
     {
       "attempts": 1,
       "bytes": 20536,
-      "checked_at": "2026-11-22T07:59:46Z",
+      "checked_at": "2026-11-23T09:07:23Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "enabled": true,
@@ -805,7 +805,7 @@
     {
       "attempts": 1,
       "bytes": 40369,
-      "checked_at": "2026-11-22T07:59:46Z",
+      "checked_at": "2026-11-23T09:07:23Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "enabled": true,
@@ -835,7 +835,7 @@
     {
       "attempts": 1,
       "bytes": 1353,
-      "checked_at": "2026-11-22T07:59:46Z",
+      "checked_at": "2026-11-23T09:07:23Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "enabled": true,
@@ -864,7 +864,7 @@
     {
       "attempts": 1,
       "bytes": 4494,
-      "checked_at": "2026-11-22T07:59:46Z",
+      "checked_at": "2026-11-23T09:07:23Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "enabled": true,
@@ -892,7 +892,7 @@
     {
       "attempts": 1,
       "bytes": 1197,
-      "checked_at": "2026-11-22T07:59:46Z",
+      "checked_at": "2026-11-23T09:07:23Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "enabled": true,
@@ -921,7 +921,7 @@
     {
       "attempts": 1,
       "bytes": 2571,
-      "checked_at": "2026-11-22T07:59:46Z",
+      "checked_at": "2026-11-23T09:07:23Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "enabled": true,
@@ -948,7 +948,7 @@
     {
       "attempts": 1,
       "bytes": 1355,
-      "checked_at": "2026-11-22T07:59:47Z",
+      "checked_at": "2026-11-23T09:07:23Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "enabled": true,
@@ -978,7 +978,7 @@
     {
       "attempts": 1,
       "bytes": 1186,
-      "checked_at": "2026-11-22T07:59:47Z",
+      "checked_at": "2026-11-23T09:07:23Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "enabled": true,
@@ -1006,7 +1006,7 @@
     {
       "attempts": 1,
       "bytes": 1116,
-      "checked_at": "2026-11-22T07:59:47Z",
+      "checked_at": "2026-11-23T09:07:23Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "enabled": true,
@@ -1033,7 +1033,7 @@
     {
       "attempts": 1,
       "bytes": 616,
-      "checked_at": "2026-11-22T07:59:47Z",
+      "checked_at": "2026-11-23T09:07:23Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "enabled": true,
@@ -1058,7 +1058,7 @@
     {
       "attempts": 1,
       "bytes": 5451,
-      "checked_at": "2026-11-22T07:59:47Z",
+      "checked_at": "2026-11-23T09:07:23Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "enabled": true,
