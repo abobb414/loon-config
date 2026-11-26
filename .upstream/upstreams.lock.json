@@ -1,50 +1,54 @@
 {
   "config": "Loon-routing.conf",
-  "generated_at": "2026-11-25T09:51:51Z",
+  "generated_at": "2026-11-26T09:32:13Z",
   "resource_count": 41,
   "resources": [
     {
       "attempts": 1,
-      "bytes": 209252,
-      "checked_at": "2026-11-25T09:51:50Z",
+      "bytes": 207908,
+      "checked_at": "2026-11-26T09:32:12Z",
       "content_type": "application/octet-stream",
       "core": true,
-      "etag": "W/\"33164-036ba50579067b45\"",
+      "etag": "W/\"32c24-138c5a50908a6165\"",
       "gated": false,
       "kind": "resource",
       "label": "ipasn-url",
       "last_modified": null,
       "ok": true,
-      "sha256": "9ac386ac5705a454e74adbe5f4e5837a766e22fa094de6251125e97c3d283be5",
+      "previous_rule_count": null,
+      "previous_sha256": "9ac386ac5705a454e74adbe5f4e5837a766e22fa094de6251125e97c3d283be5",
+      "sha256": "1d647b1537390b0f031d9bb8cb0018500704379cd13981f3651aed3b6b249bf2",
       "source": "Loyalsoldier/geoip",
       "status": 200,
-      "status_vs_previous": "unchanged",
+      "status_vs_previous": "changed",
       "tls_verified": true,
       "url": "https://cdn.jsdelivr.net/gh/Loyalsoldier/geoip@release/Country-asn.mmdb"
     },
     {
       "attempts": 1,
-      "bytes": 7630477,
-      "checked_at": "2026-11-25T09:51:50Z",
+      "bytes": 7657441,
+      "checked_at": "2026-11-26T09:32:12Z",
       "content_type": "application/octet-stream",
       "core": true,
-      "etag": "W/\"746e8d-9426ac711954fec3\"",
+      "etag": "W/\"74d7e1-eb5bbc02756a0e47\"",
       "gated": false,
       "kind": "resource",
       "label": "geoip-url",
       "last_modified": null,
       "ok": true,
-      "sha256": "9840946762fa8c2673738bbbbab22bb720bde931f6dea327eb58e689babc37dc",
+      "previous_rule_count": null,
+      "previous_sha256": "9840946762fa8c2673738bbbbab22bb720bde931f6dea327eb58e689babc37dc",
+      "sha256": "6c3ca78dadf2477261ea6addf632682bcfc1ab5924bb4c30eb28c37c828e3373",
       "source": "Loyalsoldier/geoip",
       "status": 200,
-      "status_vs_previous": "unchanged",
+      "status_vs_previous": "changed",
       "tls_verified": true,
       "url": "https://cdn.jsdelivr.net/gh/Loyalsoldier/geoip@release/Country.mmdb"
     },
     {
       "attempts": 1,
       "bytes": 1312589,
-      "checked_at": "2026-11-25T09:51:50Z",
+      "checked_at": "2026-11-26T09:32:12Z",
       "content_type": "application/octet-stream",
       "core": true,
       "etag": "\"0x8DF4A5B999887BC\"",
@@ -53,19 +57,17 @@
       "label": "resource-parser",
       "last_modified": "Tue, 24 Nov 2026 18:48:58 GMT",
       "ok": true,
-      "previous_rule_count": null,
-      "previous_sha256": "8253e8883d376aee0bfe229e3a1e35a007991439e1173d57201811136dd9571b",
       "sha256": "62268d3f7061695ae37c4381148c9fc9d76a06e372cfaefddee78c7b39e10a9f",
       "source": "sub-store-org/Sub-Store",
       "status": 200,
-      "status_vs_previous": "changed",
+      "status_vs_previous": "unchanged",
       "tls_verified": true,
       "url": "https://github.com/sub-store-org/Sub-Store/releases/latest/download/sub-store-parser.loon.min.js"
     },
     {
       "attempts": 1,
       "bytes": 2724,
-      "checked_at": "2026-11-25T09:51:50Z",
+      "checked_at": "2026-11-26T09:32:12Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "enabled": true,
@@ -94,7 +96,7 @@
     {
       "attempts": 1,
       "bytes": 551,
-      "checked_at": "2026-11-25T09:51:50Z",
+      "checked_at": "2026-11-26T09:32:12Z",
       "content_type": "application/octet-stream",
       "core": false,
       "enabled": true,
@@ -119,7 +121,7 @@
     {
       "attempts": 1,
       "bytes": 631927,
-      "checked_at": "2026-11-25T09:51:50Z",
+      "checked_at": "2026-11-26T09:32:12Z",
       "content_type": "application/octet-stream",
       "core": false,
       "enabled": true,
@@ -145,25 +147,25 @@
     },
     {
       "attempts": 1,
-      "bytes": 7514944,
-      "checked_at": "2026-11-25T09:51:50Z",
+      "bytes": 7527208,
+      "checked_at": "2026-11-26T09:32:12Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "enabled": true,
-      "etag": "\"2d301ff8ae760a7c804eeb459235af5f89945be010e3f6d04b9064916f28ff19\"",
+      "etag": "\"70aa2de7fecf4986eac2b6f25ed04d423b2fffdd25c4f3006db914dc79cbb532\"",
       "gated": false,
       "kind": "rule",
       "label": "AdRules",
       "last_modified": null,
       "ok": true,
       "policy": "REJECT",
-      "previous_rule_count": 214257,
-      "previous_sha256": "61841f5a729000ce93552a01936850aef63baba857c9881e6123972869ee0d5d",
-      "rule_count": 214618,
+      "previous_rule_count": 214618,
+      "previous_sha256": "8743b5d04355e60c23234205df4335c13634b26af80970817ebfcada9b06ed27",
+      "rule_count": 214989,
       "rule_types": {
-        "DOMAIN-SUFFIX": 214618
+        "DOMAIN-SUFFIX": 214989
       },
-      "sha256": "8743b5d04355e60c23234205df4335c13634b26af80970817ebfcada9b06ed27",
+      "sha256": "ebf58f0a67fcc8e3c0554e3158f68f82684f8451e1fec2a68da641248b07f1ff",
       "source": "Cats-Team/AdRules",
       "status": 200,
       "status_vs_previous": "changed",
@@ -173,7 +175,7 @@
     {
       "attempts": 1,
       "bytes": 311,
-      "checked_at": "2026-11-25T09:51:50Z",
+      "checked_at": "2026-11-26T09:32:12Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "enabled": true,
@@ -198,7 +200,7 @@
     {
       "attempts": 1,
       "bytes": 26870,
-      "checked_at": "2026-11-25T09:51:50Z",
+      "checked_at": "2026-11-26T09:32:12Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "enabled": true,
@@ -226,7 +228,7 @@
     {
       "attempts": 1,
       "bytes": 749,
-      "checked_at": "2026-11-25T09:51:50Z",
+      "checked_at": "2026-11-26T09:32:12Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "enabled": true,
@@ -251,7 +253,7 @@
     {
       "attempts": 1,
       "bytes": 1468,
-      "checked_at": "2026-11-25T09:51:50Z",
+      "checked_at": "2026-11-26T09:32:12Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "enabled": true,
@@ -279,7 +281,7 @@
     {
       "attempts": 1,
       "bytes": 766,
-      "checked_at": "2026-11-25T09:51:50Z",
+      "checked_at": "2026-11-26T09:32:12Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "enabled": true,
@@ -304,7 +306,7 @@
     {
       "attempts": 1,
       "bytes": 324,
-      "checked_at": "2026-11-25T09:51:50Z",
+      "checked_at": "2026-11-26T09:32:12Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "enabled": true,
@@ -329,7 +331,7 @@
     {
       "attempts": 1,
       "bytes": 4523,
-      "checked_at": "2026-11-25T09:51:50Z",
+      "checked_at": "2026-11-26T09:32:12Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "enabled": true,
@@ -357,7 +359,7 @@
     {
       "attempts": 1,
       "bytes": 638,
-      "checked_at": "2026-11-25T09:51:50Z",
+      "checked_at": "2026-11-26T09:32:12Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "enabled": true,
@@ -382,7 +384,7 @@
     {
       "attempts": 1,
       "bytes": 558,
-      "checked_at": "2026-11-25T09:51:50Z",
+      "checked_at": "2026-11-26T09:32:12Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "enabled": true,
@@ -407,7 +409,7 @@
     {
       "attempts": 1,
       "bytes": 1167,
-      "checked_at": "2026-11-25T09:51:50Z",
+      "checked_at": "2026-11-26T09:32:12Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "enabled": true,
@@ -432,7 +434,7 @@
     {
       "attempts": 1,
       "bytes": 3305,
-      "checked_at": "2026-11-25T09:51:50Z",
+      "checked_at": "2026-11-26T09:32:12Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "enabled": true,
@@ -459,7 +461,7 @@
     {
       "attempts": 1,
       "bytes": 244,
-      "checked_at": "2026-11-25T09:51:50Z",
+      "checked_at": "2026-11-26T09:32:12Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "enabled": true,
@@ -485,7 +487,7 @@
     {
       "attempts": 1,
       "bytes": 6490,
-      "checked_at": "2026-11-25T09:51:50Z",
+      "checked_at": "2026-11-26T09:32:12Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "enabled": true,
@@ -513,7 +515,7 @@
     {
       "attempts": 1,
       "bytes": 5565,
-      "checked_at": "2026-11-25T09:51:50Z",
+      "checked_at": "2026-11-26T09:32:12Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "enabled": true,
@@ -539,7 +541,7 @@
     {
       "attempts": 1,
       "bytes": 1629,
-      "checked_at": "2026-11-25T09:51:50Z",
+      "checked_at": "2026-11-26T09:32:12Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "enabled": true,
@@ -566,7 +568,7 @@
     {
       "attempts": 1,
       "bytes": 588,
-      "checked_at": "2026-11-25T09:51:50Z",
+      "checked_at": "2026-11-26T09:32:12Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "enabled": true,
@@ -591,7 +593,7 @@
     {
       "attempts": 1,
       "bytes": 605,
-      "checked_at": "2026-11-25T09:51:50Z",
+      "checked_at": "2026-11-26T09:32:13Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "enabled": true,
@@ -618,7 +620,7 @@
     {
       "attempts": 1,
       "bytes": 1117,
-      "checked_at": "2026-11-25T09:51:50Z",
+      "checked_at": "2026-11-26T09:32:13Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "enabled": true,
@@ -644,7 +646,7 @@
     {
       "attempts": 1,
       "bytes": 19792,
-      "checked_at": "2026-11-25T09:51:50Z",
+      "checked_at": "2026-11-26T09:32:13Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "enabled": true,
@@ -674,7 +676,7 @@
     {
       "attempts": 1,
       "bytes": 1738,
-      "checked_at": "2026-11-25T09:51:50Z",
+      "checked_at": "2026-11-26T09:32:13Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "enabled": true,
@@ -700,7 +702,7 @@
     {
       "attempts": 1,
       "bytes": 1701,
-      "checked_at": "2026-11-25T09:51:50Z",
+      "checked_at": "2026-11-26T09:32:13Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "enabled": true,
@@ -725,7 +727,7 @@
     {
       "attempts": 1,
       "bytes": 287,
-      "checked_at": "2026-11-25T09:51:50Z",
+      "checked_at": "2026-11-26T09:32:13Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "enabled": true,
@@ -751,7 +753,7 @@
     {
       "attempts": 1,
       "bytes": 509,
-      "checked_at": "2026-11-25T09:51:50Z",
+      "checked_at": "2026-11-26T09:32:13Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "enabled": true,
@@ -777,7 +779,7 @@
     {
       "attempts": 1,
       "bytes": 20536,
-      "checked_at": "2026-11-25T09:51:50Z",
+      "checked_at": "2026-11-26T09:32:13Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "enabled": true,
@@ -805,7 +807,7 @@
     {
       "attempts": 1,
       "bytes": 40369,
-      "checked_at": "2026-11-25T09:51:51Z",
+      "checked_at": "2026-11-26T09:32:13Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "enabled": true,
@@ -835,7 +837,7 @@
     {
       "attempts": 1,
       "bytes": 1353,
-      "checked_at": "2026-11-25T09:51:51Z",
+      "checked_at": "2026-11-26T09:32:13Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "enabled": true,
@@ -864,7 +866,7 @@
     {
       "attempts": 1,
       "bytes": 4494,
-      "checked_at": "2026-11-25T09:51:51Z",
+      "checked_at": "2026-11-26T09:32:13Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "enabled": true,
@@ -892,7 +894,7 @@
     {
       "attempts": 1,
       "bytes": 1197,
-      "checked_at": "2026-11-25T09:51:51Z",
+      "checked_at": "2026-11-26T09:32:13Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "enabled": true,
@@ -921,7 +923,7 @@
     {
       "attempts": 1,
       "bytes": 2571,
-      "checked_at": "2026-11-25T09:51:51Z",
+      "checked_at": "2026-11-26T09:32:13Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "enabled": true,
@@ -948,7 +950,7 @@
     {
       "attempts": 1,
       "bytes": 1355,
-      "checked_at": "2026-11-25T09:51:51Z",
+      "checked_at": "2026-11-26T09:32:13Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "enabled": true,
@@ -978,7 +980,7 @@
     {
       "attempts": 1,
       "bytes": 1186,
-      "checked_at": "2026-11-25T09:51:51Z",
+      "checked_at": "2026-11-26T09:32:13Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "enabled": true,
@@ -1006,7 +1008,7 @@
     {
       "attempts": 1,
       "bytes": 1116,
-      "checked_at": "2026-11-25T09:51:51Z",
+      "checked_at": "2026-11-26T09:32:13Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "enabled": true,
@@ -1033,7 +1035,7 @@
     {
       "attempts": 1,
       "bytes": 616,
-      "checked_at": "2026-11-25T09:51:51Z",
+      "checked_at": "2026-11-26T09:32:13Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "enabled": true,
@@ -1058,7 +1060,7 @@
     {
       "attempts": 1,
       "bytes": 5451,
-      "checked_at": "2026-11-25T09:51:51Z",
+      "checked_at": "2026-11-26T09:32:13Z",
       "content_type": "text/plain; charset=utf-8",
       "core": true,
       "enabled": true,
@@ -1086,7 +1088,7 @@
     }
   ],
   "summary": {
-    "changed": 2,
+    "changed": 3,
     "failed": 0,
     "failed_core": 0,
     "gated": 0,
